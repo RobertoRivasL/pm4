@@ -59,6 +59,11 @@ public class ConfiguracionPruebas {
             if (inputStream != null) {
                 props.load(inputStream);
                 logger.info("Configuración cargada exitosamente desde: {}", ARCHIVO_CONFIG);
+
+                if (props.isEmpty()) {
+                    logger.warn("Archivo de configuración vacío: {}. Usando valores por defecto.", ARCHIVO_CONFIG);
+                    cargarConfiguracionPorDefecto(props);
+                }
             } else {
                 logger.warn("Archivo de configuración no encontrado: {}. Usando valores por defecto.", ARCHIVO_CONFIG);
                 cargarConfiguracionPorDefecto(props);
