@@ -214,6 +214,8 @@ public class PruebasLogin extends PruebasBase {
         
         Assert.assertFalse(loginExitoso, "El login debería fallar con credenciales inválidas");
         Assert.assertTrue(hayErrores, "Debería mostrar errores con credenciales inválidas");
+        Assert.assertTrue(credencialesInvalidas,
+                "Debería mostrarse mensaje de credenciales inválidas");
     }
     
     @Test(dataProvider = "credencialesInvalidas", dataProviderClass = ProveedorDatos.class,
