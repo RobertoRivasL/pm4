@@ -2,17 +2,19 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
 <!-- 
-Suite de Automatización Funcional
+Suite de Automatización Funcional - ExpandTesting
 Desarrollado por: Roberto Rivas Lopez
 Curso: Automatización de Pruebas
+Plataforma: https://practice.expandtesting.com/
 -->
 
-<suite name="Suite-Automatizacion-Funcional" verbose="1" parallel="none" thread-count="1">
+<suite name="Suite-Automatizacion-ExpandTesting" verbose="1" parallel="none" thread-count="1">
     
     <!-- Configuración global de la suite -->
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
-    <parameter name="timeout" value="10"/>
+    <parameter name="timeout" value="15"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
     <!-- Listeners para reportes y evidencias -->
     <listeners>
@@ -20,8 +22,8 @@ Curso: Automatización de Pruebas
         <listener class-name="org.testng.reporters.JUnitReportReporter"/>
     </listeners>
     
-    <!-- Suite completa con todas las pruebas -->
-    <test name="Pruebas-Completas" preserve-order="true">
+    <!-- Suite completa con todas las pruebas de ExpandTesting -->
+    <test name="Pruebas-Completas-ExpandTesting" preserve-order="true">
         <classes>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
@@ -29,10 +31,9 @@ Curso: Automatización de Pruebas
                     <include name="registroExitosoConDatosMinimos"/>
                     <include name="registroExitosoConMultiplesDatos"/>
                     <include name="validacionCamposObligatoriosVacios"/>
-                    <include name="validacionEmailInvalido"/>
                     <include name="validacionPasswordsNoCoinciden"/>
-                    <include name="validacionPasswordDemasiadoCorta"/>
-                    <include name="validacionSinAceptarTerminos"/>
+                    <include name="validacionCampoUsernameFaltante"/>
+                    <include name="validacionCampoPasswordFaltante"/>
                     <include name="funcionalidadLimpiarFormulario"/>
                     <include name="navegacionALogin"/>
                 </methods>
@@ -48,10 +49,10 @@ Curso: Automatización de Pruebas
                     <include name="loginFallidoConCamposVacios"/>
                     <include name="loginFallidoConPasswordVacio"/>
                     <include name="loginFallidoConEmailVacio"/>
-                    <include name="intentosMultiplesHastaBloqueoCuenta"/>
+                    <include name="loginFallidoUsernameInvalido"/>
+                    <include name="loginFallidoPasswordInvalido"/>
                     <include name="funcionalidadLimpiarCampos"/>
                     <include name="navegacionARegistro"/>
-                    <include name="navegacionARecuperarPassword"/>
                     <include name="flujoCompletoLoginYLogout"/>
                 </methods>
             </class>
@@ -60,13 +61,14 @@ Curso: Automatización de Pruebas
     
 </suite>
 
-<!-- Suite de Smoke Tests (Pruebas críticas) -->
-<suite name="Suite-Smoke-Tests" verbose="1" parallel="none">
+<!-- Suite de Smoke Tests (Casos críticos de ExpandTesting) -->
+<suite name="Suite-Smoke-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Smoke-Tests" preserve-order="true">
+    <test name="Smoke-Tests-ExpandTesting" preserve-order="true">
         <groups>
             <run>
                 <include name="smoke"/>
@@ -74,20 +76,29 @@ Curso: Automatización de Pruebas
         </groups>
         
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro"/>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin"/>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <include name="loginExitosoConCredencialesValidas"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="registroExitosoConDatosCompletos"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
 </suite>
 
-<!-- Suite de Pruebas Positivas -->
-<suite name="Suite-Pruebas-Positivas" verbose="1" parallel="none">
+<!-- Suite de Pruebas Positivas (ExpandTesting) -->
+<suite name="Suite-Pruebas-Positivas-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Pruebas-Positivas" preserve-order="true">
+    <test name="Pruebas-Positivas-ExpandTesting" preserve-order="true">
         <groups>
             <run>
                 <include name="positivo"/>
@@ -95,20 +106,32 @@ Curso: Automatización de Pruebas
         </groups>
         
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro"/>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin"/>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <include name="loginExitosoConCredencialesValidas"/>
+                    <include name="loginExitosoConMultiplesUsuarios"/>
+                    <include name="flujoCompletoLoginYLogout"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="registroExitosoConDatosCompletos"/>
+                    <include name="registroExitosoConMultiplesDatos"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
 </suite>
 
-<!-- Suite de Pruebas Negativas -->
-<suite name="Suite-Pruebas-Negativas" verbose="1" parallel="none">
+<!-- Suite de Pruebas Negativas (ExpandTesting) -->
+<suite name="Suite-Pruebas-Negativas-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Pruebas-Negativas" preserve-order="true">
+    <test name="Pruebas-Negativas-ExpandTesting" preserve-order="true">
         <groups>
             <run>
                 <include name="negativo"/>
@@ -116,20 +139,36 @@ Curso: Automatización de Pruebas
         </groups>
         
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro"/>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin"/>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <include name="loginFallidoConCredencialesInvalidas"/>
+                    <include name="loginFallidoConMultiplesCredencialesInvalidas"/>
+                    <include name="loginFallidoConCamposVacios"/>
+                    <include name="loginFallidoUsernameInvalido"/>
+                    <include name="loginFallidoPasswordInvalido"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="validacionCamposObligatoriosVacios"/>
+                    <include name="validacionPasswordsNoCoinciden"/>
+                    <include name="validacionCampoUsernameFaltante"/>
+                    <include name="validacionCampoPasswordFaltante"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
 </suite>
 
-<!-- Suite de Pruebas de Validación -->
-<suite name="Suite-Validaciones" verbose="1" parallel="none">
+<!-- Suite de Pruebas de Validación (ExpandTesting) -->
+<suite name="Suite-Validaciones-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Pruebas-Validacion" preserve-order="true">
+    <test name="Pruebas-Validacion-ExpandTesting" preserve-order="true">
         <groups>
             <run>
                 <include name="validacion"/>
@@ -137,20 +176,34 @@ Curso: Automatización de Pruebas
         </groups>
         
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro"/>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin"/>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <include name="loginFallidoUsernameInvalido"/>
+                    <include name="loginFallidoPasswordInvalido"/>
+                    <include name="loginFallidoConCamposVacios"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="validacionCamposObligatoriosVacios"/>
+                    <include name="validacionPasswordsNoCoinciden"/>
+                    <include name="validacionCampoUsernameFaltante"/>
+                    <include name="validacionCampoPasswordFaltante"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
 </suite>
 
-<!-- Suite de Pruebas Data-Driven -->
-<suite name="Suite-Data-Driven" verbose="1" parallel="none">
+<!-- Suite de Pruebas Data-Driven (ExpandTesting) -->
+<suite name="Suite-Data-Driven-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Pruebas-Data-Driven" preserve-order="true">
+    <test name="Pruebas-Data-Driven-ExpandTesting" preserve-order="true">
         <groups>
             <run>
                 <include name="datadriven"/>
@@ -175,52 +228,54 @@ Curso: Automatización de Pruebas
     
 </suite>
 
-<!-- Suite de Pruebas Cross-Browser -->
-<suite name="Suite-Cross-Browser" verbose="1" parallel="tests" thread-count="3">
+<!-- Suite de Pruebas Cross-Browser (ExpandTesting) -->
+<suite name="Suite-Cross-Browser-ExpandTesting" verbose="1" parallel="tests" thread-count="3">
     
-    <test name="Chrome-Tests">
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    
+    <test name="Chrome-Tests-ExpandTesting">
         <parameter name="navegador" value="chrome"/>
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
-                <methods>
-                    <include name="registroExitosoConDatosCompletos"/>
-                </methods>
-            </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
                     <include name="loginExitosoConCredencialesValidas"/>
                 </methods>
             </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="registroExitosoConDatosCompletos"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
-    <test name="Firefox-Tests">
+    <test name="Firefox-Tests-ExpandTesting">
         <parameter name="navegador" value="firefox"/>
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
-                <methods>
-                    <include name="registroExitosoConDatosCompletos"/>
-                </methods>
-            </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
                     <include name="loginExitosoConCredencialesValidas"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="registroExitosoConDatosCompletos"/>
                 </methods>
             </class>
         </classes>
     </test>
     
-    <test name="Edge-Tests">
+    <test name="Edge-Tests-ExpandTesting">
         <parameter name="navegador" value="edge"/>
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
-                <methods>
-                    <include name="registroExitosoConDatosCompletos"/>
-                </methods>
-            </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
                     <include name="loginExitosoConCredencialesValidas"/>
+                </methods>
+            </class>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="registroExitosoConDatosCompletos"/>
                 </methods>
             </class>
         </classes>
@@ -228,33 +283,63 @@ Curso: Automatización de Pruebas
     
 </suite>
 
-<!-- Suite de Pruebas de Regresión -->
-<suite name="Suite-Regresion" verbose="1" parallel="none">
+<!-- Suite de Pruebas de Regresión (ExpandTesting) -->
+<suite name="Suite-Regresion-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
     
-    <test name="Regresion-Registro" preserve-order="true">
+    <test name="Regresion-Login-ExpandTesting" preserve-order="true">
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
-                    <include name="registroExitosoConDatosCompletos"/>
-                    <include name="validacionCamposObligatoriosVacios"/>
-                    <include name="validacionEmailInvalido"/>
-                    <include name="validacionPasswordsNoCoinciden"/>
+                    <include name="loginExitosoConCredencialesValidas"/>
+                    <include name="loginFallidoUsernameInvalido"/>
+                    <include name="loginFallidoPasswordInvalido"/>
+                    <include name="loginFallidoConCamposVacios"/>
+                    <include name="flujoCompletoLoginYLogout"/>
                 </methods>
             </class>
         </classes>
     </test>
     
-    <test name="Regresion-Login" preserve-order="true">
+    <test name="Regresion-Registro-ExpandTesting" preserve-order="true">
         <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
-                    <include name="loginExitosoConCredencialesValidas"/>
-                    <include name="loginFallidoConCredencialesInvalidas"/>
-                    <include name="loginFallidoConCamposVacios"/>
-                    <include name="flujoCompletoLoginYLogout"/>
+                    <include name="registroExitosoConDatosCompletos"/>
+                    <include name="validacionCamposObligatoriosVacios"/>
+                    <include name="validacionPasswordsNoCoinciden"/>
+                    <include name="validacionCampoUsernameFaltante"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+</suite>
+
+<!-- Suite de Pruebas de Integración (ExpandTesting) -->
+<suite name="Suite-Integracion-ExpandTesting" verbose="1" parallel="none">
+    
+    <parameter name="navegador" value="chrome"/>
+    <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    
+    <test name="Pruebas-Integracion-ExpandTesting" preserve-order="true">
+        <groups>
+            <run>
+                <include name="integracion"/>
+            </run>
+        </groups>
+        
+        <classes>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasIntegracion">
+                <methods>
+                    <include name="flujoCompletoRegistroLoginLogout"/>
+                    <include name="flujoNavegacionEntrePaginas"/>
+                    <include name="validacionPersistenciaDatos"/>
+                    <include name="pruebaCompatibilidadBasica"/>
                 </methods>
             </class>
         </classes>

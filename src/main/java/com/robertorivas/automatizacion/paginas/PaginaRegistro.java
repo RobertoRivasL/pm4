@@ -5,341 +5,380 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Page Object para la página de registro de Practice Expand Testing.
- * Implementa las interacciones específicas para /register
+ * Page Object para la página de registro de ExpandTesting.
+ * Implementa el patrón POM para encapsular la interacción con el formulario de registro.
  * 
- * Basado en los test cases oficiales de Practice Expand Testing:
- * - Test Case 1: Successful Registration (Happy Path)
- * - Test Case 2: Registration with Missing Username
- * - Test Case 3: Registration with Missing Password  
- * - Test Case 4: Registration with Non-matching Passwords
+ * URL: https://practice.expandtesting.com/register
  * 
- * Campos del formulario:
- * - Username field (id="username")
- * - Password field (id="password")
- * - Confirm Password field (id="confirmPassword")
- * - Register button (button[type="submit"])
- * 
- * Mensajes de error esperados:
- * - "All fields are required."
- * - "Passwords do not match."
- * 
- * Mensaje de éxito esperado:
- * - "Successfully registered, you can log in now."
+ * Casos de prueba soportados:
+ * - Registro exitoso con username y password válidos
+ * - Error con campos faltantes: "All fields are required."
+ * - Error con passwords no coincidentes: "Passwords do not match."
+ * - Redirección a /login con mensaje: "Successfully registered, you can log in now."
  * 
  * @author Roberto Rivas Lopez
  */
 public class PaginaRegistro extends PaginaBase {
     
-    private static final Logger logger = LoggerFactory.getLogger(PaginaRegistro.class);
-    
-    // ===== SELECTORES ESPECÍFICOS PARA PRACTICE EXPAND TESTING =====
+    // ===== LOCALIZADORES ESPECÍFICOS PARA EXPANDTESTING =====
     
     // Campos del formulario de registro
-    @FindBy(id = "username")
+    @FindBy(css = "input[name='username'], #username")
     private WebElement campoUsername;
     
-    @FindBy(id = "password")
+    @FindBy(css = "input[name='password'], #password")
     private WebElement campoPassword;
     
-    @FindBy(id = "confirmPassword")
+    @FindBy(css = "input[name='confirmPassword'], #confirmPassword")
     private WebElement campoConfirmarPassword;
     
-    @FindBy(xpath = "//button[@type='submit' and contains(text(), 'Register')]")
+    // Botones
+    @FindBy(css = "button[type='submit'], .btn-primary, input[value='Register']")
     private WebElement botonRegistrar;
     
-    // Mensajes de éxito y error específicos
-    @FindBy(xpath = "//div[contains(text(), 'Successfully registered, you can log in now.')]")
-    private WebElement mensajeRegistroExitoso;
+    @FindBy(css = ".btn-clear, #clear, button[name='clear']")
+    private WebElement botonLimpiar;
     
-    @FindBy(xpath = "//div[contains(text(), 'All fields are required.')]")
-    private WebElement mensajeCamposRequeridos;
+    // Mensajes y alertas específicos de ExpandTesting
+    @FindBy(css = "#flash, .alert-danger, .error")
+    private WebElement mensajeError;
     
-    @FindBy(xpath = "//div[contains(text(), 'Passwords do not match.')]")
-    private WebElement mensajePasswordsNoCoinciden;
-    
-    // Mensajes generales
-    @FindBy(xpath = "//div[contains(@class, 'alert') or contains(@class, 'message')]")
-    private WebElement mensajeAlerta;
+    @FindBy(css = "#flash, .alert-success, .success")
+    private WebElement mensajeExito;
     
     // Enlaces de navegación
-    @FindBy(xpath = "//a[@href='/login' or contains(text(), 'Login')]")
+    @FindBy(css = "a[href='/login'], a[href*='login']")
     private WebElement enlaceLogin;
     
+    // Localizadores dinámicos
+    private static final By LOADER = By.cssSelector(".loader, .spinner, .loading");
+    private static final By MENSAJE_FLASH = By.cssSelector("#flash");
+    
     /**
-     * Constructor que inicializa la página de registro.
+     * Constructor de la página de registro.
      */
     public PaginaRegistro(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver, this);
-        logger.debug("PaginaRegistro inicializada para Practice Expand Testing");
+        logger.info("Inicializando página de registro de ExpandTesting");
     }
     
-    /**
-     * Navega a la página de registro de Practice Expand Testing.
-     * URL: https://practice.expandtesting.com/register
-     */
-    public void navegarAPaginaRegistro() {
-        String urlRegistro = configuracion.obtenerUrlRegistro();
-        logger.info("Navegando a la página de registro: {}", urlRegistro);
-        
-        try {
-            driver.get(urlRegistro);
-            esperarCargaPagina();
-            logger.info("Navegación a página de registro completada");
-        } catch (Exception e) {
-            logger.error("Error navegando a la página de registro: {}", e.getMessage());
-            throw new RuntimeException("No se pudo navegar a la página de registro", e);
-        }
-    }
+    // ===== MÉTODOS ABSTRACTOS IMPLEMENTADOS =====
     
-    /**
-     * Verifica si la página de registro está cargada correctamente.
-     * Verifica la presencia de todos los elementos esenciales del formulario.
-     */
     @Override
     public boolean estaPaginaCargada() {
         try {
-            // Verificar elementos esenciales según test cases de Practice Expand Testing
-            boolean campoUsernamePresente = estaElementoVisible(By.id("username"));
-            boolean campoPasswordPresente = estaElementoVisible(By.id("password"));
-            boolean campoConfirmarPasswordPresente = estaElementoVisible(By.id("confirmPassword"));
-            boolean botonRegistrarPresente = estaElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]"));
-            
-            boolean paginaCargada = campoUsernamePresente && campoPasswordPresente && 
-                                  campoConfirmarPasswordPresente && botonRegistrarPresente;
-            
-            if (paginaCargada) {
-                logger.debug("Página de registro cargada correctamente - todos los elementos presentes");
-            } else {
-                logger.warn("La página de registro no está completamente cargada. Username: {}, Password: {}, ConfirmPassword: {}, Button: {}", 
-                           campoUsernamePresente, campoPasswordPresente, campoConfirmarPasswordPresente, botonRegistrarPresente);
-            }
-            
-            return paginaCargada;
+            return estaElementoVisible(By.cssSelector("input[name='username']")) &&
+                   estaElementoVisible(By.cssSelector("input[name='password']")) &&
+                   estaElementoVisible(By.cssSelector("input[name='confirmPassword']")) &&
+                   estaElementoVisible(By.cssSelector("button[type='submit'], .btn-primary")) &&
+                   obtenerUrlActual().contains("/register");
         } catch (Exception e) {
             logger.debug("Error verificando si la página de registro está cargada: {}", e.getMessage());
             return false;
         }
     }
     
-    /**
-     * Espera a que la página de registro se cargue completamente.
-     * Espera todos los elementos esenciales del formulario.
-     */
+    @Override
     public void esperarCargaPagina() {
-        logger.debug("Esperando carga completa de página de registro");
+        logger.debug("Esperando carga completa de la página de registro de ExpandTesting");
         
-        try {
-            // Esperar elementos principales según estructura de Practice Expand Testing
-            esperarElementoVisible(By.id("username"), tiempoEsperaExplicito);
-            esperarElementoVisible(By.id("password"), tiempoEsperaExplicito);
-            esperarElementoVisible(By.id("confirmPassword"), tiempoEsperaExplicito);
-            esperarElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]"), tiempoEsperaExplicito);
-            
-            logger.debug("Página de registro cargada exitosamente");
-        } catch (Exception e) {
-            logger.error("Error esperando carga de página de registro: {}", e.getMessage());
-            throw new RuntimeException("La página de registro no se cargó en el tiempo esperado", e);
+        // Esperar elementos principales del formulario
+        buscarElementoVisible(By.cssSelector("input[name='username']"));
+        buscarElementoVisible(By.cssSelector("input[name='password']"));
+        buscarElementoVisible(By.cssSelector("input[name='confirmPassword']"));
+        buscarElementoVisible(By.cssSelector("button[type='submit'], .btn-primary"));
+        
+        // Esperar que desaparezca el loader si existe
+        esperarQueElementoDesaparezca(LOADER, TIMEOUT_MEDIO);
+        
+        logger.info("Página de registro de ExpandTesting cargada completamente");
+    }
+    
+    @Override
+    public String obtenerTituloPagina() {
+        return "Register - ExpandTesting";
+    }
+    
+    // ===== MÉTODOS DE NAVEGACIÓN =====
+    
+    /**
+     * Navega a la página de registro de ExpandTesting.
+     */
+    public PaginaRegistro navegarAPaginaRegistro() {
+        String urlRegistro = config.obtenerUrlRegistro();
+        navegarA(urlRegistro);
+        esperarCargaPagina();
+        return this;
+    }
+    
+    /**
+     * Navega a la página de login desde el enlace.
+     */
+    public void irAPaginaLogin() {
+        logger.info("Navegando a página de login desde registro");
+        if (estaElementoPresente(By.cssSelector("a[href='/login'], a[href*='login']"))) {
+            hacerClic(By.cssSelector("a[href='/login'], a[href*='login']"));
+        } else {
+            // Navegación directa si no hay enlace
+            navegarA(config.obtenerUrlBase() + "/login");
         }
     }
     
     // ===== MÉTODOS DE INTERACCIÓN CON FORMULARIO =====
     
     /**
-     * Llena el formulario de registro con los datos proporcionados.
-     * Utiliza el modelo DatosRegistro adaptándolo a los campos de Practice Expand Testing.
+     * Introduce el username en el campo correspondiente.
      */
-    public void llenarFormularioRegistro(DatosRegistro datos) {
-        logger.info("Llenando formulario de registro con datos completos");
-        
-        try {
-            // Username (usando email del modelo como username)
-            if (datos.getEmail() != null && !datos.getEmail().isEmpty()) {
-                limpiarYEscribir(campoUsername, datos.getEmail());
-                logger.debug("Username ingresado: {}", datos.getEmail());
-            }
-            
-            // Password
-            if (datos.getPassword() != null && !datos.getPassword().isEmpty()) {
-                limpiarYEscribir(campoPassword, datos.getPassword());
-                logger.debug("Password ingresado (longitud: {})", datos.getPassword().length());
-            }
-            
-            // Confirm Password
-            if (datos.getConfirmarPassword() != null && !datos.getConfirmarPassword().isEmpty()) {
-                limpiarYEscribir(campoConfirmarPassword, datos.getConfirmarPassword());
-                logger.debug("Confirm Password ingresado (longitud: {})", datos.getConfirmarPassword().length());
-            }
-            
-            logger.info("Formulario de registro completado");
-        } catch (Exception e) {
-            logger.error("Error llenando formulario de registro: {}", e.getMessage());
-            throw new RuntimeException("No se pudo completar el formulario de registro", e);
-        }
+    public PaginaRegistro introducirUsername(String username) {
+        logger.debug("Introduciendo username: {}", username);
+        introducirTexto(By.cssSelector("input[name='username']"), username);
+        return this;
     }
     
     /**
-     * Llena campos específicos para test cases individuales.
-     * Permite llenar campos de forma selectiva para pruebas específicas.
+     * Introduce la contraseña.
      */
-    public void llenarCampo(String campo, String valor) {
-        logger.debug("Llenando campo específico: {} = {}", campo, valor != null ? valor : "NULL");
-        
-        try {
-            switch (campo.toLowerCase()) {
-                case "username":
-                    if (valor != null && !valor.isEmpty()) {
-                        limpiarYEscribir(campoUsername, valor);
-                        logger.debug("Campo username completado");
-                    } else {
-                        logger.debug("Campo username dejado vacío intencionalmente");
-                    }
-                    break;
-                case "password":
-                    if (valor != null && !valor.isEmpty()) {
-                        limpiarYEscribir(campoPassword, valor);
-                        logger.debug("Campo password completado");
-                    } else {
-                        logger.debug("Campo password dejado vacío intencionalmente");
-                    }
-                    break;
-                case "confirmpassword":
-                case "confirm_password":
-                    if (valor != null && !valor.isEmpty()) {
-                        limpiarYEscribir(campoConfirmarPassword, valor);
-                        logger.debug("Campo confirmPassword completado");
-                    } else {
-                        logger.debug("Campo confirmPassword dejado vacío intencionalmente");
-                    }
-                    break;
-                default:
-                    logger.warn("Campo no reconocido: {}", campo);
-            }
-        } catch (Exception e) {
-            logger.error("Error llenando campo {}: {}", campo, e.getMessage());
-            throw new RuntimeException("No se pudo llenar el campo: " + campo, e);
-        }
+    public PaginaRegistro introducirPassword(String password) {
+        logger.debug("Introduciendo contraseña");
+        introducirTexto(By.cssSelector("input[name='password']"), password);
+        return this;
     }
     
     /**
-     * Envía el formulario de registro haciendo clic en el botón Register.
-     * Implementa esperas y manejo de errores robusto.
+     * Introduce la confirmación de contraseña.
      */
-    public void enviarFormulario() {
-        logger.info("Enviando formulario de registro");
-        
-        try {
-            // Asegurar que el botón esté visible y clickeable
-            scrollearHaciaElemento(botonRegistrar);
-            esperarElementoClickeable(botonRegistrar, tiempoEsperaExplicito);
-            
-            // Hacer clic en el botón
-            hacerClicSeguro(botonRegistrar);
-            
-            // Esperar a que se procese la respuesta del servidor
-            Thread.sleep(3000);
-            
-            logger.info("Formulario de registro enviado exitosamente");
-        } catch (Exception e) {
-            logger.error("Error enviando formulario de registro: {}", e.getMessage());
-            throw new RuntimeException("No se pudo enviar el formulario de registro", e);
-        }
+    public PaginaRegistro introducirConfirmarPassword(String confirmarPassword) {
+        logger.debug("Introduciendo confirmación de contraseña");
+        introducirTexto(By.cssSelector("input[name='confirmPassword']"), confirmarPassword);
+        return this;
     }
     
-    // ===== MÉTODOS DE VALIDACIÓN =====
+    /**
+     * Introduce el email (alias para username para compatibilidad).
+     */
+    public PaginaRegistro introducirEmail(String email) {
+        return introducirUsername(email);
+    }
     
     /**
-     * Verifica si el registro fue exitoso.
-     * Según test case 1: redirección a /login con mensaje "Successfully registered, you can log in now."
+     * Introduce el nombre (para compatibilidad, aunque ExpandTesting no lo usa).
      */
-    public boolean registroExitoso() {
+    public PaginaRegistro introducirNombre(String nombre) {
+        // ExpandTesting no tiene campo nombre separado
+        logger.debug("Nota: ExpandTesting no tiene campo nombre separado");
+        return this;
+    }
+    
+    /**
+     * Introduce el apellido (para compatibilidad, aunque ExpandTesting no lo usa).
+     */
+    public PaginaRegistro introducirApellido(String apellido) {
+        // ExpandTesting no tiene campo apellido separado
+        logger.debug("Nota: ExpandTesting no tiene campo apellido separado");
+        return this;
+    }
+    
+    /**
+     * Acepta términos (para compatibilidad, aunque ExpandTesting no lo requiere).
+     */
+    public PaginaRegistro aceptarTerminos() {
+        // ExpandTesting no tiene checkbox de términos
+        logger.debug("Nota: ExpandTesting no requiere aceptar términos");
+        return this;
+    }
+    
+    /**
+     * Hace clic en el botón de registro.
+     */
+    public void hacerClicRegistrar() {
+        logger.info("Haciendo clic en botón de registro");
+        hacerClic(By.cssSelector("button[type='submit'], .btn-primary"));
+        
+        // Esperar respuesta del servidor
+        esperarRespuestaRegistro();
+    }
+    
+    /**
+     * Limpia todos los campos del formulario.
+     */
+    public PaginaRegistro limpiarFormulario() {
+        logger.info("Limpiando formulario de registro");
+        
+        if (estaElementoPresente(By.cssSelector("input[name='username']"))) {
+            WebElement username = driver.findElement(By.cssSelector("input[name='username']"));
+            username.clear();
+        }
+        
+        if (estaElementoPresente(By.cssSelector("input[name='password']"))) {
+            WebElement password = driver.findElement(By.cssSelector("input[name='password']"));
+            password.clear();
+        }
+        
+        if (estaElementoPresente(By.cssSelector("input[name='confirmPassword']"))) {
+            WebElement confirmPassword = driver.findElement(By.cssSelector("input[name='confirmPassword']"));
+            confirmPassword.clear();
+        }
+        
+        return this;
+    }
+    
+    // ===== MÉTODOS DE REGISTRO PRINCIPAL =====
+    
+    /**
+     * Llena el formulario de registro con datos completos (adaptado para ExpandTesting).
+     */
+    public PaginaRegistro llenarFormularioRegistro(DatosRegistro datos) {
+        logger.info("Llenando formulario de registro para: {}", datos.getEmail());
+        
+        llenarCamposBasicos(datos);
+        // ExpandTesting solo requiere username, password y confirmPassword
+        
+        logger.info("Formulario de registro completado para ExpandTesting");
+        return this;
+    }
+    
+    /**
+     * Llena solo los campos básicos requeridos por ExpandTesting.
+     */
+    public PaginaRegistro llenarCamposBasicos(DatosRegistro datos) {
+        if (datos.getEmail() != null) {
+            introducirUsername(datos.getEmail());
+        }
+        
+        if (datos.getPassword() != null) {
+            introducirPassword(datos.getPassword());
+        }
+        
+        if (datos.getConfirmarPassword() != null) {
+            introducirConfirmarPassword(datos.getConfirmarPassword());
+        }
+        
+        return this;
+    }
+    
+    /**
+     * Realiza el proceso completo de registro.
+     */
+    public boolean registrarUsuario(String username, String password, String confirmPassword) {
+        logger.info("Iniciando registro para usuario: {}", username);
+        
         try {
-            // Verificar si estamos en la página de login (redirección exitosa)
-            boolean enPaginaLogin = driver.getCurrentUrl().contains("/login");
+            // Limpiar campos antes de llenar
+            limpiarFormulario();
             
-            // Verificar mensaje de éxito específico
-            boolean mensajeExitoVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"));
+            // Llenar formulario
+            introducirUsername(username);
+            introducirPassword(password);
+            introducirConfirmarPassword(confirmPassword);
             
-            boolean exitoso = enPaginaLogin || mensajeExitoVisible;
+            // Enviar formulario
+            hacerClicRegistrar();
             
-            if (exitoso) {
-                logger.info("✓ Registro exitoso detectado - URL: {}", driver.getCurrentUrl());
-            } else {
-                logger.debug("✗ Registro no exitoso - URL actual: {}", driver.getCurrentUrl());
-            }
+            // Verificar resultado
+            return verificarRegistroExitoso();
             
-            return exitoso;
         } catch (Exception e) {
-            logger.debug("Error verificando éxito del registro: {}", e.getMessage());
+            logger.error("Error durante el proceso de registro: {}", e.getMessage());
             return false;
         }
     }
     
     /**
-     * Obtiene el mensaje de éxito después del registro.
-     * Mensaje esperado: "Successfully registered, you can log in now."
+     * Realiza el proceso completo de registro con DatosRegistro.
      */
-    public String obtenerMensajeExito() {
-        try {
-            if (estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"))) {
-                String mensaje = obtenerTexto(mensajeRegistroExitoso);
-                logger.debug("Mensaje de éxito obtenido: {}", mensaje);
-                return mensaje;
-            }
-        } catch (Exception e) {
-            logger.debug("Error obteniendo mensaje de éxito: {}", e.getMessage());
-        }
-        return null;
+    public boolean registrarUsuario(DatosRegistro datos) {
+        return registrarUsuario(datos.getEmail(), datos.getPassword(), datos.getConfirmarPassword());
     }
     
     /**
-     * Obtiene todos los errores de validación mostrados.
-     * Mensajes esperados según test cases:
-     * - "All fields are required."
-     * - "Passwords do not match."
+     * Envía el formulario de registro.
+     */
+    public void enviarFormulario() {
+        hacerClicRegistrar();
+    }
+    
+    // ===== MÉTODOS DE VALIDACIÓN Y VERIFICACIÓN =====
+    
+    /**
+     * Verifica si el registro fue exitoso.
+     */
+    public boolean verificarRegistroExitoso() {
+        try {
+            // Opción 1: Verificar redirección a página de login
+            String urlActual = obtenerUrlActual();
+            if (urlActual.contains("/login")) {
+                logger.info("Registro exitoso - Redirigido a página de login");
+                return true;
+            }
+            
+            // Opción 2: Verificar mensaje de éxito
+            if (estaElementoVisible(MENSAJE_FLASH)) {
+                String mensajeFlash = obtenerTexto(MENSAJE_FLASH);
+                if (mensajeFlash.contains("Successfully registered, you can log in now.")) {
+                    logger.info("Registro exitoso - Mensaje de éxito detectado");
+                    return true;
+                }
+            }
+            
+            // Opción 3: Verificar ausencia de errores y cambio de página
+            if (!hayErroresValidacion() && !urlActual.contains("/register")) {
+                logger.info("Registro exitoso - Sin errores y fuera de página de registro");
+                return true;
+            }
+            
+            return false;
+            
+        } catch (Exception e) {
+            logger.error("Error verificando registro exitoso: {}", e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Verifica si el registro fue exitoso (alias para compatibilidad).
+     */
+    public boolean registroExitoso() {
+        return verificarRegistroExitoso();
+    }
+    
+    /**
+     * Verifica si hay errores de validación.
+     */
+    public boolean hayErroresValidacion() {
+        try {
+            if (estaElementoVisible(MENSAJE_FLASH)) {
+                String mensaje = obtenerTexto(MENSAJE_FLASH);
+                return mensaje.contains("All fields are required.") || 
+                       mensaje.contains("Passwords do not match.") ||
+                       mensaje.contains("error") ||
+                       mensaje.contains("Error");
+            }
+            return false;
+        } catch (Exception e) {
+            logger.debug("Error verificando errores de validación: {}", e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Obtiene todos los errores de validación.
      */
     public List<String> obtenerErroresValidacion() {
         List<String> errores = new ArrayList<>();
         
         try {
-            // Buscar mensajes de error específicos de Practice Expand Testing
-            List<String> selectoresError = List.of(
-                "//div[contains(text(), 'All fields are required')]",
-                "//div[contains(text(), 'Passwords do not match')]",
-                "//div[contains(@class, 'alert-danger') or contains(@class, 'error')]",
-                "//div[contains(@class, 'alert') and not(contains(@class, 'success'))]"
-            );
-            
-            for (String selector : selectoresError) {
-                List<WebElement> elementosError = driver.findElements(By.xpath(selector));
-                for (WebElement elemento : elementosError) {
-                    if (elemento.isDisplayed()) {
-                        String textoError = elemento.getText().trim();
-                        if (!textoError.isEmpty() && !errores.contains(textoError)) {
-                            errores.add(textoError);
-                            logger.debug("Error de validación encontrado: {}", textoError);
-                        }
-                    }
+            if (estaElementoVisible(MENSAJE_FLASH)) {
+                String mensaje = obtenerTexto(MENSAJE_FLASH);
+                if (!mensaje.isEmpty() && (mensaje.contains("error") || mensaje.contains("Error") || 
+                    mensaje.contains("required") || mensaje.contains("match"))) {
+                    errores.add(mensaje);
                 }
             }
-            
-            if (errores.isEmpty()) {
-                logger.debug("No se encontraron errores de validación visibles");
-            } else {
-                logger.info("Errores de validación encontrados: {}", errores);
-            }
-            
         } catch (Exception e) {
             logger.debug("Error obteniendo errores de validación: {}", e.getMessage());
         }
@@ -347,159 +386,178 @@ public class PaginaRegistro extends PaginaBase {
         return errores;
     }
     
-    // ===== MÉTODOS DE NAVEGACIÓN =====
-    
     /**
-     * Navega a la página de login desde la página de registro.
-     * Utiliza enlace si está disponible, sino navegación directa.
+     * Obtiene el mensaje de éxito si está visible.
      */
-    public void irAPaginaLogin() {
-        logger.info("Navegando a página de login");
-        
+    public String obtenerMensajeExito() {
         try {
-            if (estaElementoVisible(By.xpath("//a[@href='/login' or contains(text(), 'Login')]"))) {
-                hacerClicSeguro(enlaceLogin);
-                logger.info("Navegación a login exitosa usando enlace");
-            } else {
-                // Navegación directa si no hay enlace
-                String urlLogin = configuracion.obtenerUrlLogin();
-                driver.get(urlLogin);
-                logger.info("Navegación directa a login completada");
+            if (estaElementoVisible(MENSAJE_FLASH)) {
+                String mensaje = obtenerTexto(MENSAJE_FLASH);
+                if (mensaje.contains("Successfully registered")) {
+                    return mensaje;
+                }
             }
+            return null;
         } catch (Exception e) {
-            logger.error("Error navegando a página de login: {}", e.getMessage());
-            throw new RuntimeException("No se pudo navegar a la página de login", e);
+            logger.debug("Error obteniendo mensaje de éxito: {}", e.getMessage());
+            return null;
         }
     }
     
+    // ===== MÉTODOS DE CASOS DE PRUEBA ESPECÍFICOS =====
+    
     /**
-     * Limpia todos los campos del formulario.
-     * Útil para pruebas que requieren formulario limpio.
+     * Prueba de registro con username faltante.
      */
-    public void limpiarFormulario() {
-        logger.info("Limpiando formulario de registro");
+    public boolean probarRegistroSinUsername(String password) {
+        logger.info("Probando registro sin username");
+        
+        limpiarFormulario();
+        // Dejar username vacío
+        introducirPassword(password);
+        introducirConfirmarPassword(password);
+        hacerClicRegistrar();
+        
+        return verificarErrorCamposRequeridos();
+    }
+    
+    /**
+     * Prueba de registro con password faltante.
+     */
+    public boolean probarRegistroSinPassword(String username) {
+        logger.info("Probando registro sin password");
+        
+        limpiarFormulario();
+        introducirUsername(username);
+        // Dejar passwords vacíos
+        hacerClicRegistrar();
+        
+        return verificarErrorCamposRequeridos();
+    }
+    
+    /**
+     * Prueba de registro con passwords que no coinciden.
+     */
+    public boolean probarPasswordsNoCoinciden(String username, String password, String confirmPassword) {
+        logger.info("Probando registro con passwords que no coinciden");
+        
+        limpiarFormulario();
+        introducirUsername(username);
+        introducirPassword(password);
+        introducirConfirmarPassword(confirmPassword);
+        hacerClicRegistrar();
+        
+        return verificarErrorPasswordsNoCoinciden();
+    }
+    
+    /**
+     * Verifica error de campos requeridos.
+     */
+    private boolean verificarErrorCamposRequeridos() {
+        List<String> errores = obtenerErroresValidacion();
+        return errores.stream().anyMatch(error -> error.contains("All fields are required."));
+    }
+    
+    /**
+     * Verifica error de passwords que no coinciden.
+     */
+    private boolean verificarErrorPasswordsNoCoinciden() {
+        List<String> errores = obtenerErroresValidacion();
+        return errores.stream().anyMatch(error -> error.contains("Passwords do not match."));
+    }
+    
+    // ===== MÉTODOS DE UTILIDAD =====
+    
+    /**
+     * Obtiene todos los valores actuales del formulario.
+     */
+    public DatosRegistro obtenerValoresFormulario() {
+        DatosRegistro datos = new DatosRegistro();
         
         try {
-            campoUsername.clear();
-            campoPassword.clear();
-            campoConfirmarPassword.clear();
+            if (estaElementoPresente(By.cssSelector("input[name='username']"))) {
+                datos.setEmail(obtenerAtributo(By.cssSelector("input[name='username']"), "value"));
+            }
             
-            logger.info("Formulario de registro limpiado exitosamente");
+            // Nota: No obtenemos passwords por seguridad
+            
         } catch (Exception e) {
-            logger.error("Error limpiando formulario: {}", e.getMessage());
-            throw new RuntimeException("No se pudo limpiar el formulario", e);
+            logger.warn("Error obteniendo valores del formulario: {}", e.getMessage());
         }
-    }
-    
-    // ===== MÉTODOS DE VERIFICACIÓN ESPECÍFICOS PARA TEST CASES =====
-    
-    /**
-     * Test Case 2 & 3: Verifica que se muestre el error "All fields are required."
-     * Se utiliza cuando falta username o password.
-     */
-    public boolean verificarErrorCamposRequeridos() {
-        boolean errorVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'All fields are required')]"));
-        if (errorVisible) {
-            logger.debug("✓ Error 'All fields are required' visible correctamente");
-        } else {
-            logger.debug("✗ Error 'All fields are required' NO visible");
-        }
-        return errorVisible;
+        
+        return datos;
     }
     
     /**
-     * Test Case 4: Verifica que se muestre el error "Passwords do not match."
-     * Se utiliza cuando password y confirmPassword son diferentes.
+     * Verifica si el formulario está completamente lleno.
      */
-    public boolean verificarErrorPasswordsNoCoinciden() {
-        boolean errorVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Passwords do not match')]"));
-        if (errorVisible) {
-            logger.debug("✓ Error 'Passwords do not match' visible correctamente");
-        } else {
-            logger.debug("✗ Error 'Passwords do not match' NO visible");
-        }
-        return errorVisible;
-    }
-    
-    /**
-     * Test Case 1: Verifica que se muestre el mensaje "Successfully registered, you can log in now."
-     * Se utiliza para confirmar registro exitoso.
-     */
-    public boolean verificarMensajeRegistroExitoso() {
-        boolean mensajeVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"));
-        if (mensajeVisible) {
-            logger.debug("✓ Mensaje 'Successfully registered' visible correctamente");
-        } else {
-            logger.debug("✗ Mensaje 'Successfully registered' NO visible");
-        }
-        return mensajeVisible;
-    }
-    
-    /**
-     * Método de debug para obtener información del estado actual de la página.
-     * Útil para troubleshooting cuando los tests fallan.
-     */
-    public void imprimirEstadoPagina() {
+    public boolean formularioCompleto() {
         try {
-            logger.info("=== ESTADO ACTUAL DE LA PÁGINA ===");
-            logger.info("URL actual: {}", driver.getCurrentUrl());
-            logger.info("Título de página: {}", driver.getTitle());
+            String username = obtenerAtributo(By.cssSelector("input[name='username']"), "value");
+            String password = obtenerAtributo(By.cssSelector("input[name='password']"), "value");
+            String confirmPassword = obtenerAtributo(By.cssSelector("input[name='confirmPassword']"), "value");
             
-            // Verificar presencia de elementos
-            logger.info("Campo Username presente: {}", estaElementoVisible(By.id("username")));
-            logger.info("Campo Password presente: {}", estaElementoVisible(By.id("password")));
-            logger.info("Campo ConfirmPassword presente: {}", estaElementoVisible(By.id("confirmPassword")));
-            logger.info("Botón Register presente: {}", estaElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]")));
-            
-            // Verificar mensajes
-            logger.info("Mensaje éxito visible: {}", verificarMensajeRegistroExitoso());
-            logger.info("Error campos requeridos visible: {}", verificarErrorCamposRequeridos());
-            logger.info("Error passwords no coinciden visible: {}", verificarErrorPasswordsNoCoinciden());
-            
-            logger.info("=== FIN ESTADO PÁGINA ===");
+            return username != null && !username.isEmpty() && 
+                   password != null && !password.isEmpty() &&
+                   confirmPassword != null && !confirmPassword.isEmpty();
         } catch (Exception e) {
-            logger.error("Error obteniendo estado de página: {}", e.getMessage());
+            logger.debug("Error verificando si el formulario está completo: {}", e.getMessage());
+            return false;
         }
     }
     
-    // ===== MÉTODOS DE COMPATIBILIDAD PARA PRUEBAS DE INTEGRACIÓN =====
-    
     /**
-     * Llena campos básicos del formulario (compatibilidad con PruebasIntegracion).
-     * @param datos Los datos de registro
-     * @return Esta instancia para method chaining
+     * Verifica si el formulario de registro está disponible.
      */
-    public PaginaRegistro llenarCamposBasicos(DatosRegistro datos) {
-        logger.debug("Llenando campos básicos para integración");
-        llenarFormularioRegistro(datos);
-        return this;
-    }
-    
-    /**
-     * Obtiene los valores actuales del formulario (compatibilidad con PruebasIntegracion).
-     * @return Map con los valores de los campos
-     */
-    public Map<String, String> obtenerValoresFormulario() {
-        Map<String, String> valores = new HashMap<>();
+    public boolean formularioRegistroDisponible() {
         try {
-            valores.put("username", campoUsername.getAttribute("value"));
-            valores.put("password", campoPassword.getAttribute("value"));
-            valores.put("confirmPassword", campoConfirmarPassword.getAttribute("value"));
-            logger.debug("Valores del formulario obtenidos: {}", valores);
+            return estaElementoVisible(By.cssSelector("input[name='username']")) &&
+                   estaElementoVisible(By.cssSelector("input[name='password']")) &&
+                   estaElementoVisible(By.cssSelector("input[name='confirmPassword']")) &&
+                   estaElementoVisible(By.cssSelector("button[type='submit'], .btn-primary"));
         } catch (Exception e) {
-            logger.error("Error obteniendo valores del formulario: {}", e.getMessage());
+            return false;
         }
-        return valores;
     }
     
     /**
-     * Verifica si hay errores de validación visibles (compatibilidad con PruebasIntegracion).
-     * @return true si hay errores visibles
+     * Espera la respuesta del servidor después del registro.
      */
-    public boolean hayErroresValidacion() {
-        List<String> errores = obtenerErroresValidacion();
-        boolean hayErrores = !errores.isEmpty();
-        logger.debug("Hay errores de validación: {}", hayErrores);
-        return hayErrores;
+    private void esperarRespuestaRegistro() {
+        try {
+            // Esperar que aparezca mensaje de éxito, error o redirección
+            espera.until(driver -> {
+                String urlActual = driver.getCurrentUrl();
+                boolean hayMensaje = estaElementoVisible(MENSAJE_FLASH);
+                boolean huboRedireccion = !urlActual.endsWith("/register");
+                
+                return hayMensaje || huboRedireccion;
+            });
+        } catch (Exception e) {
+            logger.debug("Timeout esperando respuesta de registro");
+        }
+    }
+    
+    /**
+     * Obtiene información de debug de la página actual.
+     */
+    public void logearInformacionRegistro() {
+        logger.debug("=== INFORMACIÓN DE REGISTRO ===");
+        logger.debug("URL actual: {}", obtenerUrlActual());
+        logger.debug("Página cargada: {}", estaPaginaCargada());
+        logger.debug("Formulario disponible: {}", formularioRegistroDisponible());
+        logger.debug("Formulario completo: {}", formularioCompleto());
+        logger.debug("Hay errores: {}", hayErroresValidacion());
+        
+        if (hayErroresValidacion()) {
+            logger.debug("Errores: {}", obtenerErroresValidacion());
+        }
+        
+        String mensajeExito = obtenerMensajeExito();
+        if (mensajeExito != null) {
+            logger.debug("Mensaje de éxito: {}", mensajeExito);
+        }
+        
+        logger.debug("===============================");
     }
 }

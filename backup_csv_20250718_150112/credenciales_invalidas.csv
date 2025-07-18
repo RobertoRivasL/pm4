@@ -1,0 +1,21 @@
+email,password,descripcion
+usuario.inexistente@test.com,password123,Usuario que no existe en el sistema
+student,passwordIncorrecto,Password incorrecto para usuario válido
+admin,wrongpassword,Password erróneo para admin
+test@invalid.com,validpass123,Email válido pero usuario no registrado
+email-malformado@,password123,Email con formato inválido
+usuario@dominio,password123,Email sin extensión de dominio
+@dominio.com,password123,Email sin nombre de usuario
+usuario@@doble.com,password123,Email con doble arroba
+usuario con espacios@test.com,password123,Email con espacios
+usuario@test.com,123,Password demasiado corto
+usuario@test.com,,Password vacío
+,password123,Email vacío
+usuario@test.com,pass,Password muy corto
+USUARIO@TEST.COM,password123,Email en mayúsculas
+usuario@test.com,PASSWORD123,Password en mayúsculas
+usuario123@test.com,pass word,Password con espacios
+usuario@test.com,contraseñaconñ,Password con caracteres especiales
+usuario+tag@test.com,password123,Email con símbolo plus pero usuario no existe
+usuario.punto@test.com,password123,Email con punto pero usuario no registrado
+usuario-guion@test.com,password123,Email con guión pero usuario inexistente

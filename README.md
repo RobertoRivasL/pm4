@@ -1,109 +1,118 @@
-# Suite de Automatización Funcional
+# Suite de Automatización Funcional - ExpandTesting
 
-**Desarrollado por:** Roberto Rivas Lopez
-**Curso:** Automatización de Pruebas
-**Tecnología:** Java 17 + Selenium WebDriver + TestNG + Maven
+**Desarrollado por:** Roberto Rivas Lopez  
+**Curso:** Automatización de Pruebas  
+**Tecnología:** Java 17 + Selenium WebDriver + TestNG + Maven  
+**Sitio de Pruebas:** https://practice.expandtesting.com/
 
 ## 📋 Descripción del Proyecto
 
-Suite completa de automatización funcional enfocada en la validación de formularios de registro y login. Este proyecto implementa las mejores prácticas de automatización de pruebas, incluyendo el patrón Page Object Model (POM), Data Driven Testing, y generación de reportes avanzados.
+Suite completa de automatización funcional enfocada en la validación de formularios de registro y login utilizando **ExpandTesting**, una plataforma diseñada específicamente para testing automation. Este proyecto implementa las mejores prácticas de automatización de pruebas, incluyendo el patrón Page Object Model (POM), Data Driven Testing, y generación de reportes avanzados.
 
-### 🎯 Objetivos
+### 🎯 Objetivos Actualizados
 
-1. **Validación del formulario de registro**: Campos obligatorios, reglas de negocio, mensajes de error
-2. **Validación de inicio de sesión**: Credenciales válidas/inválidas, bloqueos, cambios de contraseña
+1. **Validación del formulario de registro**: Campos obligatorios, passwords coincidentes, mensajes de error específicos de ExpandTesting
+2. **Validación de inicio de sesión**: Credenciales válidas/inválidas con mensajes específicos de la plataforma
 3. **Generación de evidencias**: Capturas de pantalla, logs, reportes HTML detallados
 4. **Cross-browser testing**: Compatibilidad con Chrome, Firefox y Edge
-5. **Data Driven Testing**: Pruebas con múltiples conjuntos de datos desde CSV
+5. **Data Driven Testing**: Pruebas con múltiples conjuntos de datos específicos para ExpandTesting
+
+## 🌐 URLs y Casos de Prueba de ExpandTesting
+
+### URLs Principales
+- **Base URL**: https://practice.expandtesting.com/
+- **Login**: https://practice.expandtesting.com/login
+- **Register**: https://practice.expandtesting.com/register
+- **Secure Area**: https://practice.expandtesting.com/secure
+
+### Casos de Prueba de Login
+
+#### ✅ Test Case 1: Successful Login
+- **Username**: `practice`
+- **Password**: `SuperSecretPassword!`
+- **Resultado esperado**: Redirección a `/secure` con mensaje "You logged into a secure area!"
+
+#### ❌ Test Case 2: Invalid Username
+- **Username**: `wrongUser` (o cualquier username incorrecto)
+- **Password**: `SuperSecretPassword!`
+- **Error esperado**: "Invalid username."
+
+#### ❌ Test Case 3: Invalid Password
+- **Username**: `practice`
+- **Password**: `WrongPassword` (o cualquier password incorrecto)
+- **Error esperado**: "Invalid password."
+
+### Casos de Prueba de Register
+
+#### ✅ Test Case 1: Successful Registration
+- **Username**: Cualquier username válido único
+- **Password**: Cualquier password válido
+- **Confirm Password**: Mismo password
+- **Resultado esperado**: Redirección a `/login` con mensaje "Successfully registered, you can log in now."
+
+#### ❌ Test Case 2: Missing Username
+- **Username**: (vacío)
+- **Password**: Válido
+- **Confirm Password**: Válido
+- **Error esperado**: "All fields are required."
+
+#### ❌ Test Case 3: Missing Password
+- **Username**: Válido
+- **Password**: (vacío)
+- **Confirm Password**: Cualquier valor
+- **Error esperado**: "All fields are required."
+
+#### ❌ Test Case 4: Non-matching Passwords
+- **Username**: Válido
+- **Password**: `Password123`
+- **Confirm Password**: `DifferentPassword456`
+- **Error esperado**: "Passwords do not match."
 
 ## 🛠️ Tecnologías y Herramientas
 
-| Tecnología                  | Versión       | Propósito                                     |
-| ---------------------------- | -------------- | ---------------------------------------------- |
-| **Java**               | 17             | Lenguaje principal de desarrollo               |
-| **Maven**              | 3.9.10         | Gestión de dependencias y construcción       |
-| **Selenium WebDriver** | 4.15.0         | Automatización de navegadores web             |
-| **TestNG**             | 7.8.0          | Framework de pruebas y organización de suites |
-| **WebDriverManager**   | 5.6.2          | Gestión automática de drivers de navegadores |
-| **ExtentReports**      | 5.1.1          | Generación de reportes HTML avanzados         |
-| **OpenCSV**            | 5.9            | Manejo de archivos CSV para datos de prueba    |
-| **SLF4J + Logback**    | 2.0.9 / 1.4.14 | Sistema de logging estructurado                |
-
-## 🏗️ Arquitectura del Proyecto
-
-```
-suite-automatizacion-funcional/
-├── src/
-│   ├── main/java/com/robertorivas/automatizacion/
-│   │   ├── configuracion/          # Configuración de navegadores y pruebas
-│   │   ├── modelos/                # Modelos de datos (Usuario, DatosRegistro)
-│   │   ├── paginas/                # Page Objects (POM)
-│   │   ├── utilidades/             # Utilidades (datos, evidencias, reportes)
-│   │   └── servicios/              # Servicios de navegación y validación
-│   └── test/
-│       ├── java/com/robertorivas/automatizacion/
-│       │   ├── pruebas/            # Clases de pruebas
-│       │   ├── datos/              # Proveedores de datos
-│       │   └── suites/             # Suites de pruebas organizadas
-│       └── resources/
-│           ├── datos/              # Archivos CSV con datos de prueba
-│           ├── configuracion/      # Archivos de configuración
-│           └── testng.xml          # Configuración de suites TestNG
-├── reportes/                       # Reportes generados
-├── documentacion/                  # Documentación adicional
-└── pom.xml                        # Configuración Maven
-```
-
-## 🔧 Principios de Diseño Aplicados
-
-### SOLID
-
-- **S** - Single Responsibility: Cada clase tiene una responsabilidad específica
-- **O** - Open/Closed: Extensible para nuevos navegadores sin modificar código existente
-- **L** - Liskov Substitution: Las implementaciones pueden sustituirse sin afectar funcionalidad
-- **I** - Interface Segregation: Interfaces específicas según necesidades
-- **D** - Dependency Inversion: Dependencias de abstracciones, no de concreciones
-
-### Adicionales
-
-- **Modularidad**: Separación clara de responsabilidades por módulos
-- **Abstracción**: Page Object Model y capas de abstracción
-- **Encapsulación**: Datos y métodos encapsulados apropiadamente
-- **Separación de Intereses**: Configuración, datos, lógica y reportes separados
+| Tecnología | Versión | Propósito |
+|-----------|---------|-----------|
+| **Java** | 17 | Lenguaje principal de desarrollo |
+| **Maven** | 3.9.10 | Gestión de dependencias y construcción |
+| **Selenium WebDriver** | 4.15.0 | Automatización de navegadores web |
+| **TestNG** | 7.8.0 | Framework de pruebas y organización de suites |
+| **WebDriverManager** | 5.6.2 | Gestión automática de drivers de navegadores |
+| **ExtentReports** | 5.1.1 | Generación de reportes HTML avanzados |
+| **OpenCSV** | 5.9 | Manejo de archivos CSV para datos de prueba |
+| **SLF4J + Logback** | 2.0.9 / 1.4.14 | Sistema de logging estructurado |
 
 ## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
 
 1. **Java Development Kit (JDK) 17 o superior**
-
    ```bash
    java -version
    # Debería mostrar version 17.x.x
    ```
-2. **Apache Maven 3.9.10 o superior**
 
+2. **Apache Maven 3.9.10 o superior**
    ```bash
    mvn -version
    # Debería mostrar version 3.9.x
    ```
+
 3. **Git** (opcional, para clonar el repositorio)
 
 ### Instalación
 
 1. **Clonar el repositorio**
-
    ```bash
    git clone https://github.com/usuario/suite-automatizacion-funcional.git
    cd suite-automatizacion-funcional
    ```
-2. **Instalar dependencias**
 
+2. **Instalar dependencias**
    ```bash
    mvn clean install
    ```
-3. **Verificar instalación**
 
+3. **Verificar instalación**
    ```bash
    mvn test -DskipTests
    # Debería compilar sin errores
@@ -111,21 +120,19 @@ suite-automatizacion-funcional/
 
 ## 🏃‍♂️ Ejecución de Pruebas
 
-### Comandos Básicos
+### Comandos Básicos para ExpandTesting
 
 #### Ejecutar todas las pruebas
-
 ```bash
 mvn test
 ```
 
 #### Ejecutar suite específica
-
 ```bash
 # Suite completa
 mvn test -Dsurefire.suiteXmlFiles=src/test/resources/configuracion/testng.xml
 
-# Solo smoke tests  
+# Solo smoke tests (casos críticos)
 mvn test -Dgroups=smoke
 
 # Solo pruebas de registro
@@ -136,7 +143,6 @@ mvn test -Dtest=PruebasLogin
 ```
 
 #### Configuración de navegador
-
 ```bash
 # Ejecutar en Chrome (por defecto)
 mvn test -Dnavegador=chrome
@@ -148,77 +154,145 @@ mvn test -Dnavegador=firefox
 mvn test -Dnavegador=chrome-headless
 ```
 
-#### Cross-browser testing
-
+#### Ejecutar casos específicos de ExpandTesting
 ```bash
-mvn test -P cross-browser
+# Solo login exitoso con credenciales de ExpandTesting
+mvn test -Dtest=PruebasLogin#loginExitosoConCredencialesValidas
+
+# Solo registro exitoso
+mvn test -Dtest=PruebasRegistro#registroExitosoConDatosCompletos
+
+# Solo pruebas de validación
+mvn test -Dgroups=validacion
 ```
 
-### Configuración Avanzada
+## 📊 Datos de Prueba Específicos para ExpandTesting
 
-#### Variables de entorno soportadas
+### Archivos CSV Actualizados
 
-```bash
-# Navegador a utilizar
-export NAVEGADOR=chrome|firefox|edge|chrome-headless|firefox-headless
+El proyecto utiliza archivos CSV específicos para ExpandTesting:
 
-# Entorno de ejecución  
-export ENTORNO=desarrollo|ci|produccion
-
-# Modo headless
-export HEADLESS=true|false
-
-# URL base personalizada
-export URL_BASE=https://mi-aplicacion.com
-```
-
-#### Ejecución con parámetros personalizados
-
-```bash
-mvn test \
-  -Dnavegador=firefox \
-  -Dentorno=ci \
-  -Dheadless=true \
-  -Dtest=PruebasRegistro#registroExitosoConDatosCompletos
-```
-
-## 📊 Datos de Prueba
-
-### Archivos CSV
-
-El proyecto utiliza archivos CSV para Data Driven Testing:
-
-- **`usuarios_registro.csv`**: Datos válidos para registro de usuarios
-- **`usuarios_login.csv`**: Credenciales válidas para login
-- **`credenciales_invalidas.csv`**: Credenciales inválidas para pruebas negativas
+- **`usuarios_login_expandtesting.csv`**: Credenciales válidas para login
+- **`usuarios_registro_expandtesting.csv`**: Datos válidos e inválidos para registro
+- **`credenciales_invalidas_expandtesting.csv`**: Credenciales inválidas para pruebas negativas
 
 ### Formato de Datos
 
-#### usuarios_registro.csv
-
+#### usuarios_login_expandtesting.csv
 ```csv
-email,password,confirmarPassword,nombre,apellido,telefono,genero,pais,ciudad,aceptaTerminos,notificaciones,tipo
-juan.perez@testautomation.com,Password123,Password123,Juan,Pérez,+34600123456,Masculino,España,Madrid,true,true,NORMAL
+username,password,nombre,apellido,descripcion
+practice,SuperSecretPassword!,Practice,User,Usuario principal válido para ExpandTesting
+practice,SuperSecretPassword!,Test,User,Usuario de prueba principal
 ```
 
-#### usuarios_login.csv
-
+#### usuarios_registro_expandtesting.csv
 ```csv
-email,password,nombre,apellido,telefono
-student,Password123,Test,Student,+34600111111
-admin,admin123,Admin,User,+34600222222
+username,password,confirmPassword,descripcion,caso_prueba
+newuser001,TestPassword123,TestPassword123,Registro exitoso con datos válidos,successful_registration
+,ValidPassword123,ValidPassword123,Username vacío para test negativo,missing_username
+validuser013,Password123,DifferentPass456,Passwords que no coinciden,passwords_not_match
 ```
 
-### Generación de Datos Aleatorios
+#### credenciales_invalidas_expandtesting.csv
+```csv
+username,password,descripcion,error_esperado
+wrongUser,SuperSecretPassword!,Username incorrecto con password válido,Invalid username.
+practice,WrongPassword,Username válido con password incorrecto,Invalid password.
+,SuperSecretPassword!,Username vacío con password válido,All fields are required.
+```
 
-El sistema puede generar datos aleatorios cuando los archivos CSV no están disponibles:
+## 🧪 Casos de Prueba Principales
 
-```java
-// Generar usuarios aleatorios
-List<Usuario> usuarios = gestorDatos.generarUsuariosAleatorios(10);
+### Pruebas de Login
 
-// Generar datos de registro aleatorios
-List<DatosRegistro> datos = gestorDatos.generarDatosRegistroAleatorios(5);
+1. **Login Exitoso** ✅
+   - Credenciales: `practice` / `SuperSecretPassword!`
+   - Verificación: Redirección a `/secure`
+   - Mensaje esperado: "You logged into a secure area!"
+
+2. **Login Fallido - Username Inválido** ❌
+   - Username: `wrongUser`, `invalidUser`, etc.
+   - Password: `SuperSecretPassword!`
+   - Error esperado: "Invalid username."
+
+3. **Login Fallido - Password Inválido** ❌
+   - Username: `practice`
+   - Password: `WrongPassword`, `InvalidPass123`, etc.
+   - Error esperado: "Invalid password."
+
+4. **Login Fallido - Campos Vacíos** ❌
+   - Varios combinaciones de campos vacíos
+   - Error esperado: "All fields are required."
+
+### Pruebas de Registro
+
+1. **Registro Exitoso** ✅
+   - Username único válido
+   - Password y confirmación coincidentes
+   - Verificación: Redirección a `/login`
+   - Mensaje esperado: "Successfully registered, you can log in now."
+
+2. **Registro Fallido - Username Faltante** ❌
+   - Username vacío
+   - Error esperado: "All fields are required."
+
+3. **Registro Fallido - Password Faltante** ❌
+   - Password o confirmación vacíos
+   - Error esperado: "All fields are required."
+
+4. **Registro Fallido - Passwords No Coinciden** ❌
+   - Passwords diferentes
+   - Error esperado: "Passwords do not match."
+
+### Pruebas de Integración
+
+1. **Flujo Completo** 🔄
+   - Registro → Login → Navegación en área segura → Logout
+   - Verificación de persistencia de datos
+   - Validación de estado de sesión
+
+## ⚙️ Configuración Específica para ExpandTesting
+
+### Archivo config.properties actualizado
+
+```properties
+# URLs específicas de ExpandTesting
+app.url.base=https://practice.expandtesting.com
+app.url.registro=/register
+app.url.login=/login
+app.url.principal=/secure
+
+# Mensajes esperados en ExpandTesting
+mensaje.login.exitoso=You logged into a secure area!
+mensaje.registro.exitoso=Successfully registered, you can log in now.
+mensaje.error.username.invalido=Invalid username.
+mensaje.error.password.invalido=Invalid password.
+mensaje.error.campos.requeridos=All fields are required.
+mensaje.error.passwords.no.coinciden=Passwords do not match.
+
+# Credenciales válidas para ExpandTesting
+test.username.valido=practice
+test.password.valido=SuperSecretPassword!
+```
+
+### Selectores CSS Específicos
+
+```properties
+# Selectores para formulario de login
+selector.login.username=input[name='username'], #username
+selector.login.password=input[name='password'], #password
+selector.login.boton.submit=button[type='submit'], .btn-primary
+
+# Selectores para formulario de registro
+selector.registro.username=input[name='username'], #username
+selector.registro.password=input[name='password'], #password
+selector.registro.confirm.password=input[name='confirmPassword'], #confirmPassword
+selector.registro.boton.submit=button[type='submit'], .btn-primary
+
+# Selectores para mensajes
+selector.mensaje.flash=#flash
+selector.secure.page=h2, .secure-area-text
+selector.logout.button=a[href='/logout'], .btn-secondary
 ```
 
 ## 📈 Reportes y Evidencias
@@ -226,300 +300,119 @@ List<DatosRegistro> datos = gestorDatos.generarDatosRegistroAleatorios(5);
 ### Tipos de Reportes Generados
 
 1. **Reportes HTML (ExtentReports)**
+   - Ubicación: `reportes/reporte_suite_automatizacion_expandtesting_[timestamp].html`
+   - Casos específicos de ExpandTesting documentados
+   - Screenshots de mensajes de error y éxito
 
-   - Ubicación: `reportes/reporte_suite_automatizacion_[timestamp].html`
-   - Características: Interactivo, con capturas, filtros, estadísticas
 2. **Capturas de Pantalla**
+   - Login exitoso en área segura
+   - Mensajes de error específicos
+   - Flujos de registro completos
 
-   - Ubicación: `reportes/capturas/`
-   - Automáticas en fallos y pasos importantes
 3. **Logs Detallados**
+   - Interacciones con formularios de ExpandTesting
+   - Verificaciones de mensajes específicos
+   - Tiempos de respuesta de la plataforma
 
-   - Ubicación: `reportes/logs/`
-   - Nivel configurable (INFO, DEBUG, ERROR)
-4. **Resumen de Evidencias**
+## 🔍 Casos de Prueba Específicos Implementados
 
-   - Ubicación: `reportes/resumen_evidencias_[timestamp].txt`
-   - Estadísticas consolidadas
+### Para Desarrolladores QA
 
-### Ejemplo de Estructura de Reporte
-
-```
-reportes/
-├── reporte_suite_automatizacion_2024-01-15_14-30-45.html
-├── capturas/
-│   ├── captura_PruebasRegistro_exito_2024-01-15_14-31-20.png
-│   └── captura_PruebasLogin_fallo_2024-01-15_14-32-15.png
-├── logs/
-│   ├── log_PruebasRegistro.txt
-│   └── log_PruebasLogin.txt
-└── resumen_evidencias_2024-01-15_14-35-00.txt
-```
-
-## 🧪 Suites de Pruebas Disponibles
-
-### Organización por Grupos
-
-| Grupo                  | Descripción                 | Pruebas Incluidas               |
-| ---------------------- | ---------------------------- | ------------------------------- |
-| **smoke**        | Pruebas críticas básicas   | Registro exitoso, Login exitoso |
-| **positivo**     | Casos de éxito              | Todos los flujos válidos       |
-| **negativo**     | Casos de fallo               | Validaciones, errores esperados |
-| **validacion**   | Pruebas de validación       | Campos obligatorios, formatos   |
-| **datadriven**   | Pruebas con múltiples datos | Proveedores de datos CSV        |
-| **integracion**  | Pruebas end-to-end           | Flujos completos                |
-| **crossbrowser** | Compatibilidad               | Múltiples navegadores          |
-
-### Ejecución por Grupos
-
+#### Smoke Tests
 ```bash
-# Ejecutar solo smoke tests
+# Casos críticos básicos
 mvn test -Dgroups=smoke
-
-# Ejecutar pruebas positivas y negativas
-mvn test -Dgroups=positivo,negativo
-
-# Excluir pruebas de integración
-mvn test -DexcludedGroups=integracion
 ```
 
-## 🔍 Casos de Prueba Principales
-
-### Pruebas de Registro
-
-1. **Registro Exitoso**
-
-   - Datos completos válidos
-   - Datos mínimos requeridos
-   - Múltiples conjuntos de datos (CSV)
-2. **Validaciones**
-
-   - Campos obligatorios vacíos
-   - Email con formato inválido
-   - Contraseñas que no coinciden
-   - Contraseña demasiado corta
-   - Sin aceptar términos y condiciones
-3. **Funcionalidad**
-
-   - Limpiar formulario
-   - Navegación entre páginas
-
-### Pruebas de Login
-
-1. **Login Exitoso**
-
-   - Credenciales válidas
-   - Múltiples usuarios (CSV)
-   - Opción "Recordar credenciales"
-2. **Login Fallido**
-
-   - Credenciales inválidas
-   - Campos vacíos
-   - Intentos múltiples (seguridad)
-3. **Flujos Completos**
-
-   - Login → Navegación → Logout
-   - Manejo de sesiones
-
-### Pruebas de Integración
-
-1. **Flujo End-to-End**
-
-   - Registro → Login → Logout
-   - Navegación entre páginas
-   - Persistencia de datos
-2. **Compatibilidad**
-
-   - Cross-browser testing
-   - Resoluciones de pantalla
-   - Manejo de errores
-
-## ⚙️ Configuración Avanzada
-
-### Archivo config.properties
-
-```properties
-# URLs de la aplicación
-app.url.base=https://practicetestautomation.com
-app.url.registro=/practice-test-login
-app.url.login=/practice-test-login
-
-# Configuración de navegadores
-navegador.defecto=chrome
-navegador.headless=false
-
-# Timeouts (en segundos)
-timeout.implicito=10
-timeout.explicito=15
-timeout.pagina=30
-
-# Rutas de archivos
-ruta.datos=src/test/resources/datos
-ruta.reportes=reportes
-ruta.capturas=reportes/capturas
+#### Pruebas de Validación
+```bash
+# Validaciones específicas de ExpandTesting
+mvn test -Dgroups=validacion
 ```
 
-### Personalización de Configuraciones
-
-```java
-// Cambiar navegador programáticamente
-System.setProperty("navegador", "firefox");
-
-// Cambiar entorno
-System.setProperty("entorno", "ci");
-
-// Modo headless
-System.setProperty("headless", "true");
+#### Data Driven Tests
+```bash
+# Múltiples datasets específicos
+mvn test -Dgroups=datadriven
 ```
 
-## 🐛 Resolución de Problemas
-
-### Problemas Comunes
-
-#### 1. Error de Driver de Navegador
-
-```
-Error: WebDriver not found
-```
-
-**Solución**: WebDriverManager maneja automáticamente los drivers. Verificar conectividad a internet.
-
-#### 2. Timeout en Elementos
-
-```
-Error: Element not found within timeout
-```
-
-**Solución**: Aumentar timeouts en `config.properties` o verificar selectores CSS.
-
-#### 3. Problemas de Datos CSV
-
-```
-Error: CSV file not found
-```
-
-**Solución**: Verificar que los archivos CSV están en `src/test/resources/datos/`.
-
-#### 4. Errores de Compilación
-
-```
-Error: Java version mismatch
-```
-
-**Solución**: Verificar que se está usando Java 17+:
+### Comandos de Debugging
 
 ```bash
-java -version
-mvn -version
-```
-
-### Logs y Debugging
-
-#### Habilitar logs detallados
-
-```bash
-# Ejecutar con logs DEBUG
+# Ejecutar con logs detallados
 mvn test -Dlog.level=DEBUG
 
-# Ver logs en tiempo real
-tail -f reportes/logs/log_[PruebaNombre].txt
+# Ejecutar con capturas en cada paso
+mvn test -Ddebug.capturas.pasos=true
+
+# Ejecutar sin headless para ver el navegador
+mvn test -Dheadless=false -Ddebug.activar=true
 ```
 
-#### Debugging de Selectores
+## 🐛 Resolución de Problemas Específicos
 
-```java
-// En las clases Page Object, se pueden ajustar selectores
-By.cssSelector("input[name='username'], #username, input[type='email']")
+### Problemas Comunes con ExpandTesting
+
+#### 1. Error de Credenciales
+```
+Error: Invalid username. o Invalid password.
+```
+**Solución**: Verificar que se usan las credenciales exactas: `practice` / `SuperSecretPassword!`
+
+#### 2. Timeout en Redirecciones
+```
+Error: Timeout waiting for page load
+```
+**Solución**: ExpandTesting puede tener latencia. Aumentar timeouts:
+```properties
+timeout.explicito=20
+timeout.pagina=45
 ```
 
-### Verificación de Configuración
-
-```bash
-# Verificar configuración de Maven
-mvn help:system
-
-# Verificar dependencias
-mvn dependency:tree
-
-# Limpiar y recompilar
-mvn clean compile
+#### 3. Selectores No Encontrados
 ```
+Error: Element not found
+```
+**Solución**: ExpandTesting usa estructura específica. Verificar selectores en config.properties
 
-## 📚 Documentación Adicional
+## 🤝 Valor Profesional del Proyecto
 
-### Estructura de Clases Principales
+### Competencias Demostradas
 
-#### Page Objects
+- ✅ **Adaptabilidad**: Migración exitosa a nueva plataforma de testing
+- ✅ **Automatización Real**: Casos de prueba de plataforma real de testing
+- ✅ **Manejo de Datos**: CSV específicos para escenarios reales
+- ✅ **Debugging**: Resolución de problemas con selectores y flujos específicos
+- ✅ **Documentación**: README actualizado con casos específicos
+- ✅ **Best Practices**: Implementación de patrones probados en entorno real
 
-- **`PaginaBase.java`**: Clase base con funcionalidades comunes
-- **`PaginaRegistro.java`**: Formulario de registro de usuarios
-- **`PaginaLogin.java`**: Formulario de inicio de sesión
-- **`PaginaPrincipal.java`**: Página después del login exitoso
+### Evidencias para Portfolio
 
-#### Modelos de Datos
+1. **Screenshots de ejecución exitosa** en ExpandTesting
+2. **Reportes HTML** con casos de la plataforma real
+3. **Código adaptado** mostrando flexibilidad técnica
+4. **Configuración específica** para entorno real de testing
+5. **Casos edge documentados** y resueltos
 
-- **`Usuario.java`**: Representa un usuario del sistema
-- **`DatosRegistro.java`**: Datos específicos del formulario de registro
+## 📞 Contacto
 
-#### Utilidades
-
-- **`GestorDatos.java`**: Manejo de datos CSV y generación aleatoria
-- **`GestorEvidencias.java`**: Capturas de pantalla y logs
-- **`GeneradorReportes.java`**: Reportes HTML con ExtentReports
-
-### Patrones de Diseño Utilizados
-
-1. **Page Object Model (POM)**: Encapsulación de elementos de página
-2. **Factory Pattern**: Creación de drivers y datos
-3. **Singleton Pattern**: Configuraciones y reportes
-4. **Builder Pattern**: Construcción de objetos complejos
-5. **Template Method**: Estructura común de pruebas
-
-### Buenas Prácticas Implementadas
-
-1. **Separación de Responsabilidades**: Cada clase tiene un propósito específico
-2. **Reutilización de Código**: Funcionalidades comunes en clases base
-3. **Manejo de Errores**: Try-catch apropiados y logs informativos
-4. **Threading Safety**: Soporte para ejecución paralela
-5. **Configuración Centralizada**: Un solo punto de configuración
-6. **Evidencias Automáticas**: Capturas y logs sin intervención manual
-
-## 🤝 Contribución al Portafolio Profesional
-
-Este proyecto demuestra competencias clave en:
-
-- ✅ **Automatización de Pruebas**: Selenium WebDriver con Java
-- ✅ **Frameworks de Testing**: TestNG y organización de suites
-- ✅ **Gestión de Dependencias**: Maven y configuración de proyectos
-- ✅ **Patrones de Diseño**: POM, Factory, Singleton, Builder
-- ✅ **Data Driven Testing**: CSV y proveedores de datos
-- ✅ **Cross-Browser Testing**: Compatibilidad entre navegadores
-- ✅ **Reportes Avanzados**: ExtentReports con evidencias
-- ✅ **CI/CD Ready**: Configuración para integración continua
-- ✅ **Documentación Técnica**: README completo y comentarios
-
-### Valor para Empleadores
-
-1. **Conocimientos Técnicos Sólidos**: Java 17, Selenium 4, TestNG
-2. **Mejores Prácticas**: Principios SOLID, patrones de diseño
-3. **Automatización Completa**: Desde datos hasta reportes
-4. **Mantenibilidad**: Código limpio y bien estructurado
-5. **Escalabilidad**: Fácil extensión para nuevas funcionalidades
-
-## 📞 Contacto y Soporte
-
-**Desarrollador:** Roberto Rivas Lopez
-**Curso:** Automatización de Pruebas
-**Email:** roberto.rivas.l@mail.pucv.cl
-**LinkedIn:** [www.linkedin.com/in/rrivasl](www.linkedin.com/in/rrivasl)
-**GitHub:** [https://github.com/RobertoRivasL](https://github.com/RobertoRivasL)
+**Desarrollador:** Roberto Rivas Lopez  
+**Curso:** Automatización de Pruebas  
+**Plataforma de Testing:** ExpandTesting (https://practice.expandtesting.com/)
 
 ---
 
-## 📄 Licencia
+## 📝 Notas de Migración
 
-Este proyecto está desarrollado con fines educativos como parte del curso de Automatización de Pruebas.
+Este proyecto fue migrado exitosamente de una plataforma de testing básica a **ExpandTesting**, una plataforma más robusta y realista que proporciona casos de prueba específicos y mensajes de error consistentes, lo que lo convierte en una mejor herramienta de aprendizaje y demostración de competencias en automatización de pruebas.
+
+La migración demuestra capacidades de:
+- **Análisis de requerimientos** de nueva plataforma
+- **Refactoring de código** manteniendo buenas prácticas
+- **Actualización de datos de prueba** para nuevos escenarios
+- **Documentación actualizada** con nuevos casos de uso
+- **Debugging y resolución** de problemas de integración
 
 ---
 
-**Nota**: Este proyecto representa una implementación completa de suite de automatización funcional, siguiendo las mejores prácticas de la industria y demostrando competencias avanzadas en testing automatizado.
+**Nota**: Este proyecto representa una implementación completa y actualizada de suite de automatización funcional usando una plataforma real de testing, demostrando competencias avanzadas en testing automatizado con herramientas y escenarios del mundo real.

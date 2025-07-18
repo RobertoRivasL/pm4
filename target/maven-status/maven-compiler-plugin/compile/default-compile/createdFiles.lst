@@ -6,8 +6,10 @@ com\robertorivas\automatizacion\modelos\DatosRegistro$Genero.class
 com\robertorivas\automatizacion\paginas\PaginaLogin.class
 com\robertorivas\automatizacion\configuracion\ConfiguracionNavegador.class
 com\robertorivas\automatizacion\modelos\DatosRegistro$Builder.class
+com\robertorivas\automatizacion\paginas\PaginaRegistro.class
 com\robertorivas\automatizacion\paginas\PaginaBase.class
 com\robertorivas\automatizacion\utilidades\GestorDatos.class
+com\robertorivas\automatizacion\utilidades\GestorEvidencias.class
 com\robertorivas\automatizacion\modelos\DatosRegistro.class
 com\robertorivas\automatizacion\modelos\Usuario$EstadoUsuario.class
 com\robertorivas\automatizacion\configuracion\ConfiguracionNavegador$TipoNavegador.class

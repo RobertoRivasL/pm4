@@ -1,0 +1,21 @@
+email,password,confirmarPassword,nombre,apellido,telefono,genero,pais,ciudad,aceptaTerminos,notificaciones,tipo
+juan.perez@testautomation.com,Password123,Password123,Juan,Pérez,+34600123456,Masculino,España,Madrid,true,true,NORMAL
+maria.garcia@testautomation.com,SecurePass456,SecurePass456,María,García,+34600654321,Femenino,España,Barcelona,true,false,PREMIUM
+carlos.lopez@testautomation.com,MyPassword789,MyPassword789,Carlos,López,+34600987654,Masculino,España,Valencia,true,true,NORMAL
+ana.martinez@testautomation.com,AnaPass2024,AnaPass2024,Ana,Martínez,+34600111222,Femenino,España,Sevilla,true,false,ESTUDIANTE
+luis.rodriguez@testautomation.com,LuisSecure123,LuisSecure123,Luis,Rodríguez,+34600333444,Masculino,España,Bilbao,true,true,EMPRESA
+isabel.fernandez@testautomation.com,IsabelPass789,IsabelPass789,Isabel,Fernández,+34600555666,Femenino,España,Zaragoza,true,false,NORMAL
+miguel.sanchez@testautomation.com,MiguelKey456,MiguelKey456,Miguel,Sánchez,+34600777888,Masculino,España,Málaga,true,true,PREMIUM
+laura.gonzalez@testautomation.com,LauraSecure321,LauraSecure321,Laura,González,+34600999000,Femenino,España,Palma,true,false,NORMAL
+david.martin@testautomation.com,DavidPass123,DavidPass123,David,Martín,+34600112233,Masculino,España,Las Palmas,true,true,ESTUDIANTE
+carmen.jimenez@testautomation.com,CarmenKey789,CarmenKey789,Carmen,Jiménez,+34600445566,Femenino,España,Alicante,true,false,EMPRESA
+antonio.ruiz@testautomation.com,AntonioPass456,AntonioPass456,Antonio,Ruiz,+34600778899,Masculino,España,Córdoba,true,true,NORMAL
+pilar.moreno@testautomation.com,PilarSecure123,PilarSecure123,Pilar,Moreno,+34600001122,Femenino,España,Valladolid,true,false,PREMIUM
+francisco.munoz@testautomation.com,FranKey789,FranKey789,Francisco,Muñoz,+34600334455,Masculino,España,Vigo,true,true,NORMAL
+rosa.alvarez@testautomation.com,RosaPass321,RosaPass321,Rosa,Álvarez,+34600667788,Femenino,España,Gijón,true,false,ESTUDIANTE
+manuel.romero@testautomation.com,ManuelSecure456,ManuelSecure456,Manuel,Romero,+34600990011,Masculino,España,Hospitalet,true,true,EMPRESA
+teresa.navarro@testautomation.com,TeresaKey123,TeresaKey123,Teresa,Navarro,+34600223344,Femenino,España,A Coruña,true,false,NORMAL
+angel.torres@testautomation.com,AngelPass789,AngelPass789,Ángel,Torres,+34600556677,Masculino,España,Vitoria,true,true,PREMIUM
+dolores.dominguez@testautomation.com,DoloresSecure123,DoloresSecure123,Dolores,Domínguez,+34600889900,Femenino,España,Granada,true,false,NORMAL
+jose.gil@testautomation.com,JoseKey456,JoseKey456,José,Gil,+34600112244,Masculino,España,Elche,true,true,ESTUDIANTE
+monica.vargas@testautomation.com,MonicaPass321,MonicaPass321,Mónica,Vargas,+34600445577,Femenino,España,Oviedo,true,false,EMPRESA

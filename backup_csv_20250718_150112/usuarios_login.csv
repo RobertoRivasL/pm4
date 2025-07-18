@@ -1,0 +1,16 @@
+email,password,nombre,apellido,telefono
+student,Password123,Test,Student,+34600111111
+admin,admin123,Admin,User,+34600222222
+demo,demo123,Demo,User,+34600333333
+test@testautomation.com,testpass123,Test,Automation,+34600444444
+usuario1@test.com,password123,Usuario,Uno,+34600555555
+usuario2@test.com,mypassword456,Usuario,Dos,+34600666666
+testuser@example.com,testuser789,Test,User,+34600777777
+quality@assurance.com,qa123pass,Quality,Assurance,+34600888888
+automation@testing.com,autotest456,Automation,Tester,+34600999999
+selenium@webdriver.com,selenium123,Selenium,Driver,+34600101010
+robot@framework.com,robot456,Robot,Framework,+34600111011
+cypress@e2e.com,cypress789,Cypress,E2E,+34600121212
+playwright@microsoft.com,playwright123,Playwright,Microsoft,+34600131313
+testng@testing.com,testng456,TestNG,Framework,+34600141414
+junit@java.com,junit789,JUnit,Java,+34600151515

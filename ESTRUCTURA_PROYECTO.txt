@@ -1,0 +1,63 @@
+=== ESTRUCTURA ESPERADA DEL PROYECTO ===
+
+suite-automatizacion-funcional/
+├── pom.xml
+├── src/
+│   ├── main/java/com/robertorivas/automatizacion/
+│   │   ├── configuracion/
+│   │   │   ├── ConfiguracionNavegador.java
+│   │   │   └── ConfiguracionPruebas.java
+│   │   ├── modelos/
+│   │   │   ├── DatosRegistro.java
+│   │   │   └── Usuario.java
+│   │   ├── paginas/
+│   │   │   ├── PaginaBase.java
+│   │   │   ├── PaginaLogin.java
+│   │   │   ├── PaginaPrincipal.java
+│   │   │   └── PaginaRegistro.java
+│   │   └── utilidades/
+│   │       ├── GestorDatos.java
+│   │       └── GestorEvidencias.java
+│   └── test/
+│       ├── java/com/robertorivas/automatizacion/
+│       │   ├── datos/
+│       │   │   └── ProveedorDatos.java
+│       │   └── pruebas/
+│       │       ├── PruebasBase.java
+│       │       ├── PruebasIntegracion.java
+│       │       ├── PruebasLogin.java
+│       │       └── PruebasRegistro.java
+│       └── resources/
+│           ├── configuracion/
+│           │   ├── config.properties
+│           │   └── testng.xml
+│           └── datos/
+│               ├── usuarios_login_expandtesting.csv
+│               ├── usuarios_registro_expandtesting.csv
+│               └── credenciales_invalidas_expandtesting.csv
+
+=== ARCHIVOS CRÍTICOS PARA COMPILACIÓN ===
+
+1. GestorDatos.java - Manejo de datos CSV
+2. GestorEvidencias.java - Capturas de pantalla
+3. PruebasBase.java - Clase base para todas las pruebas
+4. config.properties - Configuración de URLs y parámetros
+5. testng.xml - Configuración de suites de prueba
+
+=== COMANDOS ÚTILES ===
+
+Limpiar y compilar:
+mvn clean compile
+
+Ejecutar prueba específica:
+mvn test -Dtest=PruebasLogin#loginExitosoConCredencialesValidas
+
+Ejecutar todas las pruebas:
+mvn test
+
+Ejecutar con navegador específico:
+mvn test -Dnavegador=chrome
+
+Ejecutar en modo debug:
+mvn test -Ddebug.activar=true
+
