@@ -5,580 +5,501 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Page Object para la página de registro de usuarios.
- * Implementa el patrón POM para encapsular la interacción con el formulario de registro.
+ * Page Object para la página de registro de Practice Expand Testing.
+ * Implementa las interacciones específicas para /register
  * 
- * Principios aplicados:
- * - Page Object Model: Encapsula elementos y acciones de la página
- * - Single Responsibility: Solo maneja operaciones de registro
- * - Encapsulation: Elementos privados con métodos públicos de interacción
- * - DRY: Reutiliza funcionalidad de la clase base
+ * Basado en los test cases oficiales de Practice Expand Testing:
+ * - Test Case 1: Successful Registration (Happy Path)
+ * - Test Case 2: Registration with Missing Username
+ * - Test Case 3: Registration with Missing Password  
+ * - Test Case 4: Registration with Non-matching Passwords
+ * 
+ * Campos del formulario:
+ * - Username field (id="username")
+ * - Password field (id="password")
+ * - Confirm Password field (id="confirmPassword")
+ * - Register button (button[type="submit"])
+ * 
+ * Mensajes de error esperados:
+ * - "All fields are required."
+ * - "Passwords do not match."
+ * 
+ * Mensaje de éxito esperado:
+ * - "Successfully registered, you can log in now."
  * 
  * @author Roberto Rivas Lopez
  */
 public class PaginaRegistro extends PaginaBase {
     
-    // ===== LOCALIZADORES DE ELEMENTOS =====
+    private static final Logger logger = LoggerFactory.getLogger(PaginaRegistro.class);
+    
+    // ===== SELECTORES ESPECÍFICOS PARA PRACTICE EXPAND TESTING =====
     
     // Campos del formulario de registro
-    @FindBy(css = "input[name='username'], #username, input[type='email']")
-    private WebElement campoEmail;
+    @FindBy(id = "username")
+    private WebElement campoUsername;
     
-    @FindBy(css = "input[name='password'], #password")
+    @FindBy(id = "password")
     private WebElement campoPassword;
     
-    @FindBy(css = "input[name='confirmPassword'], #confirmPassword, input[name='confirm_password']")
+    @FindBy(id = "confirmPassword")
     private WebElement campoConfirmarPassword;
     
-    @FindBy(css = "input[name='firstName'], #firstName, input[name='first_name']")
-    private WebElement campoNombre;
+    @FindBy(xpath = "//button[@type='submit' and contains(text(), 'Register')]")
+    private WebElement botonRegistrar;
     
-    @FindBy(css = "input[name='lastName'], #lastName, input[name='last_name']")
-    private WebElement campoApellido;
+    // Mensajes de éxito y error específicos
+    @FindBy(xpath = "//div[contains(text(), 'Successfully registered, you can log in now.')]")
+    private WebElement mensajeRegistroExitoso;
     
-    @FindBy(css = "input[name='phone'], #phone, input[name='telephone']")
-    private WebElement campoTelefono;
+    @FindBy(xpath = "//div[contains(text(), 'All fields are required.')]")
+    private WebElement mensajeCamposRequeridos;
     
-    // Dropdowns y selectores
-    @FindBy(css = "select[name='gender'], #gender")
-    private WebElement selectGenero;
+    @FindBy(xpath = "//div[contains(text(), 'Passwords do not match.')]")
+    private WebElement mensajePasswordsNoCoinciden;
     
-    @FindBy(css = "select[name='country'], #country")
-    private WebElement selectPais;
+    // Mensajes generales
+    @FindBy(xpath = "//div[contains(@class, 'alert') or contains(@class, 'message')]")
+    private WebElement mensajeAlerta;
     
-    @FindBy(css = "select[name='city'], #city")
-    private WebElement selectCiudad;
-    
-    // Checkboxes
-    @FindBy(css = "input[name='terms'], #terms, input[name='acceptTerms']")
-    private WebElement checkboxTerminos;
-    
-    @FindBy(css = "input[name='newsletter'], #newsletter")
-    private WebElement checkboxNotificaciones;
-    
-    @FindBy(css = "input[name='promotions'], #promotions")
-    private WebElement checkboxPromociones;
-    
-    // Botones
-    @FindBy(css = "button[type='submit'], #submit, .btn-register, input[type='submit']")
-    private WebElement botonRegistrarse;
-    
-    @FindBy(css = ".btn-clear, #clear, button[name='clear']")
-    private WebElement botonLimpiar;
-    
-    @FindBy(css = ".btn-cancel, #cancel, button[name='cancel']")
-    private WebElement botonCancelar;
-    
-    // Mensajes y validaciones
-    @FindBy(css = ".error-message, .alert-danger, #error, .field-error")
-    private List<WebElement> mensajesError;
-    
-    @FindBy(css = ".success-message, .alert-success, #success")
-    private WebElement mensajeExito;
-    
-    @FindBy(css = ".validation-message, .help-text")
-    private List<WebElement> mensajesValidacion;
-    
-    // Enlaces y navegación
-    @FindBy(css = "a[href*='login'], .link-login, #loginLink")
-    private WebElement enlaceIniciarSesion;
-    
-    @FindBy(css = "a[href*='terms'], .link-terms")
-    private WebElement enlaceTerminos;
-    
-    @FindBy(css = "a[href*='privacy'], .link-privacy")
-    private WebElement enlacePrivacidad;
-    
-    // Localizadores dinámicos (usando By para flexibilidad)
-    private static final By LOADER = By.cssSelector(".loader, .spinner, .loading");
-    private static final By MODAL_CONFIRMACION = By.cssSelector(".modal, .dialog, .popup");
-    private static final By CAPTCHA = By.cssSelector(".captcha, #captcha, .recaptcha");
+    // Enlaces de navegación
+    @FindBy(xpath = "//a[@href='/login' or contains(text(), 'Login')]")
+    private WebElement enlaceLogin;
     
     /**
-     * Constructor de la página de registro.
+     * Constructor que inicializa la página de registro.
      */
     public PaginaRegistro(WebDriver driver) {
         super(driver);
-        logger.info("Inicializando página de registro");
+        PageFactory.initElements(driver, this);
+        logger.debug("PaginaRegistro inicializada para Practice Expand Testing");
     }
     
-    // ===== MÉTODOS ABSTRACTOS IMPLEMENTADOS =====
+    /**
+     * Navega a la página de registro de Practice Expand Testing.
+     * URL: https://practice.expandtesting.com/register
+     */
+    public void navegarAPaginaRegistro() {
+        String urlRegistro = configuracion.obtenerUrlRegistro();
+        logger.info("Navegando a la página de registro: {}", urlRegistro);
+        
+        try {
+            driver.get(urlRegistro);
+            esperarCargaPagina();
+            logger.info("Navegación a página de registro completada");
+        } catch (Exception e) {
+            logger.error("Error navegando a la página de registro: {}", e.getMessage());
+            throw new RuntimeException("No se pudo navegar a la página de registro", e);
+        }
+    }
     
+    /**
+     * Verifica si la página de registro está cargada correctamente.
+     * Verifica la presencia de todos los elementos esenciales del formulario.
+     */
     @Override
     public boolean estaPaginaCargada() {
         try {
-            return estaElementoVisible(By.cssSelector("input[name='username'], #username, input[type='email']")) &&
-                   estaElementoVisible(By.cssSelector("input[name='password'], #password")) &&
-                   estaElementoVisible(By.cssSelector("button[type='submit'], #submit, .btn-register"));
+            // Verificar elementos esenciales según test cases de Practice Expand Testing
+            boolean campoUsernamePresente = estaElementoVisible(By.id("username"));
+            boolean campoPasswordPresente = estaElementoVisible(By.id("password"));
+            boolean campoConfirmarPasswordPresente = estaElementoVisible(By.id("confirmPassword"));
+            boolean botonRegistrarPresente = estaElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]"));
+            
+            boolean paginaCargada = campoUsernamePresente && campoPasswordPresente && 
+                                  campoConfirmarPasswordPresente && botonRegistrarPresente;
+            
+            if (paginaCargada) {
+                logger.debug("Página de registro cargada correctamente - todos los elementos presentes");
+            } else {
+                logger.warn("La página de registro no está completamente cargada. Username: {}, Password: {}, ConfirmPassword: {}, Button: {}", 
+                           campoUsernamePresente, campoPasswordPresente, campoConfirmarPasswordPresente, botonRegistrarPresente);
+            }
+            
+            return paginaCargada;
         } catch (Exception e) {
-            logger.debug("Error verificando si la página está cargada: {}", e.getMessage());
+            logger.debug("Error verificando si la página de registro está cargada: {}", e.getMessage());
             return false;
         }
     }
     
-    @Override
+    /**
+     * Espera a que la página de registro se cargue completamente.
+     * Espera todos los elementos esenciales del formulario.
+     */
     public void esperarCargaPagina() {
-        logger.debug("Esperando carga completa de la página de registro");
+        logger.debug("Esperando carga completa de página de registro");
         
-        // Esperar elementos principales del formulario
-        buscarElementoVisible(By.cssSelector("input[name='username'], #username, input[type='email']"));
-        buscarElementoVisible(By.cssSelector("input[name='password'], #password"));
-        buscarElementoVisible(By.cssSelector("button[type='submit'], #submit, .btn-register"));
-        
-        // Esperar que desaparezca el loader si existe
-        esperarQueElementoDesaparezca(LOADER, TIMEOUT_MEDIO);
-        
-        logger.info("Página de registro cargada completamente");
-    }
-    
-    @Override
-    public String obtenerTituloPagina() {
-        return "Registro de Usuario";
-    }
-    
-    // ===== MÉTODOS DE NAVEGACIÓN =====
-    
-    /**
-     * Navega a la página de registro.
-     */
-    public PaginaRegistro navegarAPaginaRegistro() {
-        String urlRegistro = config.obtenerUrlRegistro();
-        navegarA(urlRegistro);
-        esperarCargaPagina();
-        return this;
-    }
-    
-    /**
-     * Navega a la página de login desde el enlace.
-     */
-    public void irAPaginaLogin() {
-        logger.info("Navegando a página de login desde registro");
-        hacerClic(By.cssSelector("a[href*='login'], .link-login, #loginLink"));
+        try {
+            // Esperar elementos principales según estructura de Practice Expand Testing
+            esperarElementoVisible(By.id("username"), tiempoEsperaExplicito);
+            esperarElementoVisible(By.id("password"), tiempoEsperaExplicito);
+            esperarElementoVisible(By.id("confirmPassword"), tiempoEsperaExplicito);
+            esperarElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]"), tiempoEsperaExplicito);
+            
+            logger.debug("Página de registro cargada exitosamente");
+        } catch (Exception e) {
+            logger.error("Error esperando carga de página de registro: {}", e.getMessage());
+            throw new RuntimeException("La página de registro no se cargó en el tiempo esperado", e);
+        }
     }
     
     // ===== MÉTODOS DE INTERACCIÓN CON FORMULARIO =====
     
     /**
-     * Llena el formulario de registro con datos completos.
+     * Llena el formulario de registro con los datos proporcionados.
+     * Utiliza el modelo DatosRegistro adaptándolo a los campos de Practice Expand Testing.
      */
-    public PaginaRegistro llenarFormularioRegistro(DatosRegistro datos) {
-        logger.info("Llenando formulario de registro para: {}", datos.getEmail());
+    public void llenarFormularioRegistro(DatosRegistro datos) {
+        logger.info("Llenando formulario de registro con datos completos");
         
-        llenarCamposBasicos(datos);
-        llenarCamposPersonales(datos);
-        llenarCamposOpcionales(datos);
-        configurarOpciones(datos);
+        try {
+            // Username (usando email del modelo como username)
+            if (datos.getEmail() != null && !datos.getEmail().isEmpty()) {
+                limpiarYEscribir(campoUsername, datos.getEmail());
+                logger.debug("Username ingresado: {}", datos.getEmail());
+            }
+            
+            // Password
+            if (datos.getPassword() != null && !datos.getPassword().isEmpty()) {
+                limpiarYEscribir(campoPassword, datos.getPassword());
+                logger.debug("Password ingresado (longitud: {})", datos.getPassword().length());
+            }
+            
+            // Confirm Password
+            if (datos.getConfirmarPassword() != null && !datos.getConfirmarPassword().isEmpty()) {
+                limpiarYEscribir(campoConfirmarPassword, datos.getConfirmarPassword());
+                logger.debug("Confirm Password ingresado (longitud: {})", datos.getConfirmarPassword().length());
+            }
+            
+            logger.info("Formulario de registro completado");
+        } catch (Exception e) {
+            logger.error("Error llenando formulario de registro: {}", e.getMessage());
+            throw new RuntimeException("No se pudo completar el formulario de registro", e);
+        }
+    }
+    
+    /**
+     * Llena campos específicos para test cases individuales.
+     * Permite llenar campos de forma selectiva para pruebas específicas.
+     */
+    public void llenarCampo(String campo, String valor) {
+        logger.debug("Llenando campo específico: {} = {}", campo, valor != null ? valor : "NULL");
         
-        logger.info("Formulario de registro completado");
-        return this;
+        try {
+            switch (campo.toLowerCase()) {
+                case "username":
+                    if (valor != null && !valor.isEmpty()) {
+                        limpiarYEscribir(campoUsername, valor);
+                        logger.debug("Campo username completado");
+                    } else {
+                        logger.debug("Campo username dejado vacío intencionalmente");
+                    }
+                    break;
+                case "password":
+                    if (valor != null && !valor.isEmpty()) {
+                        limpiarYEscribir(campoPassword, valor);
+                        logger.debug("Campo password completado");
+                    } else {
+                        logger.debug("Campo password dejado vacío intencionalmente");
+                    }
+                    break;
+                case "confirmpassword":
+                case "confirm_password":
+                    if (valor != null && !valor.isEmpty()) {
+                        limpiarYEscribir(campoConfirmarPassword, valor);
+                        logger.debug("Campo confirmPassword completado");
+                    } else {
+                        logger.debug("Campo confirmPassword dejado vacío intencionalmente");
+                    }
+                    break;
+                default:
+                    logger.warn("Campo no reconocido: {}", campo);
+            }
+        } catch (Exception e) {
+            logger.error("Error llenando campo {}: {}", campo, e.getMessage());
+            throw new RuntimeException("No se pudo llenar el campo: " + campo, e);
+        }
     }
     
     /**
-     * Llena solo los campos básicos del formulario.
-     */
-    public PaginaRegistro llenarCamposBasicos(DatosRegistro datos) {
-        if (datos.getEmail() != null) {
-            introducirEmail(datos.getEmail());
-        }
-        
-        if (datos.getPassword() != null) {
-            introducirPassword(datos.getPassword());
-        }
-        
-        if (datos.getConfirmarPassword() != null) {
-            introducirConfirmarPassword(datos.getConfirmarPassword());
-        }
-        
-        return this;
-    }
-    
-    /**
-     * Llena los campos personales del formulario.
-     */
-    public PaginaRegistro llenarCamposPersonales(DatosRegistro datos) {
-        if (datos.getNombre() != null) {
-            introducirNombre(datos.getNombre());
-        }
-        
-        if (datos.getApellido() != null) {
-            introducirApellido(datos.getApellido());
-        }
-        
-        if (datos.getTelefono() != null) {
-            introducirTelefono(datos.getTelefono());
-        }
-        
-        return this;
-    }
-    
-    /**
-     * Llena los campos opcionales del formulario.
-     */
-    public PaginaRegistro llenarCamposOpcionales(DatosRegistro datos) {
-        if (datos.getGenero() != null && estaElementoPresente(By.cssSelector("select[name='gender'], #gender"))) {
-            seleccionarGenero(datos.getGenero());
-        }
-        
-        if (datos.getPais() != null && estaElementoPresente(By.cssSelector("select[name='country'], #country"))) {
-            seleccionarPais(datos.getPais());
-        }
-        
-        if (datos.getCiudad() != null && estaElementoPresente(By.cssSelector("select[name='city'], #city"))) {
-            seleccionarCiudad(datos.getCiudad());
-        }
-        
-        return this;
-    }
-    
-    /**
-     * Configura las opciones del formulario (checkboxes).
-     */
-    public PaginaRegistro configurarOpciones(DatosRegistro datos) {
-        if (datos.isAceptaTerminos()) {
-            aceptarTerminos();
-        }
-        
-        if (estaElementoPresente(By.cssSelector("input[name='newsletter'], #newsletter"))) {
-            configurarNotificaciones(datos.isRecibirNotificaciones());
-        }
-        
-        if (estaElementoPresente(By.cssSelector("input[name='promotions'], #promotions"))) {
-            configurarPromociones(datos.isRecibirPromociones());
-        }
-        
-        return this;
-    }
-    
-    // ===== MÉTODOS DE CAMPOS INDIVIDUALES =====
-    
-    /**
-     * Introduce el email en el campo correspondiente.
-     */
-    public PaginaRegistro introducirEmail(String email) {
-        logger.debug("Introduciendo email: {}", email);
-        introducirTexto(By.cssSelector("input[name='username'], #username, input[type='email']"), email);
-        return this;
-    }
-    
-    /**
-     * Introduce la contraseña.
-     */
-    public PaginaRegistro introducirPassword(String password) {
-        logger.debug("Introduciendo contraseña");
-        introducirTexto(By.cssSelector("input[name='password'], #password"), password);
-        return this;
-    }
-    
-    /**
-     * Introduce la confirmación de contraseña.
-     */
-    public PaginaRegistro introducirConfirmarPassword(String confirmarPassword) {
-        logger.debug("Introduciendo confirmación de contraseña");
-        if (estaElementoPresente(By.cssSelector("input[name='confirmPassword'], #confirmPassword"))) {
-            introducirTexto(By.cssSelector("input[name='confirmPassword'], #confirmPassword"), confirmarPassword);
-        }
-        return this;
-    }
-    
-    /**
-     * Introduce el nombre.
-     */
-    public PaginaRegistro introducirNombre(String nombre) {
-        logger.debug("Introduciendo nombre: {}", nombre);
-        if (estaElementoPresente(By.cssSelector("input[name='firstName'], #firstName"))) {
-            introducirTexto(By.cssSelector("input[name='firstName'], #firstName"), nombre);
-        }
-        return this;
-    }
-    
-    /**
-     * Introduce el apellido.
-     */
-    public PaginaRegistro introducirApellido(String apellido) {
-        logger.debug("Introduciendo apellido: {}", apellido);
-        if (estaElementoPresente(By.cssSelector("input[name='lastName'], #lastName"))) {
-            introducirTexto(By.cssSelector("input[name='lastName'], #lastName"), apellido);
-        }
-        return this;
-    }
-    
-    /**
-     * Introduce el teléfono.
-     */
-    public PaginaRegistro introducirTelefono(String telefono) {
-        logger.debug("Introduciendo teléfono: {}", telefono);
-        if (estaElementoPresente(By.cssSelector("input[name='phone'], #phone"))) {
-            introducirTexto(By.cssSelector("input[name='phone'], #phone"), telefono);
-        }
-        return this;
-    }
-    
-    /**
-     * Selecciona el género.
-     */
-    public PaginaRegistro seleccionarGenero(String genero) {
-        logger.debug("Seleccionando género: {}", genero);
-        seleccionarPorTexto(By.cssSelector("select[name='gender'], #gender"), genero);
-        return this;
-    }
-    
-    /**
-     * Selecciona el país.
-     */
-    public PaginaRegistro seleccionarPais(String pais) {
-        logger.debug("Seleccionando país: {}", pais);
-        seleccionarPorTexto(By.cssSelector("select[name='country'], #country"), pais);
-        return this;
-    }
-    
-    /**
-     * Selecciona la ciudad.
-     */
-    public PaginaRegistro seleccionarCiudad(String ciudad) {
-        logger.debug("Seleccionando ciudad: {}", ciudad);
-        seleccionarPorTexto(By.cssSelector("select[name='city'], #city"), ciudad);
-        return this;
-    }
-    
-    // ===== MÉTODOS DE CHECKBOXES =====
-    
-    /**
-     * Acepta los términos y condiciones.
-     */
-    public PaginaRegistro aceptarTerminos() {
-        logger.debug("Aceptando términos y condiciones");
-        WebElement checkbox = buscarElementoClickeable(By.cssSelector("input[name='terms'], #terms"));
-        if (!checkbox.isSelected()) {
-            checkbox.click();
-        }
-        return this;
-    }
-    
-    /**
-     * Configura las notificaciones.
-     */
-    public PaginaRegistro configurarNotificaciones(boolean activar) {
-        logger.debug("Configurando notificaciones: {}", activar);
-        WebElement checkbox = buscarElementoClickeable(By.cssSelector("input[name='newsletter'], #newsletter"));
-        if (checkbox.isSelected() != activar) {
-            checkbox.click();
-        }
-        return this;
-    }
-    
-    /**
-     * Configura las promociones.
-     */
-    public PaginaRegistro configurarPromociones(boolean activar) {
-        logger.debug("Configurando promociones: {}", activar);
-        WebElement checkbox = buscarElementoClickeable(By.cssSelector("input[name='promotions'], #promotions"));
-        if (checkbox.isSelected() != activar) {
-            checkbox.click();
-        }
-        return this;
-    }
-    
-    // ===== MÉTODOS DE ACCIONES =====
-    
-    /**
-     * Envía el formulario de registro.
+     * Envía el formulario de registro haciendo clic en el botón Register.
+     * Implementa esperas y manejo de errores robusto.
      */
     public void enviarFormulario() {
         logger.info("Enviando formulario de registro");
-        hacerClic(By.cssSelector("button[type='submit'], #submit, .btn-register"));
         
-        // Esperar que se procese el formulario
-        esperarProcesamiento();
-    }
-    
-    /**
-     * Limpia todos los campos del formulario.
-     */
-    public PaginaRegistro limpiarFormulario() {
-        logger.info("Limpiando formulario de registro");
-        if (estaElementoPresente(By.cssSelector(".btn-clear, #clear"))) {
-            hacerClic(By.cssSelector(".btn-clear, #clear"));
-        } else {
-            // Limpiar campos manualmente
-            limpiarCamposManualmente();
-        }
-        return this;
-    }
-    
-    /**
-     * Cancela el registro.
-     */
-    public void cancelarRegistro() {
-        logger.info("Cancelando registro");
-        if (estaElementoPresente(By.cssSelector(".btn-cancel, #cancel"))) {
-            hacerClic(By.cssSelector(".btn-cancel, #cancel"));
-        }
-    }
-    
-    /**
-     * Limpia los campos manualmente.
-     */
-    private void limpiarCamposManualmente() {
-        By[] campos = {
-            By.cssSelector("input[name='username'], #username"),
-            By.cssSelector("input[name='password'], #password"),
-            By.cssSelector("input[name='confirmPassword'], #confirmPassword"),
-            By.cssSelector("input[name='firstName'], #firstName"),
-            By.cssSelector("input[name='lastName'], #lastName"),
-            By.cssSelector("input[name='phone'], #phone")
-        };
-        
-        for (By campo : campos) {
-            if (estaElementoPresente(campo)) {
-                WebElement elemento = driver.findElement(campo);
-                elemento.clear();
-            }
+        try {
+            // Asegurar que el botón esté visible y clickeable
+            scrollearHaciaElemento(botonRegistrar);
+            esperarElementoClickeable(botonRegistrar, tiempoEsperaExplicito);
+            
+            // Hacer clic en el botón
+            hacerClicSeguro(botonRegistrar);
+            
+            // Esperar a que se procese la respuesta del servidor
+            Thread.sleep(3000);
+            
+            logger.info("Formulario de registro enviado exitosamente");
+        } catch (Exception e) {
+            logger.error("Error enviando formulario de registro: {}", e.getMessage());
+            throw new RuntimeException("No se pudo enviar el formulario de registro", e);
         }
     }
     
     // ===== MÉTODOS DE VALIDACIÓN =====
     
     /**
-     * Verifica si hay errores de validación en el formulario.
+     * Verifica si el registro fue exitoso.
+     * Según test case 1: redirección a /login con mensaje "Successfully registered, you can log in now."
      */
-    public boolean hayErroresValidacion() {
-        return !obtenerErroresValidacion().isEmpty();
-    }
-    
-    /**
-     * Obtiene todos los errores de validación visibles.
-     */
-    public List<String> obtenerErroresValidacion() {
-        List<String> errores = new ArrayList<>();
-        
-        // Buscar mensajes de error generales
-        List<WebElement> elementosError = driver.findElements(By.cssSelector(".error-message, .alert-danger, #error, .field-error"));
-        for (WebElement elemento : elementosError) {
-            if (elemento.isDisplayed()) {
-                String textoError = elemento.getText().trim();
-                if (!textoError.isEmpty()) {
-                    errores.add(textoError);
-                }
+    public boolean registroExitoso() {
+        try {
+            // Verificar si estamos en la página de login (redirección exitosa)
+            boolean enPaginaLogin = driver.getCurrentUrl().contains("/login");
+            
+            // Verificar mensaje de éxito específico
+            boolean mensajeExitoVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"));
+            
+            boolean exitoso = enPaginaLogin || mensajeExitoVisible;
+            
+            if (exitoso) {
+                logger.info("✓ Registro exitoso detectado - URL: {}", driver.getCurrentUrl());
+            } else {
+                logger.debug("✗ Registro no exitoso - URL actual: {}", driver.getCurrentUrl());
             }
+            
+            return exitoso;
+        } catch (Exception e) {
+            logger.debug("Error verificando éxito del registro: {}", e.getMessage());
+            return false;
         }
-        
-        return errores;
     }
     
     /**
-     * Obtiene el mensaje de éxito si está visible.
+     * Obtiene el mensaje de éxito después del registro.
+     * Mensaje esperado: "Successfully registered, you can log in now."
      */
     public String obtenerMensajeExito() {
-        if (estaElementoVisible(By.cssSelector(".success-message, .alert-success, #success"))) {
-            return obtenerTexto(By.cssSelector(".success-message, .alert-success, #success"));
+        try {
+            if (estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"))) {
+                String mensaje = obtenerTexto(mensajeRegistroExitoso);
+                logger.debug("Mensaje de éxito obtenido: {}", mensaje);
+                return mensaje;
+            }
+        } catch (Exception e) {
+            logger.debug("Error obteniendo mensaje de éxito: {}", e.getMessage());
         }
         return null;
     }
     
     /**
-     * Verifica si el registro fue exitoso.
+     * Obtiene todos los errores de validación mostrados.
+     * Mensajes esperados según test cases:
+     * - "All fields are required."
+     * - "Passwords do not match."
      */
-    public boolean registroExitoso() {
-        return obtenerMensajeExito() != null || 
-               estaEnUrl("success") || 
-               estaEnUrl("welcome") ||
-               estaEnUrl("login");
-    }
-    
-    /**
-     * Espera a que aparezca un mensaje de error específico.
-     */
-    public boolean esperarMensajeError(String mensajeEsperado) {
-        try {
-            espera.until(driver -> {
-                List<String> errores = obtenerErroresValidacion();
-                return errores.stream().anyMatch(error -> error.contains(mensajeEsperado));
-            });
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Espera el procesamiento del formulario.
-     */
-    private void esperarProcesamiento() {
-        // Esperar que desaparezca el loader
-        esperarQueElementoDesaparezca(LOADER, TIMEOUT_LARGO);
+    public List<String> obtenerErroresValidacion() {
+        List<String> errores = new ArrayList<>();
         
-        // Esperar que aparezcan mensajes de error o éxito
         try {
-            espera.until(driver -> 
-                hayErroresValidacion() || 
-                registroExitoso() ||
-                estaElementoVisible(MODAL_CONFIRMACION)
+            // Buscar mensajes de error específicos de Practice Expand Testing
+            List<String> selectoresError = List.of(
+                "//div[contains(text(), 'All fields are required')]",
+                "//div[contains(text(), 'Passwords do not match')]",
+                "//div[contains(@class, 'alert-danger') or contains(@class, 'error')]",
+                "//div[contains(@class, 'alert') and not(contains(@class, 'success'))]"
             );
+            
+            for (String selector : selectoresError) {
+                List<WebElement> elementosError = driver.findElements(By.xpath(selector));
+                for (WebElement elemento : elementosError) {
+                    if (elemento.isDisplayed()) {
+                        String textoError = elemento.getText().trim();
+                        if (!textoError.isEmpty() && !errores.contains(textoError)) {
+                            errores.add(textoError);
+                            logger.debug("Error de validación encontrado: {}", textoError);
+                        }
+                    }
+                }
+            }
+            
+            if (errores.isEmpty()) {
+                logger.debug("No se encontraron errores de validación visibles");
+            } else {
+                logger.info("Errores de validación encontrados: {}", errores);
+            }
+            
         } catch (Exception e) {
-            logger.debug("Tiempo de espera agotado para procesamiento del formulario");
+            logger.debug("Error obteniendo errores de validación: {}", e.getMessage());
+        }
+        
+        return errores;
+    }
+    
+    // ===== MÉTODOS DE NAVEGACIÓN =====
+    
+    /**
+     * Navega a la página de login desde la página de registro.
+     * Utiliza enlace si está disponible, sino navegación directa.
+     */
+    public void irAPaginaLogin() {
+        logger.info("Navegando a página de login");
+        
+        try {
+            if (estaElementoVisible(By.xpath("//a[@href='/login' or contains(text(), 'Login')]"))) {
+                hacerClicSeguro(enlaceLogin);
+                logger.info("Navegación a login exitosa usando enlace");
+            } else {
+                // Navegación directa si no hay enlace
+                String urlLogin = configuracion.obtenerUrlLogin();
+                driver.get(urlLogin);
+                logger.info("Navegación directa a login completada");
+            }
+        } catch (Exception e) {
+            logger.error("Error navegando a página de login: {}", e.getMessage());
+            throw new RuntimeException("No se pudo navegar a la página de login", e);
         }
     }
     
-    // ===== MÉTODOS DE UTILIDAD =====
-    
     /**
-     * Obtiene todos los valores actuales del formulario.
+     * Limpia todos los campos del formulario.
+     * Útil para pruebas que requieren formulario limpio.
      */
-    public DatosRegistro obtenerValoresFormulario() {
-        DatosRegistro datos = new DatosRegistro();
+    public void limpiarFormulario() {
+        logger.info("Limpiando formulario de registro");
         
         try {
-            if (estaElementoPresente(By.cssSelector("input[name='username'], #username"))) {
-                datos.setEmail(obtenerAtributo(By.cssSelector("input[name='username'], #username"), "value"));
-            }
+            campoUsername.clear();
+            campoPassword.clear();
+            campoConfirmarPassword.clear();
             
-            if (estaElementoPresente(By.cssSelector("input[name='firstName'], #firstName"))) {
-                datos.setNombre(obtenerAtributo(By.cssSelector("input[name='firstName'], #firstName"), "value"));
-            }
-            
-            if (estaElementoPresente(By.cssSelector("input[name='lastName'], #lastName"))) {
-                datos.setApellido(obtenerAtributo(By.cssSelector("input[name='lastName'], #lastName"), "value"));
-            }
-            
-            // Obtener estado de checkboxes
-            if (estaElementoPresente(By.cssSelector("input[name='terms'], #terms"))) {
-                WebElement checkbox = driver.findElement(By.cssSelector("input[name='terms'], #terms"));
-                datos.setAceptaTerminos(checkbox.isSelected());
-            }
-            
+            logger.info("Formulario de registro limpiado exitosamente");
         } catch (Exception e) {
-            logger.warn("Error obteniendo valores del formulario: {}", e.getMessage());
+            logger.error("Error limpiando formulario: {}", e.getMessage());
+            throw new RuntimeException("No se pudo limpiar el formulario", e);
         }
-        
-        return datos;
+    }
+    
+    // ===== MÉTODOS DE VERIFICACIÓN ESPECÍFICOS PARA TEST CASES =====
+    
+    /**
+     * Test Case 2 & 3: Verifica que se muestre el error "All fields are required."
+     * Se utiliza cuando falta username o password.
+     */
+    public boolean verificarErrorCamposRequeridos() {
+        boolean errorVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'All fields are required')]"));
+        if (errorVisible) {
+            logger.debug("✓ Error 'All fields are required' visible correctamente");
+        } else {
+            logger.debug("✗ Error 'All fields are required' NO visible");
+        }
+        return errorVisible;
     }
     
     /**
-     * Verifica si el formulario está completamente lleno.
+     * Test Case 4: Verifica que se muestre el error "Passwords do not match."
+     * Se utiliza cuando password y confirmPassword son diferentes.
      */
-    public boolean formularioCompleto() {
-        try {
-            String email = obtenerAtributo(By.cssSelector("input[name='username'], #username"), "value");
-            String password = obtenerAtributo(By.cssSelector("input[name='password'], #password"), "value");
-            
-            boolean camposBasicosLlenos = email != null && !email.isEmpty() && 
-                                        password != null && !password.isEmpty();
-            
-            boolean terminosAceptados = true;
-            if (estaElementoPresente(By.cssSelector("input[name='terms'], #terms"))) {
-                WebElement checkbox = driver.findElement(By.cssSelector("input[name='terms'], #terms"));
-                terminosAceptados = checkbox.isSelected();
-            }
-            
-            return camposBasicosLlenos && terminosAceptados;
-        } catch (Exception e) {
-            logger.debug("Error verificando si el formulario está completo: {}", e.getMessage());
-            return false;
+    public boolean verificarErrorPasswordsNoCoinciden() {
+        boolean errorVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Passwords do not match')]"));
+        if (errorVisible) {
+            logger.debug("✓ Error 'Passwords do not match' visible correctamente");
+        } else {
+            logger.debug("✗ Error 'Passwords do not match' NO visible");
         }
+        return errorVisible;
+    }
+    
+    /**
+     * Test Case 1: Verifica que se muestre el mensaje "Successfully registered, you can log in now."
+     * Se utiliza para confirmar registro exitoso.
+     */
+    public boolean verificarMensajeRegistroExitoso() {
+        boolean mensajeVisible = estaElementoVisible(By.xpath("//div[contains(text(), 'Successfully registered')]"));
+        if (mensajeVisible) {
+            logger.debug("✓ Mensaje 'Successfully registered' visible correctamente");
+        } else {
+            logger.debug("✗ Mensaje 'Successfully registered' NO visible");
+        }
+        return mensajeVisible;
+    }
+    
+    /**
+     * Método de debug para obtener información del estado actual de la página.
+     * Útil para troubleshooting cuando los tests fallan.
+     */
+    public void imprimirEstadoPagina() {
+        try {
+            logger.info("=== ESTADO ACTUAL DE LA PÁGINA ===");
+            logger.info("URL actual: {}", driver.getCurrentUrl());
+            logger.info("Título de página: {}", driver.getTitle());
+            
+            // Verificar presencia de elementos
+            logger.info("Campo Username presente: {}", estaElementoVisible(By.id("username")));
+            logger.info("Campo Password presente: {}", estaElementoVisible(By.id("password")));
+            logger.info("Campo ConfirmPassword presente: {}", estaElementoVisible(By.id("confirmPassword")));
+            logger.info("Botón Register presente: {}", estaElementoVisible(By.xpath("//button[@type='submit' and contains(text(), 'Register')]")));
+            
+            // Verificar mensajes
+            logger.info("Mensaje éxito visible: {}", verificarMensajeRegistroExitoso());
+            logger.info("Error campos requeridos visible: {}", verificarErrorCamposRequeridos());
+            logger.info("Error passwords no coinciden visible: {}", verificarErrorPasswordsNoCoinciden());
+            
+            logger.info("=== FIN ESTADO PÁGINA ===");
+        } catch (Exception e) {
+            logger.error("Error obteniendo estado de página: {}", e.getMessage());
+        }
+    }
+    
+    // ===== MÉTODOS DE COMPATIBILIDAD PARA PRUEBAS DE INTEGRACIÓN =====
+    
+    /**
+     * Llena campos básicos del formulario (compatibilidad con PruebasIntegracion).
+     * @param datos Los datos de registro
+     * @return Esta instancia para method chaining
+     */
+    public PaginaRegistro llenarCamposBasicos(DatosRegistro datos) {
+        logger.debug("Llenando campos básicos para integración");
+        llenarFormularioRegistro(datos);
+        return this;
+    }
+    
+    /**
+     * Obtiene los valores actuales del formulario (compatibilidad con PruebasIntegracion).
+     * @return Map con los valores de los campos
+     */
+    public Map<String, String> obtenerValoresFormulario() {
+        Map<String, String> valores = new HashMap<>();
+        try {
+            valores.put("username", campoUsername.getAttribute("value"));
+            valores.put("password", campoPassword.getAttribute("value"));
+            valores.put("confirmPassword", campoConfirmarPassword.getAttribute("value"));
+            logger.debug("Valores del formulario obtenidos: {}", valores);
+        } catch (Exception e) {
+            logger.error("Error obteniendo valores del formulario: {}", e.getMessage());
+        }
+        return valores;
+    }
+    
+    /**
+     * Verifica si hay errores de validación visibles (compatibilidad con PruebasIntegracion).
+     * @return true si hay errores visibles
+     */
+    public boolean hayErroresValidacion() {
+        List<String> errores = obtenerErroresValidacion();
+        boolean hayErrores = !errores.isEmpty();
+        logger.debug("Hay errores de validación: {}", hayErrores);
+        return hayErrores;
     }
 }

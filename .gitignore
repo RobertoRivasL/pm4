@@ -1,0 +1,47 @@
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.tar
+
+# Directorios de compilación Maven
+target/
+build/
+
+# Archivos de configuración IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Reportes y capturas generados por las pruebas
+reportes/
+capturas/
+
+# Archivos de configuración local
+*.properties.local
+*.yml.local
+
+# Archivos temporales de Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de backup
+*.bak
+*.tmp
+*~
+
+# Archivos de WebDriver
+drivers/

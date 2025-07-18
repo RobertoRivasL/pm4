@@ -1,8 +1,8 @@
 # Suite de Automatización Funcional
 
-**Desarrollado por:** Roberto Rivas Lopez  
-**Curso:** Automatización de Pruebas  
-**Tecnología:** Java 17 + Selenium WebDriver + TestNG + Maven  
+**Desarrollado por:** Roberto Rivas Lopez
+**Curso:** Automatización de Pruebas
+**Tecnología:** Java 17 + Selenium WebDriver + TestNG + Maven
 
 ## 📋 Descripción del Proyecto
 
@@ -11,23 +11,23 @@ Suite completa de automatización funcional enfocada en la validación de formul
 ### 🎯 Objetivos
 
 1. **Validación del formulario de registro**: Campos obligatorios, reglas de negocio, mensajes de error
-2. **Validación de inicio de sesión**: Credenciales válidas/inválidas, bloqueos, cambios de contraseña  
+2. **Validación de inicio de sesión**: Credenciales válidas/inválidas, bloqueos, cambios de contraseña
 3. **Generación de evidencias**: Capturas de pantalla, logs, reportes HTML detallados
 4. **Cross-browser testing**: Compatibilidad con Chrome, Firefox y Edge
 5. **Data Driven Testing**: Pruebas con múltiples conjuntos de datos desde CSV
 
 ## 🛠️ Tecnologías y Herramientas
 
-| Tecnología | Versión | Propósito |
-|-----------|---------|-----------|
-| **Java** | 17 | Lenguaje principal de desarrollo |
-| **Maven** | 3.9.10 | Gestión de dependencias y construcción |
-| **Selenium WebDriver** | 4.15.0 | Automatización de navegadores web |
-| **TestNG** | 7.8.0 | Framework de pruebas y organización de suites |
-| **WebDriverManager** | 5.6.2 | Gestión automática de drivers de navegadores |
-| **ExtentReports** | 5.1.1 | Generación de reportes HTML avanzados |
-| **OpenCSV** | 5.9 | Manejo de archivos CSV para datos de prueba |
-| **SLF4J + Logback** | 2.0.9 / 1.4.14 | Sistema de logging estructurado |
+| Tecnología                  | Versión       | Propósito                                     |
+| ---------------------------- | -------------- | ---------------------------------------------- |
+| **Java**               | 17             | Lenguaje principal de desarrollo               |
+| **Maven**              | 3.9.10         | Gestión de dependencias y construcción       |
+| **Selenium WebDriver** | 4.15.0         | Automatización de navegadores web             |
+| **TestNG**             | 7.8.0          | Framework de pruebas y organización de suites |
+| **WebDriverManager**   | 5.6.2          | Gestión automática de drivers de navegadores |
+| **ExtentReports**      | 5.1.1          | Generación de reportes HTML avanzados         |
+| **OpenCSV**            | 5.9            | Manejo de archivos CSV para datos de prueba    |
+| **SLF4J + Logback**    | 2.0.9 / 1.4.14 | Sistema de logging estructurado                |
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -57,6 +57,7 @@ suite-automatizacion-funcional/
 ## 🔧 Principios de Diseño Aplicados
 
 ### SOLID
+
 - **S** - Single Responsibility: Cada clase tiene una responsabilidad específica
 - **O** - Open/Closed: Extensible para nuevos navegadores sin modificar código existente
 - **L** - Liskov Substitution: Las implementaciones pueden sustituirse sin afectar funcionalidad
@@ -64,9 +65,10 @@ suite-automatizacion-funcional/
 - **D** - Dependency Inversion: Dependencias de abstracciones, no de concreciones
 
 ### Adicionales
+
 - **Modularidad**: Separación clara de responsabilidades por módulos
 - **Abstracción**: Page Object Model y capas de abstracción
-- **Encapsulación**: Datos y métodos encapsulados apropiadamente  
+- **Encapsulación**: Datos y métodos encapsulados apropiadamente
 - **Separación de Intereses**: Configuración, datos, lógica y reportes separados
 
 ## 🚀 Instalación y Configuración
@@ -74,33 +76,34 @@ suite-automatizacion-funcional/
 ### Prerrequisitos
 
 1. **Java Development Kit (JDK) 17 o superior**
+
    ```bash
    java -version
    # Debería mostrar version 17.x.x
    ```
-
 2. **Apache Maven 3.9.10 o superior**
+
    ```bash
    mvn -version
    # Debería mostrar version 3.9.x
    ```
-
 3. **Git** (opcional, para clonar el repositorio)
 
 ### Instalación
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone https://github.com/usuario/suite-automatizacion-funcional.git
    cd suite-automatizacion-funcional
    ```
-
 2. **Instalar dependencias**
+
    ```bash
    mvn clean install
    ```
-
 3. **Verificar instalación**
+
    ```bash
    mvn test -DskipTests
    # Debería compilar sin errores
@@ -111,11 +114,13 @@ suite-automatizacion-funcional/
 ### Comandos Básicos
 
 #### Ejecutar todas las pruebas
+
 ```bash
 mvn test
 ```
 
 #### Ejecutar suite específica
+
 ```bash
 # Suite completa
 mvn test -Dsurefire.suiteXmlFiles=src/test/resources/configuracion/testng.xml
@@ -131,6 +136,7 @@ mvn test -Dtest=PruebasLogin
 ```
 
 #### Configuración de navegador
+
 ```bash
 # Ejecutar en Chrome (por defecto)
 mvn test -Dnavegador=chrome
@@ -143,6 +149,7 @@ mvn test -Dnavegador=chrome-headless
 ```
 
 #### Cross-browser testing
+
 ```bash
 mvn test -P cross-browser
 ```
@@ -150,6 +157,7 @@ mvn test -P cross-browser
 ### Configuración Avanzada
 
 #### Variables de entorno soportadas
+
 ```bash
 # Navegador a utilizar
 export NAVEGADOR=chrome|firefox|edge|chrome-headless|firefox-headless
@@ -165,6 +173,7 @@ export URL_BASE=https://mi-aplicacion.com
 ```
 
 #### Ejecución con parámetros personalizados
+
 ```bash
 mvn test \
   -Dnavegador=firefox \
@@ -186,12 +195,14 @@ El proyecto utiliza archivos CSV para Data Driven Testing:
 ### Formato de Datos
 
 #### usuarios_registro.csv
+
 ```csv
 email,password,confirmarPassword,nombre,apellido,telefono,genero,pais,ciudad,aceptaTerminos,notificaciones,tipo
 juan.perez@testautomation.com,Password123,Password123,Juan,Pérez,+34600123456,Masculino,España,Madrid,true,true,NORMAL
 ```
 
 #### usuarios_login.csv
+
 ```csv
 email,password,nombre,apellido,telefono
 student,Password123,Test,Student,+34600111111
@@ -215,18 +226,19 @@ List<DatosRegistro> datos = gestorDatos.generarDatosRegistroAleatorios(5);
 ### Tipos de Reportes Generados
 
 1. **Reportes HTML (ExtentReports)**
+
    - Ubicación: `reportes/reporte_suite_automatizacion_[timestamp].html`
    - Características: Interactivo, con capturas, filtros, estadísticas
-
 2. **Capturas de Pantalla**
+
    - Ubicación: `reportes/capturas/`
    - Automáticas en fallos y pasos importantes
-
 3. **Logs Detallados**
+
    - Ubicación: `reportes/logs/`
    - Nivel configurable (INFO, DEBUG, ERROR)
-
 4. **Resumen de Evidencias**
+
    - Ubicación: `reportes/resumen_evidencias_[timestamp].txt`
    - Estadísticas consolidadas
 
@@ -248,15 +260,15 @@ reportes/
 
 ### Organización por Grupos
 
-| Grupo | Descripción | Pruebas Incluidas |
-|-------|-------------|-------------------|
-| **smoke** | Pruebas críticas básicas | Registro exitoso, Login exitoso |
-| **positivo** | Casos de éxito | Todos los flujos válidos |
-| **negativo** | Casos de fallo | Validaciones, errores esperados |
-| **validacion** | Pruebas de validación | Campos obligatorios, formatos |
-| **datadriven** | Pruebas con múltiples datos | Proveedores de datos CSV |
-| **integracion** | Pruebas end-to-end | Flujos completos |
-| **crossbrowser** | Compatibilidad | Múltiples navegadores |
+| Grupo                  | Descripción                 | Pruebas Incluidas               |
+| ---------------------- | ---------------------------- | ------------------------------- |
+| **smoke**        | Pruebas críticas básicas   | Registro exitoso, Login exitoso |
+| **positivo**     | Casos de éxito              | Todos los flujos válidos       |
+| **negativo**     | Casos de fallo               | Validaciones, errores esperados |
+| **validacion**   | Pruebas de validación       | Campos obligatorios, formatos   |
+| **datadriven**   | Pruebas con múltiples datos | Proveedores de datos CSV        |
+| **integracion**  | Pruebas end-to-end           | Flujos completos                |
+| **crossbrowser** | Compatibilidad               | Múltiples navegadores          |
 
 ### Ejecución por Grupos
 
@@ -276,45 +288,48 @@ mvn test -DexcludedGroups=integracion
 ### Pruebas de Registro
 
 1. **Registro Exitoso**
+
    - Datos completos válidos
    - Datos mínimos requeridos
    - Múltiples conjuntos de datos (CSV)
-
 2. **Validaciones**
+
    - Campos obligatorios vacíos
    - Email con formato inválido
    - Contraseñas que no coinciden
    - Contraseña demasiado corta
    - Sin aceptar términos y condiciones
-
 3. **Funcionalidad**
+
    - Limpiar formulario
    - Navegación entre páginas
 
 ### Pruebas de Login
 
 1. **Login Exitoso**
+
    - Credenciales válidas
    - Múltiples usuarios (CSV)
    - Opción "Recordar credenciales"
-
 2. **Login Fallido**
+
    - Credenciales inválidas
    - Campos vacíos
    - Intentos múltiples (seguridad)
-
 3. **Flujos Completos**
+
    - Login → Navegación → Logout
    - Manejo de sesiones
 
 ### Pruebas de Integración
 
 1. **Flujo End-to-End**
+
    - Registro → Login → Logout
    - Navegación entre páginas
    - Persistencia de datos
-
 2. **Compatibilidad**
+
    - Cross-browser testing
    - Resoluciones de pantalla
    - Manejo de errores
@@ -362,28 +377,37 @@ System.setProperty("headless", "true");
 ### Problemas Comunes
 
 #### 1. Error de Driver de Navegador
+
 ```
 Error: WebDriver not found
 ```
+
 **Solución**: WebDriverManager maneja automáticamente los drivers. Verificar conectividad a internet.
 
 #### 2. Timeout en Elementos
+
 ```
 Error: Element not found within timeout
 ```
+
 **Solución**: Aumentar timeouts en `config.properties` o verificar selectores CSS.
 
 #### 3. Problemas de Datos CSV
+
 ```
 Error: CSV file not found
 ```
+
 **Solución**: Verificar que los archivos CSV están en `src/test/resources/datos/`.
 
 #### 4. Errores de Compilación
+
 ```
 Error: Java version mismatch
 ```
+
 **Solución**: Verificar que se está usando Java 17+:
+
 ```bash
 java -version
 mvn -version
@@ -392,6 +416,7 @@ mvn -version
 ### Logs y Debugging
 
 #### Habilitar logs detallados
+
 ```bash
 # Ejecutar con logs DEBUG
 mvn test -Dlog.level=DEBUG
@@ -401,6 +426,7 @@ tail -f reportes/logs/log_[PruebaNombre].txt
 ```
 
 #### Debugging de Selectores
+
 ```java
 // En las clases Page Object, se pueden ajustar selectores
 By.cssSelector("input[name='username'], #username, input[type='email']")
@@ -424,16 +450,19 @@ mvn clean compile
 ### Estructura de Clases Principales
 
 #### Page Objects
+
 - **`PaginaBase.java`**: Clase base con funcionalidades comunes
 - **`PaginaRegistro.java`**: Formulario de registro de usuarios
 - **`PaginaLogin.java`**: Formulario de inicio de sesión
 - **`PaginaPrincipal.java`**: Página después del login exitoso
 
 #### Modelos de Datos
+
 - **`Usuario.java`**: Representa un usuario del sistema
 - **`DatosRegistro.java`**: Datos específicos del formulario de registro
 
 #### Utilidades
+
 - **`GestorDatos.java`**: Manejo de datos CSV y generación aleatoria
 - **`GestorEvidencias.java`**: Capturas de pantalla y logs
 - **`GeneradorReportes.java`**: Reportes HTML con ExtentReports
@@ -479,11 +508,11 @@ Este proyecto demuestra competencias clave en:
 
 ## 📞 Contacto y Soporte
 
-**Desarrollador:** Roberto Rivas Lopez  
-**Curso:** Automatización de Pruebas  
-**Email:** [tu-email@ejemplo.com]  
-**LinkedIn:** [tu-perfil-linkedin]  
-**GitHub:** [tu-usuario-github]  
+**Desarrollador:** Roberto Rivas Lopez
+**Curso:** Automatización de Pruebas
+**Email:** roberto.rivas.l@mail.pucv.cl
+**LinkedIn:** [www.linkedin.com/in/rrivasl](www.linkedin.com/in/rrivasl)
+**GitHub:** [https://github.com/RobertoRivasL](https://github.com/RobertoRivasL)
 
 ---
 

@@ -139,11 +139,11 @@ public class ConfiguracionPruebas {
     }
     
     public String obtenerUrlRegistro() {
-        return obtenerUrlBase() + propiedades.getProperty("app.url.registro");
+        return propiedades.getProperty("app.url.registro");
     }
     
     public String obtenerUrlLogin() {
-        return obtenerUrlBase() + propiedades.getProperty("app.url.login");
+        return propiedades.getProperty("app.url.login");
     }
     
     // Métodos de acceso a configuraciones de navegador

@@ -138,9 +138,12 @@
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/configuracion/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
+                        <!-- Opción 1: Sin suiteXmlFiles -->
+                        <groups>smoke</groups>
+                        <!-- Opción 2: O especificar incluir clases directamente -->
+                        <includes>
+                            <include>**/*PruebasLogin*.java</include>
+                        </includes>
                     <systemPropertyVariables>
                         <navegador>${navegador}</navegador>
                         <entorno>${entorno}</entorno>
