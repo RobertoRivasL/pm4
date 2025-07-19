@@ -57,8 +57,8 @@ public class PaginaLogin extends PaginaBase {
         "input[type='submit']",
         ".btn-primary",
         ".btn",
-        "button[value*='Login']",
-        "button[value*='Submit']",
+        "button:contains('Login')",
+        "button:contains('Submit')",
         "form button:first-of-type"
     };
 
@@ -86,48 +86,10 @@ public class PaginaLogin extends PaginaBase {
     private static final By LOADER = By.cssSelector(".loader, .spinner, .loading");
     private static final By MENSAJE_FLASH = By.cssSelector("#flash");
     private static final By ANY_ERROR_MESSAGE = By.cssSelector("#flash, .alert-danger, .error, .message");
-    
-    // Selectores para modales y popups después del login
-    private static final String[] SELECTORES_MODAL_CIERRE = {
-        "button[aria-label='Close']",
-        "button[aria-label*='close' i]",
-        ".close",
-        ".modal-close",
-        "button.close",
-        "[data-dismiss='modal']",
-        ".btn-close",
-        "button[title='Close']",
-        "button[title*='close' i]",
-        ".popup-close",
-        ".ad-close",
-        "[id*='close']",
-        "[class*='close']",
-        "button[onclick*='close']",
-        "div[role='button'][aria-label*='close' i]"
-    };
-    
-    private static final String[] SELECTORES_MODAL_CONTAINER = {
-        ".modal",
-        ".popup",
-        ".overlay",
-        "[role='dialog']",
-        ".advertisement",
-        ".ad-modal",
-        "[id*='modal']",
-        "[id*='popup']",
-        "[id*='ad']",
-        "[class*='modal']",
-        "[class*='popup']",
-        "[class*='overlay']",
-        "iframe[src*='google']",
-        "iframe[src*='ads']",
-        "div[style*='z-index']"
-    };
 
     // Timeouts específicos
     private static final Duration TIMEOUT_ELEMENTO = Duration.ofSeconds(5);
     private static final Duration TIMEOUT_RESPUESTA = Duration.ofSeconds(10);
-    private static final Duration TIMEOUT_MODAL = Duration.ofSeconds(3);
 
     /**
      * Constructor de la página de login.
@@ -174,7 +136,7 @@ public class PaginaLogin extends PaginaBase {
             
             if (!campoEncontrado) {
                 // Esperar un poco más y reintentar
-                pausar(Duration.ofMillis(2000));
+                pausar(2000);
             }
             
             // Esperar que desaparezca el loader
@@ -199,15 +161,16 @@ public class PaginaLogin extends PaginaBase {
      */
     public PaginaLogin navegarAPaginaLogin() {
         String urlLogin = config.obtenerUrlLogin();
+        String urlCompleta = config.obtenerUrlBase() + urlLogin;
         
-        logger.info("Navegando a login: {}", urlLogin);
-        navegarA(urlLogin);
+        logger.info("Navegando a login: {}", urlCompleta);
+        navegarA(urlCompleta);
         esperarCargaPagina();
         
         // Verificación adicional
         if (!estaPaginaCargada()) {
             logger.warn("La página no se cargó correctamente, reintentando...");
-            pausar(Duration.ofMillis(2000));
+            pausar(2000);
             refrescarPagina();
             esperarCargaPagina();
         }
@@ -224,8 +187,8 @@ public class PaginaLogin extends PaginaBase {
         String[] selectoresRegistro = {
             "a[href*='register']",
             "a[href='/register']", 
-            "a[title*='Register']",
-            "a[title*='Sign up']"
+            "a:contains('Register')",
+            "a:contains('Sign up')"
         };
         
         for (String selector : selectoresRegistro) {
@@ -237,36 +200,6 @@ public class PaginaLogin extends PaginaBase {
         
         // Navegación directa como fallback
         navegarA(config.obtenerUrlBase() + "/register");
-    }
-
-    /**
-     * Navega a recuperación de contraseña con múltiples estrategias.
-     */
-    public void irARecuperarPassword() {
-        logger.info("Navegando a página de recuperación de contraseña");
-        
-        String[] selectoresRecuperacion = {
-            "a[href*='forgot']",
-            "a[href*='recover']", 
-            "a[href*='reset']",
-            "a[title*='Forgot']",
-            "a[title*='Reset']", 
-            "a[title*='Recover']",
-            "#forgot-password",
-            ".forgot-password"
-        };
-        
-        for (String selector : selectoresRecuperacion) {
-            if (estaElementoPresente(By.cssSelector(selector))) {
-                hacerClic(By.cssSelector(selector));
-                return;
-            }
-        }
-        
-        // Navegación directa como fallback
-        // Practice Expand Testing puede no tener esta funcionalidad, 
-        // pero mantenemos la funcionalidad para compatibilidad
-        logger.warn("No se encontró enlace de recuperación de contraseña, navegación directa no disponible");
     }
 
     // ===== MÉTODOS DE INTERACCIÓN ROBUSTOS =====
@@ -455,13 +388,13 @@ public class PaginaLogin extends PaginaBase {
 
             // Paso 2: Limpiar campos
             limpiarCamposLogin();
-            pausar(Duration.ofMillis(500)); // Breve pausa para estabilidad
+            pausar(500); // Breve pausa para estabilidad
 
             // Paso 3: Llenar formulario
             introducirUsername(username);
-            pausar(Duration.ofMillis(300));
+            pausar(300);
             introducirPassword(password);
-            pausar(Duration.ofMillis(300));
+            pausar(300);
 
             // Paso 4: Recordar credenciales si es necesario
             if (recordar) {
@@ -495,164 +428,12 @@ public class PaginaLogin extends PaginaBase {
     // ===== MÉTODOS DE VERIFICACIÓN ROBUSTOS =====
 
     /**
-     * Cierra modales o popups que puedan aparecer después del login.
-     * Maneja casos como publicidad, banners promocionales, etc.
-     */
-    public void cerrarModalesPostLogin() {
-        logger.debug("Verificando y cerrando modales post-login");
-        
-        try {
-            // Esperar un poco para que aparezcan los modales
-            pausar(Duration.ofMillis(2000));
-            
-            // Verificar si hay algún modal visible o si la URL contiene indicadores de modal
-            String urlActual = obtenerUrlActual();
-            boolean tieneFragmentoModal = urlActual.contains("#google_vignette") || 
-                                        urlActual.contains("#ad") || 
-                                        urlActual.contains("#popup") ||
-                                        urlActual.contains("#modal");
-            
-            boolean modalPresente = tieneFragmentoModal;
-            for (String selector : SELECTORES_MODAL_CONTAINER) {
-                if (estaElementoVisible(By.cssSelector(selector))) {
-                    modalPresente = true;
-                    logger.info("Modal detectado con selector: {}", selector);
-                    break;
-                }
-            }
-            
-            if (!modalPresente) {
-                logger.debug("No se detectaron modales post-login");
-                return;
-            }
-            
-            logger.info("Modal detectado - iniciando estrategias de cierre agresivas");
-            
-            // Intentar cerrar el modal con diferentes estrategias
-            boolean modalCerrado = false;
-            
-            // Estrategia 1: Tecla ESC múltiples veces (muy efectiva contra ads)
-            try {
-                for (int i = 0; i < 3; i++) {
-                    driver.switchTo().activeElement().sendKeys(Keys.ESCAPE);
-                    pausar(Duration.ofMillis(500));
-                }
-                logger.info("✅ Enviadas teclas ESC preventivas");
-            } catch (Exception e) {
-                logger.debug("Error enviando ESC: {}", e.getMessage());
-            }
-            
-            // Estrategia 2: Botón de cierre específico
-            for (String selector : SELECTORES_MODAL_CIERRE) {
-                try {
-                    if (estaElementoPresente(By.cssSelector(selector)) && 
-                        estaElementoVisible(By.cssSelector(selector))) {
-                        hacerClic(By.cssSelector(selector));
-                        logger.info("✅ Modal cerrado con botón: {}", selector);
-                        modalCerrado = true;
-                        break;
-                    }
-                } catch (Exception e) {
-                    logger.debug("No se pudo cerrar modal con selector {}: {}", selector, e.getMessage());
-                }
-            }
-            
-            // Estrategia 3: Click fuera del modal (en el overlay)
-            if (!modalCerrado) {
-                try {
-                    for (String selector : SELECTORES_MODAL_CONTAINER) {
-                        if (estaElementoPresente(By.cssSelector(selector))) {
-                            // Click en el overlay, no en el contenido del modal
-                            hacerClicConJavaScript(By.cssSelector(selector));
-                            logger.info("✅ Modal cerrado con click en overlay");
-                            modalCerrado = true;
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.debug("No se pudo cerrar modal con click en overlay: {}", e.getMessage());
-                }
-            }
-            
-            // Estrategia 4: Navegación directa si sigue con fragmento modal
-            String urlDespues = obtenerUrlActual();
-            if (urlDespues.contains("#google_vignette") || urlDespues.contains("#ad")) {
-                try {
-                    // Navegar a la URL limpia (sin fragmento)
-                    String urlLimpia = urlDespues.split("#")[0];
-                    if (urlLimpia.endsWith("/login")) {
-                        // Si todavía estamos en login, ir a secure
-                        urlLimpia = config.obtenerUrlPrincipal();
-                    }
-                    logger.info("Navegando a URL limpia para evitar modal: {}", urlLimpia);
-                    navegarA(urlLimpia);
-                    modalCerrado = true;
-                } catch (Exception e) {
-                    logger.debug("Error navegando a URL limpia: {}", e.getMessage());
-                }
-            }
-            
-            // Estrategia 5: JavaScript para eliminar elementos modal
-            if (!modalCerrado) {
-                try {
-                    String jsScript = 
-                        "var modals = document.querySelectorAll('.modal, .popup, .overlay, [id*=\"modal\"], [id*=\"popup\"], [id*=\"ad\"]');" +
-                        "modals.forEach(function(modal) { modal.style.display = 'none'; modal.remove(); });" +
-                        "document.body.style.overflow = 'auto';" +
-                        "return modals.length;";
-                    
-                    Object resultado = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(jsScript);
-                    if (resultado != null) {
-                        logger.info("✅ Ejecutado JavaScript para eliminar modales: {}", resultado);
-                        modalCerrado = true;
-                    }
-                } catch (Exception e) {
-                    logger.debug("Error eliminando modales con JavaScript: {}", e.getMessage());
-                }
-            }
-            
-            // Esperar que el modal desaparezca
-            if (modalCerrado) {
-                pausar(Duration.ofMillis(1500));
-                
-                // Verificar que efectivamente se cerró
-                String urlFinal = obtenerUrlActual();
-                boolean sinFragmentoModal = !urlFinal.contains("#google_vignette") && 
-                                          !urlFinal.contains("#ad") && 
-                                          !urlFinal.contains("#popup");
-                
-                boolean sinModalVisible = true;
-                for (String selector : SELECTORES_MODAL_CONTAINER) {
-                    if (estaElementoVisible(By.cssSelector(selector))) {
-                        sinModalVisible = false;
-                        break;
-                    }
-                }
-                
-                if (sinFragmentoModal && sinModalVisible) {
-                    logger.info("✅ Modal cerrado exitosamente - URL limpia: {}", urlFinal);
-                } else {
-                    logger.warn("❌ Modal puede seguir presente - URL: {}", urlFinal);
-                }
-            } else {
-                logger.warn("❌ No se pudo cerrar el modal con ninguna estrategia");
-            }
-            
-        } catch (Exception e) {
-            logger.warn("Error manejando modales post-login: {}", e.getMessage());
-        }
-    }
-
-    /**
      * Verifica login exitoso con múltiples validaciones.
      */
     public boolean verificarLoginExitoso() {
         logger.debug("Verificando login exitoso con múltiples estrategias");
         
         try {
-            // Primero cerrar cualquier modal/popup que pueda aparecer
-            cerrarModalesPostLogin();
-            
             // Verificación 1: URL cambió a /secure
             String urlActual = obtenerUrlActual();
             if (urlActual.contains("/secure")) {
@@ -669,10 +450,9 @@ public class PaginaLogin extends PaginaBase {
             // Verificación 3: Presencia de elementos de página segura
             String[] selectoresPageSegura = {
                 "a[href*='logout']",
-                "button[onclick*='logout']", 
+                "button[onclick*='logout']",
                 ".logout",
-                "a[href='/logout']",
-                "form[action*='logout']"
+                "a:contains('Logout')"
             };
             
             for (String selector : selectoresPageSegura) {
@@ -873,22 +653,12 @@ public class PaginaLogin extends PaginaBase {
     }
 
     /**
-     * Espera respuesta del servidor con verificaciones múltiples y manejo de modales.
+     * Espera respuesta del servidor con verificaciones múltiples.
      */
     private void esperarRespuestaLogin() {
-        logger.debug("Esperando respuesta del servidor con manejo anti-modales");
+        logger.debug("Esperando respuesta del servidor");
         
         try {
-            // Estrategia agresiva: presionar ESC inmediatamente y múltiples veces
-            for (int i = 0; i < 5; i++) {
-                try {
-                    driver.switchTo().activeElement().sendKeys(Keys.ESCAPE);
-                    pausar(Duration.ofMillis(300));
-                } catch (Exception e) {
-                    // Continuar aunque falle
-                }
-            }
-            
             // Esperar cambio de URL O mensaje flash O loader desaparece
             espera.until(driver -> {
                 String urlActual = driver.getCurrentUrl();
@@ -896,101 +666,14 @@ public class PaginaLogin extends PaginaBase {
                 boolean hayMensaje = estaElementoVisible(By.cssSelector("#flash, .alert, .message"));
                 boolean sinLoader = !estaElementoVisible(By.cssSelector(".loader, .spinner"));
                 
-                // Enviar ESC cada iteración para prevenir modales
-                try {
-                    driver.switchTo().activeElement().sendKeys(Keys.ESCAPE);
-                } catch (Exception e) {
-                    // Ignorar errores
-                }
-                
                 return cambioUrl || hayMensaje || sinLoader;
             });
             
-            // Manejo inmediato de modales si aparecen
-            cerrarModalesInmediatos();
-            
             // Pausa adicional para estabilidad
-            pausar(Duration.ofMillis(1500));
-            
-            // Verificación final de modales
-            String urlFinal = obtenerUrlActual();
-            if (urlFinal.contains("#google_vignette") || urlFinal.contains("#ad")) {
-                logger.warn("Detectado fragmento de modal en URL, aplicando correcciones agresivas");
-                aplicarCorrecionesAgresivasModal();
-            }
+            pausar(1000);
             
         } catch (Exception e) {
             logger.debug("Timeout esperando respuesta de login: {}", e.getMessage());
-            // Aplicar correcciones como fallback
-            cerrarModalesInmediatos();
-        }
-    }
-    
-    /**
-     * Cierra modales de forma inmediata sin esperas largas.
-     */
-    private void cerrarModalesInmediatos() {
-        try {
-            // ESC múltiples
-            for (int i = 0; i < 3; i++) {
-                driver.switchTo().activeElement().sendKeys(Keys.ESCAPE);
-                pausar(Duration.ofMillis(200));
-            }
-            
-            // Buscar y cerrar elementos modal rápidamente
-            String[] selectoresRapidos = {
-                "iframe[src*='google']",
-                "iframe[src*='ads']",
-                ".modal",
-                ".popup",
-                "[role='dialog']"
-            };
-            
-            for (String selector : selectoresRapidos) {
-                try {
-                    if (estaElementoPresente(By.cssSelector(selector))) {
-                        // Click en el elemento para cerrarlo
-                        hacerClicConJavaScript(By.cssSelector(selector));
-                        logger.debug("Modal cerrado inmediatamente: {}", selector);
-                    }
-                } catch (Exception e) {
-                    // Continuar con el siguiente
-                }
-            }
-            
-        } catch (Exception e) {
-            logger.debug("Error en cierre inmediato de modales: {}", e.getMessage());
-        }
-    }
-    
-    /**
-     * Aplica correcciones agresivas cuando se detectan modales persistentes.
-     */
-    private void aplicarCorrecionesAgresivasModal() {
-        try {
-            logger.info("Aplicando correcciones agresivas para modales persistentes");
-            
-            // JavaScript para eliminar todos los overlays y modales
-            String jsLimpieza = 
-                "document.querySelectorAll('iframe[src*=\"google\"], iframe[src*=\"ads\"], .modal, .popup, .overlay, [role=\"dialog\"]').forEach(el => el.remove());" +
-                "document.body.style.overflow = 'auto';" +
-                "window.location.hash = '';";
-            
-            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(jsLimpieza);
-            
-            // Forzar navegación limpia
-            String urlLimpia = obtenerUrlActual().split("#")[0];
-            if (urlLimpia.endsWith("/login")) {
-                // Navegar directamente a /secure si estamos logueados
-                String urlSegura = config.obtenerUrlPrincipal();
-                logger.info("Navegación forzada a área segura: {}", urlSegura);
-                navegarA(urlSegura);
-            }
-            
-            pausar(Duration.ofMillis(1000));
-            
-        } catch (Exception e) {
-            logger.warn("Error en correcciones agresivas: {}", e.getMessage());
         }
     }
 
@@ -1135,7 +818,7 @@ public class PaginaLogin extends PaginaBase {
                 return true;
             }
             
-            pausar(Duration.ofMillis(2000)); // Pausa entre intentos
+            pausar(2000); // Pausa entre intentos
         }
         
         logger.info("No se detectó bloqueo después de {} intentos", maxIntentos);

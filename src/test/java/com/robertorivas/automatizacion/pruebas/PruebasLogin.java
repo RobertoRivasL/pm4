@@ -50,8 +50,8 @@ public class PruebasLogin extends PruebasBase {
     public void loginExitosoConCredencialesValidas() {
         registrarSeparador("LOGIN EXITOSO - CREDENCIALES VÁLIDAS");
         
-        // Arrange
-        Usuario usuario = Usuario.crearUsuarioPrueba("student", "Password123");
+        // Arrange - Credenciales válidas según Practice Expand Testing
+        Usuario usuario = Usuario.crearUsuarioPrueba("practice", "SuperSecretPassword!");
         
         Map<String, Object> datosEntrada = new HashMap<>();
         datosEntrada.put("Email", usuario.getEmail());
@@ -142,7 +142,7 @@ public class PruebasLogin extends PruebasBase {
         registrarSeparador("LOGIN EXITOSO - RECORDAR CREDENCIALES");
         
         // Arrange
-        Usuario usuario = Usuario.crearUsuarioPrueba("student", "Password123");
+        Usuario usuario = Usuario.crearUsuarioPrueba("practice", "SuperSecretPassword!");
         paginaLogin = new PaginaLogin(obtenerDriver());
         
         // Act
@@ -503,7 +503,7 @@ public class PruebasLogin extends PruebasBase {
         registrarSeparador("FLUJO COMPLETO - LOGIN Y LOGOUT");
         
         // Arrange
-        Usuario usuario = Usuario.crearUsuarioPrueba("student", "Password123");
+        Usuario usuario = Usuario.crearUsuarioPrueba("practice", "SuperSecretPassword!");
         
         Map<String, Object> datosEntrada = new HashMap<>();
         datosEntrada.put("Email", usuario.getEmail());
@@ -567,5 +567,39 @@ public class PruebasLogin extends PruebasBase {
         }
         
         Assert.assertTrue(loginExitoso, "El flujo completo de login debería ser exitoso");
+    }
+
+     // ===== 🆕 NUEVOS TESTS CON DATAPROVIDER (OPCIONALES) =====
+    
+    @Test(dataProvider = "usuariosValidosCSV", 
+          dataProviderClass = ProveedorDatos.class,
+          description = "Login con múltiples usuarios desde CSV",
+          groups = {"login", "datadriven", "csv"},
+          priority = 50) // Priority alto para ejecutar después de tests básicos
+    public void loginMultiplesUsuariosCSV(Usuario usuario) {
+        // 👉 NUEVO TEST CON DATAPROVIDER - ADICIONAL
+        registrarSeparador("LOGIN CSV - " + usuario.getEmail());
+        
+        paginaLogin = new PaginaLogin(obtenerDriver());
+        paginaLogin.navegarAPaginaLogin();
+        
+        boolean loginExitoso = paginaLogin.iniciarSesion(usuario);
+        Assert.assertTrue(loginExitoso, "Login debería ser exitoso para: " + usuario.getEmail());
+    }
+    
+    @Test(dataProvider = "credencialesInvalidasCSV", 
+          dataProviderClass = ProveedorDatos.class,
+          description = "Validación exhaustiva con credenciales inválidas desde CSV",
+          groups = {"login", "datadriven", "negativo"},
+          priority = 51)
+    public void credencialesInvalidasExhaustivasCSV(Usuario credencialesInvalidas) {
+        // 👉 NUEVO TEST CON DATAPROVIDER - ADICIONAL
+        registrarSeparador("CREDENCIALES INVÁLIDAS CSV - " + credencialesInvalidas.getEmail());
+        
+        paginaLogin = new PaginaLogin(obtenerDriver());
+        paginaLogin.navegarAPaginaLogin();
+        
+        boolean loginExitoso = paginaLogin.iniciarSesion(credencialesInvalidas);
+        Assert.assertFalse(loginExitoso, "Login debería fallar para: " + credencialesInvalidas.getEmail());
     }
 }

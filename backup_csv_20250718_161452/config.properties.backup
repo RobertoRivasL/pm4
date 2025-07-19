@@ -164,7 +164,3 @@ expandtesting.login.url=/login
 expandtesting.register.url=/register
 expandtesting.secure.url=/secure
 expandtesting.logout.url=/logout
-
-dataprovider.activar=true
-datos.registro.invalidos=datos_registro_invalidos.csv
-ejecucion.modo.hibrido=true

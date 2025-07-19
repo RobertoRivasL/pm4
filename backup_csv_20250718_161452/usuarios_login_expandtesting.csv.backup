@@ -1,0 +1,11 @@
+username,password,nombre,apellido,descripcion
+practice,SuperSecretPassword!,Practice,User,Usuario principal válido para ExpandTesting
+practice,SuperSecretPassword!,Test,User,Usuario de prueba principal (duplicado para data-driven)
+practice,SuperSecretPassword!,Demo,User,Usuario demo para testing
+practice,SuperSecretPassword!,Automation,Tester,Usuario para automatización
+practice,SuperSecretPassword!,Quality,Assurance,Usuario QA
+practice,SuperSecretPassword!,Selenium,Driver,Usuario Selenium
+practice,SuperSecretPassword!,TestNG,Framework,Usuario TestNG
+practice,SuperSecretPassword!,Maven,Build,Usuario Maven
+practice,SuperSecretPassword!,Java,Developer,Usuario Java
+practice,SuperSecretPassword!,WebDriver,User,Usuario WebDriver

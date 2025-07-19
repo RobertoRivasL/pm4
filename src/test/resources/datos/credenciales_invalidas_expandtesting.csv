@@ -1,21 +1,16 @@
-username,password,descripcion,error_esperado
-wrongUser,SuperSecretPassword!,Username incorrecto con password válido,Invalid username.
-invalidUser,SuperSecretPassword!,Username que no existe,Invalid username.
-testUser,SuperSecretPassword!,Username de prueba inexistente,Invalid username.
-fakeUser,SuperSecretPassword!,Username falso,Invalid username.
-practice,WrongPassword,Username válido con password incorrecto,Invalid password.
-practice,InvalidPass123,Password incorrecto formato válido,Invalid password.
-practice,wrongpassword,Password incorrecto en minúsculas,Invalid password.
-practice,WRONGPASSWORD,Password incorrecto en mayúsculas,Invalid password.
-practice,123456,Password numérico incorrecto,Invalid password.
-practice,password,Password común incorrecto,Invalid password.
-practice,,Username válido con password vacío,All fields are required.
-,SuperSecretPassword!,Username vacío con password válido,All fields are required.
-,,Ambos campos vacíos,All fields are required.
-wrongUser,WrongPassword,Ambos campos incorrectos,Invalid username.
-user@test.com,SuperSecretPassword!,Email como username,Invalid username.
-admin,SuperSecretPassword!,Username admin inexistente,Invalid username.
-root,SuperSecretPassword!,Username root inexistente,Invalid username.
-practice,12345,Password muy corto,Invalid password.
-practice,Pass,Password demasiado corto,Invalid password.
-practice,super secret password,Password con espacios,Invalid password.
+email,password,descripcion
+invaliduser,SuperSecretPassword!,Usuario que no existe en el sistema
+practice,wrongpassword,Password incorrecto para usuario válido
+practice,invalid,Password muy corto
+wronguser,wrongpass,Ambos inválidos
+,SuperSecretPassword!,Username vacío
+practice,,Password vacío
+,,"Ambos vacíos"
+practice,short,Password demasiado corto
+PRACTICE,SuperSecretPassword!,Username en mayúsculas
+practice,SUPERSECRETPASSWORD!,Password en mayúsculas
+usuario.con.puntos,SuperSecretPassword!,Username con puntos
+practice,Pass123,Password demasiado simple
+practice,password,Password sin mayúsculas ni números
+test@invalid.com,SuperSecretPassword!,Email formato válido pero usuario inexistente
+practice,SuperSecretPassword,Password sin signo de exclamación

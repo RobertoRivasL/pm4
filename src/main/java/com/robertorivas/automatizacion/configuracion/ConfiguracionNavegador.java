@@ -19,10 +19,21 @@ import java.util.Map;
  * Clase responsable de la configuración y creación de instancias de WebDriver
  * para diferentes navegadores.
  * 
+ * Estrategia de Drivers:
+ * - Chrome/Firefox: WebDriverManager automático (descarga según versión navegador)
+ * - Edge: Driver incluido en src/test/resources/drivers/msedgedriver.exe con fallback automático
+ * 
  * Principios aplicados:
  * - Single Responsibility: Solo maneja la configuración de navegadores
  * - Open/Closed: Abierto para extensión (nuevos navegadores)
  * - Factory Pattern: Para la creación de drivers
+ * - Strategy Pattern: Diferentes estrategias para cada navegador
+ * 
+ * Características avanzadas:
+ * - Sistema anti-modal en Chrome para bloqueo automático de publicidad
+ * - Configuraciones específicas de estabilidad por navegador
+ * - Fallback robusto para Edge usando driver local incluido
+ * - Soporte completo headless para Chrome y Firefox
  * 
  * @author Roberto Rivas Lopez
  */
@@ -116,11 +127,42 @@ public class ConfiguracionNavegador {
         opciones.addArguments("--disable-web-security");
         opciones.addArguments("--allow-running-insecure-content");
         
-        // Configurar descargas
+        // ===== CONFIGURACIONES ANTI-ANUNCIOS Y MODALES =====
+        // Bloquear anuncios y popups
+        opciones.addArguments("--disable-popup-blocking"); // Paradójicamente ayuda con algunos casos
+        opciones.addArguments("--disable-default-apps");
+        opciones.addArguments("--disable-background-timer-throttling");
+        opciones.addArguments("--disable-backgrounding-occluded-windows");
+        opciones.addArguments("--disable-renderer-backgrounding");
+        opciones.addArguments("--disable-features=TranslateUI");
+        opciones.addArguments("--disable-ipc-flooding-protection");
+        
+        // Bloquear específicamente Google Ads
+        opciones.addArguments("--block-new-web-contents");
+        opciones.addArguments("--disable-component-extensions-with-background-pages");
+        
+        // Configurar preferencias avanzadas para bloqueo de anuncios
         Map<String, Object> prefsDescargas = new HashMap<>();
         prefsDescargas.put("profile.default_content_settings.popups", 0);
         prefsDescargas.put("download.default_directory", System.getProperty("user.dir") + "/descargas");
+        
+        // Preferencias específicas para bloquear anuncios y modales
+        prefsDescargas.put("profile.default_content_setting_values.notifications", 2); // Bloquear notificaciones
+        prefsDescargas.put("profile.default_content_setting_values.popups", 2); // Bloquear popups
+        prefsDescargas.put("profile.managed_default_content_settings.popups", 2); // Forzar bloqueo de popups
+        prefsDescargas.put("profile.content_settings.exceptions.automatic_downloads.*.setting", 2); // Bloquear descargas automáticas
+        
+        // Configuraciones adicionales para mejorar estabilidad
+        prefsDescargas.put("profile.default_content_setting_values.media_stream_mic", 2);
+        prefsDescargas.put("profile.default_content_setting_values.media_stream_camera", 2);
+        prefsDescargas.put("profile.default_content_setting_values.geolocation", 2);
+        prefsDescargas.put("profile.default_content_setting_values.desktop_notification", 2);
+        
         opciones.setExperimentalOption("prefs", prefsDescargas);
+        
+        // Configurar switches adicionales para blocking
+        opciones.setExperimentalOption("useAutomationExtension", false);
+        opciones.setExperimentalOption("excludeSwitches", java.util.Arrays.asList("enable-automation"));
         
         return new ChromeDriver(opciones);
     }
@@ -150,16 +192,65 @@ public class ConfiguracionNavegador {
     
     /**
      * Crea y configura EdgeDriver.
+     * Utiliza el driver específico incluido en src/test/resources/drivers/msedgedriver.exe
      */
     private static WebDriver crearDriverEdge() {
-        WebDriverManager.edgedriver().setup();
+        try {
+            // Intentar primero con WebDriverManager automático
+            WebDriverManager.edgedriver().setup();
+            logger.info("WebDriverManager configuró EdgeDriver automáticamente");
+        } catch (Exception e) {
+            logger.warn("WebDriverManager falló para Edge, usando driver local: {}", e.getMessage());
+            
+            // Usar driver local incluido en el proyecto
+            String driverPath = ConfiguracionNavegador.class.getClassLoader()
+                    .getResource("drivers/msedgedriver.exe").getPath();
+            
+            // Limpiar path en Windows (remover / inicial)
+            if (System.getProperty("os.name").toLowerCase().contains("windows") && 
+                driverPath.startsWith("/")) {
+                driverPath = driverPath.substring(1);
+            }
+            
+            System.setProperty("webdriver.edge.driver", driverPath);
+            logger.info("Configurado EdgeDriver manual con driver local: {}", driverPath);
+        }
         
+        EdgeOptions opciones = configurarOpcionesEdge();
+        return new EdgeDriver(opciones);
+    }
+    
+    /**
+     * Configura las opciones específicas para EdgeDriver.
+     */
+    private static EdgeOptions configurarOpcionesEdge() {
         EdgeOptions opciones = new EdgeOptions();
+        
+        // Configuraciones básicas de estabilidad
         opciones.addArguments("--no-sandbox");
         opciones.addArguments("--disable-dev-shm-usage");
         opciones.addArguments("--window-size=1920,1080");
+        opciones.addArguments("--disable-gpu");
+        opciones.addArguments("--disable-extensions");
         
-        return new EdgeDriver(opciones);
+        // Configuraciones adicionales para Edge
+        opciones.addArguments("--disable-web-security");
+        opciones.addArguments("--allow-running-insecure-content");
+        opciones.addArguments("--disable-features=VizDisplayCompositor");
+        
+        // Configurar preferencias para bloquear notificaciones y popups
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.default_content_settings.popups", 0);
+        prefs.put("profile.default_content_setting_values.notifications", 2);
+        prefs.put("profile.default_content_setting_values.popups", 2);
+        opciones.setExperimentalOption("prefs", prefs);
+        
+        // Configuraciones para mejorar estabilidad
+        opciones.setExperimentalOption("useAutomationExtension", false);
+        opciones.setExperimentalOption("excludeSwitches", java.util.Arrays.asList("enable-automation"));
+        
+        logger.debug("EdgeOptions configuradas con argumentos anti-popup y estabilidad");
+        return opciones;
     }
     
     /**

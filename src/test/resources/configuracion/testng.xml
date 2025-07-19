@@ -2,19 +2,22 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 
 <!-- 
-Suite de Automatización Funcional - ExpandTesting
+Suite de Automatización Funcional - ExpandTesting + DataProvider
 Desarrollado por: Roberto Rivas Lopez
 Curso: Automatización de Pruebas
 Plataforma: https://practice.expandtesting.com/
+HÍBRIDO: Tests existentes + DataProvider con CSV
 -->
 
-<suite name="Suite-Automatizacion-ExpandTesting" verbose="1" parallel="none" thread-count="1">
+<!-- 🚀 SUITE PRINCIPAL HÍBRIDA - MANTIENE TU ESTRUCTURA + DATAPROVIDER -->
+<suite name="Suite-Automatizacion-ExpandTesting-Hibrida" verbose="1" parallel="none" thread-count="1">
     
     <!-- Configuración global de la suite -->
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
     <parameter name="timeout" value="15"/>
     <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
     
     <!-- Listeners para reportes y evidencias -->
     <listeners>
@@ -22,11 +25,12 @@ Plataforma: https://practice.expandtesting.com/
         <listener class-name="org.testng.reporters.JUnitReportReporter"/>
     </listeners>
     
-    <!-- Suite completa con todas las pruebas de ExpandTesting -->
-    <test name="Pruebas-Completas-ExpandTesting" preserve-order="true">
+    <!-- 🔄 TU SUITE COMPLETA ACTUAL + NUEVOS TESTS DATAPROVIDER -->
+    <test name="Pruebas-Completas-ExpandTesting-Hibrida" preserve-order="true">
         <classes>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
+                    <!-- 🟢 TUS TESTS EXISTENTES (PRIMERO - PRIORITARIOS) -->
                     <include name="registroExitosoConDatosCompletos"/>
                     <include name="registroExitosoConDatosMinimos"/>
                     <include name="registroExitosoConMultiplesDatos"/>
@@ -36,11 +40,17 @@ Plataforma: https://practice.expandtesting.com/
                     <include name="validacionCampoPasswordFaltante"/>
                     <include name="funcionalidadLimpiarFormulario"/>
                     <include name="navegacionALogin"/>
+                    
+                    <!-- 🆕 NUEVOS TESTS CON DATAPROVIDER (DESPUÉS - EXHAUSTIVOS) -->
+                    <include name="validacionesRegistroExhaustivasCSV"/>
+                    <include name="registroValidacionesFormatosEmailCSV"/>
+                    <include name="registroCrossBrowserCSV"/>
                 </methods>
             </class>
             
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
+                    <!-- 🟢 TUS TESTS EXISTENTES -->
                     <include name="loginExitosoConCredencialesValidas"/>
                     <include name="loginExitosoConMultiplesUsuarios"/>
                     <include name="loginExitosoConRecordarCredenciales"/>
@@ -54,6 +64,12 @@ Plataforma: https://practice.expandtesting.com/
                     <include name="funcionalidadLimpiarCampos"/>
                     <include name="navegacionARegistro"/>
                     <include name="flujoCompletoLoginYLogout"/>
+                    
+                    <!-- 🆕 NUEVOS TESTS CON DATAPROVIDER -->
+                    <include name="loginExhaustivoMultiplesUsuariosCSV"/>
+                    <include name="credencialesInvalidasExhaustivasCSV"/>
+                    <include name="loginSeguridadIntentosMultiplesCSV"/>
+                    <include name="loginCrossBrowserExpandTestingCSV"/>
                 </methods>
             </class>
         </classes>
@@ -61,7 +77,7 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Smoke Tests (Casos críticos de ExpandTesting) -->
+<!-- 🟢 TU SUITE DE SMOKE TESTS - MANTENER EXACTAMENTE IGUAL -->
 <suite name="Suite-Smoke-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
@@ -72,6 +88,9 @@ Plataforma: https://practice.expandtesting.com/
         <groups>
             <run>
                 <include name="smoke"/>
+                <!-- ❌ Excluir DataProvider de smoke tests -->
+                <exclude name="datadriven"/>
+                <exclude name="exhaustivo"/>
             </run>
         </groups>
         
@@ -91,7 +110,7 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas Positivas (ExpandTesting) -->
+<!-- 🟢 TUS SUITES EXISTENTES - MANTENER EXACTAMENTE IGUAL -->
 <suite name="Suite-Pruebas-Positivas-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
@@ -102,6 +121,8 @@ Plataforma: https://practice.expandtesting.com/
         <groups>
             <run>
                 <include name="positivo"/>
+                <!-- ❌ Excluir DataProvider para mantener velocidad -->
+                <exclude name="datadriven"/>
             </run>
         </groups>
         
@@ -124,7 +145,6 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas Negativas (ExpandTesting) -->
 <suite name="Suite-Pruebas-Negativas-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
@@ -135,6 +155,7 @@ Plataforma: https://practice.expandtesting.com/
         <groups>
             <run>
                 <include name="negativo"/>
+                <exclude name="datadriven"/>
             </run>
         </groups>
         
@@ -161,66 +182,130 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas de Validación (ExpandTesting) -->
-<suite name="Suite-Validaciones-ExpandTesting" verbose="1" parallel="none">
+<!-- 🔄 TU SUITE DE VALIDACIONES EXPANDIDA CON DATAPROVIDER -->
+<suite name="Suite-Validaciones-ExpandTesting-Expandida" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
     <parameter name="entorno" value="desarrollo"/>
     <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
     
-    <test name="Pruebas-Validacion-ExpandTesting" preserve-order="true">
+    <test name="Pruebas-Validacion-ExpandTesting-Completas" preserve-order="true">
         <groups>
             <run>
                 <include name="validacion"/>
-            </run>
-        </groups>
-        
-        <classes>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
-                <methods>
-                    <include name="loginFallidoUsernameInvalido"/>
-                    <include name="loginFallidoPasswordInvalido"/>
-                    <include name="loginFallidoConCamposVacios"/>
-                </methods>
-            </class>
-            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
-                <methods>
-                    <include name="validacionCamposObligatoriosVacios"/>
-                    <include name="validacionPasswordsNoCoinciden"/>
-                    <include name="validacionCampoUsernameFaltante"/>
-                    <include name="validacionCampoPasswordFaltante"/>
-                </methods>
-            </class>
-        </classes>
-    </test>
-    
-</suite>
-
-<!-- Suite de Pruebas Data-Driven (ExpandTesting) -->
-<suite name="Suite-Data-Driven-ExpandTesting" verbose="1" parallel="none">
-    
-    <parameter name="navegador" value="chrome"/>
-    <parameter name="entorno" value="desarrollo"/>
-    <parameter name="url.base" value="https://practice.expandtesting.com"/>
-    
-    <test name="Pruebas-Data-Driven-ExpandTesting" preserve-order="true">
-        <groups>
-            <run>
+                <!-- ✅ Incluir DataProvider para validaciones exhaustivas -->
                 <include name="datadriven"/>
             </run>
         </groups>
         
         <classes>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <!-- 🟢 TUS VALIDACIONES EXISTENTES -->
+                    <include name="loginFallidoUsernameInvalido"/>
+                    <include name="loginFallidoPasswordInvalido"/>
+                    <include name="loginFallidoConCamposVacios"/>
+                    
+                    <!-- 🆕 VALIDACIONES EXHAUSTIVAS CON DATAPROVIDER -->
+                    <include name="credencialesInvalidasExhaustivasCSV"/>
+                </methods>
+            </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
+                    <!-- 🟢 TUS VALIDACIONES EXISTENTES -->
+                    <include name="validacionCamposObligatoriosVacios"/>
+                    <include name="validacionPasswordsNoCoinciden"/>
+                    <include name="validacionCampoUsernameFaltante"/>
+                    <include name="validacionCampoPasswordFaltante"/>
+                    
+                    <!-- 🆕 VALIDACIONES EXHAUSTIVAS CON DATAPROVIDER -->
+                    <include name="validacionesRegistroExhaustivasCSV"/>
+                    <include name="registroValidacionesFormatosEmailCSV"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+</suite>
+
+<!-- 🆕 SUITE ESPECÍFICA SOLO DATAPROVIDER - NUEVA -->
+<suite name="Suite-DataProvider-ExpandTesting" verbose="1" parallel="none">
+    
+    <parameter name="navegador" value="chrome"/>
+    <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
+    
+    <test name="Solo-DataProvider-ExpandTesting" preserve-order="true">
+        <groups>
+            <run>
+                <!-- ✅ Solo incluir tests con DataProvider -->
+                <include name="datadriven"/>
+                <include name="exhaustivo"/>
+                <include name="csv"/>
+            </run>
+        </groups>
+        
+        <classes>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <include name="loginExhaustivoMultiplesUsuariosCSV"/>
+                    <include name="credencialesInvalidasExhaustivasCSV"/>
+                    <include name="loginSeguridadIntentosMultiplesCSV"/>
+                    <include name="loginCrossBrowserExpandTestingCSV"/>
+                </methods>
+            </class>
+            
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="validacionesRegistroExhaustivasCSV"/>
+                    <include name="registroValidacionesFormatosEmailCSV"/>
+                    <include name="registroCrossBrowserCSV"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+</suite>
+
+<!-- 🔄 TU SUITE DATA-DRIVEN EXPANDIDA -->
+<suite name="Suite-Data-Driven-ExpandTesting-Completa" verbose="1" parallel="none">
+    
+    <parameter name="navegador" value="chrome"/>
+    <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
+    
+    <test name="Pruebas-Data-Driven-ExpandTesting-Todas" preserve-order="true">
+        <groups>
+            <run>
+                <include name="datadriven"/>
+                <include name="csv"/>
+            </run>
+        </groups>
+        
+        <classes>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <!-- 🟢 TU TEST EXISTENTE -->
                     <include name="registroExitosoConMultiplesDatos"/>
+                    
+                    <!-- 🆕 NUEVOS TESTS CON CSV -->
+                    <include name="validacionesRegistroExhaustivasCSV"/>
+                    <include name="registroValidacionesFormatosEmailCSV"/>
                 </methods>
             </class>
             
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
+                    <!-- 🟢 TUS TESTS EXISTENTES -->
                     <include name="loginExitosoConMultiplesUsuarios"/>
                     <include name="loginFallidoConMultiplesCredencialesInvalidas"/>
+                    
+                    <!-- 🆕 NUEVOS TESTS CON CSV -->
+                    <include name="loginExhaustivoMultiplesUsuariosCSV"/>
+                    <include name="credencialesInvalidasExhaustivasCSV"/>
                 </methods>
             </class>
         </classes>
@@ -228,54 +313,65 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas Cross-Browser (ExpandTesting) -->
-<suite name="Suite-Cross-Browser-ExpandTesting" verbose="1" parallel="tests" thread-count="3">
+<!-- 🔄 TU SUITE CROSS-BROWSER EXPANDIDA CON DATAPROVIDER -->
+<suite name="Suite-Cross-Browser-ExpandTesting-Completa" verbose="1" parallel="tests" thread-count="3">
     
     <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
     
-    <test name="Chrome-Tests-ExpandTesting">
+    <test name="Chrome-Tests-ExpandTesting-Completo">
         <parameter name="navegador" value="chrome"/>
         <classes>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
+                    <!-- 🟢 TU TEST EXISTENTE -->
                     <include name="loginExitosoConCredencialesValidas"/>
+                    <!-- 🆕 NUEVO TEST CON DATAPROVIDER -->
+                    <include name="loginCrossBrowserExpandTestingCSV"/>
                 </methods>
             </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
+                    <!-- 🟢 TU TEST EXISTENTE -->
                     <include name="registroExitosoConDatosCompletos"/>
+                    <!-- 🆕 NUEVO TEST CON DATAPROVIDER -->
+                    <include name="registroCrossBrowserCSV"/>
                 </methods>
             </class>
         </classes>
     </test>
     
-    <test name="Firefox-Tests-ExpandTesting">
+    <test name="Firefox-Tests-ExpandTesting-Completo">
         <parameter name="navegador" value="firefox"/>
         <classes>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
                     <include name="loginExitosoConCredencialesValidas"/>
+                    <include name="loginCrossBrowserExpandTestingCSV"/>
                 </methods>
             </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
                     <include name="registroExitosoConDatosCompletos"/>
+                    <include name="registroCrossBrowserCSV"/>
                 </methods>
             </class>
         </classes>
     </test>
     
-    <test name="Edge-Tests-ExpandTesting">
+    <test name="Edge-Tests-ExpandTesting-Completo">
         <parameter name="navegador" value="edge"/>
         <classes>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
                 <methods>
                     <include name="loginExitosoConCredencialesValidas"/>
+                    <include name="loginCrossBrowserExpandTestingCSV"/>
                 </methods>
             </class>
             <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
                 <methods>
                     <include name="registroExitosoConDatosCompletos"/>
+                    <include name="registroCrossBrowserCSV"/>
                 </methods>
             </class>
         </classes>
@@ -283,7 +379,7 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas de Regresión (ExpandTesting) -->
+<!-- 🟢 TUS SUITES DE REGRESIÓN E INTEGRACIÓN - MANTENER IGUAL -->
 <suite name="Suite-Regresion-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
@@ -319,7 +415,6 @@ Plataforma: https://practice.expandtesting.com/
     
 </suite>
 
-<!-- Suite de Pruebas de Integración (ExpandTesting) -->
 <suite name="Suite-Integracion-ExpandTesting" verbose="1" parallel="none">
     
     <parameter name="navegador" value="chrome"/>
@@ -340,6 +435,38 @@ Plataforma: https://practice.expandtesting.com/
                     <include name="flujoNavegacionEntrePaginas"/>
                     <include name="validacionPersistenciaDatos"/>
                     <include name="pruebaCompatibilidadBasica"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+</suite>
+
+<!-- 🆕 SUITE HÍBRIDA DEMO - PARA PRESENTACIONES -->
+<suite name="Suite-Demo-Hibrida-ExpandTesting" verbose="1" parallel="none">
+    
+    <parameter name="navegador" value="chrome"/>
+    <parameter name="entorno" value="desarrollo"/>
+    <parameter name="url.base" value="https://practice.expandtesting.com"/>
+    <parameter name="dataprovider.activar" value="true"/>
+    
+    <test name="Demo-Capacidades-Hibridas" preserve-order="true">
+        <classes>
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasLogin">
+                <methods>
+                    <!-- 🟢 Test existente (rápido) -->
+                    <include name="loginExitosoConCredencialesValidas"/>
+                    <!-- 🆕 Test DataProvider (exhaustivo) -->
+                    <include name="loginExhaustivoMultiplesUsuariosCSV"/>
+                </methods>
+            </class>
+            
+            <class name="com.robertorivas.automatizacion.pruebas.PruebasRegistro">
+                <methods>
+                    <!-- 🟢 Test existente (rápido) -->
+                    <include name="registroExitosoConDatosCompletos"/>
+                    <!-- 🆕 Test DataProvider (exhaustivo) -->
+                    <include name="validacionesRegistroExhaustivasCSV"/>
                 </methods>
             </class>
         </classes>

@@ -294,19 +294,19 @@ public class ProveedorDatos {
         List<Object[]> combinaciones = new ArrayList<>();
         
         // Email válido, password válido
-        combinaciones.add(new Object[]{"student", "Password123", true, "Login válido"});
+        combinaciones.add(new Object[]{"practice", "SuperSecretPassword!", true, "Login válido"});
         
         // Email válido, password inválido
-        combinaciones.add(new Object[]{"student", "PasswordIncorrecto", false, "Password incorrecto"});
+        combinaciones.add(new Object[]{"practice", "PasswordIncorrecto", false, "Password incorrecto"});
         
         // Email inválido, password válido
-        combinaciones.add(new Object[]{"usuario.inexistente@test.com", "Password123", false, "Usuario inexistente"});
+        combinaciones.add(new Object[]{"usuario.inexistente@test.com", "SuperSecretPassword!", false, "Usuario inexistente"});
         
         // Email inválido, password inválido
         combinaciones.add(new Object[]{"usuario.inexistente@test.com", "PasswordIncorrecto", false, "Ambos inválidos"});
         
         // Email vacío, password válido
-        combinaciones.add(new Object[]{"", "Password123", false, "Email vacío"});
+        combinaciones.add(new Object[]{"", "SuperSecretPassword!", false, "Email vacío"});
         
         // Email válido, password vacío
         combinaciones.add(new Object[]{"student", "", false, "Password vacío"});
@@ -473,7 +473,7 @@ public class ProveedorDatos {
     private static List<Usuario> generarUsuariosValidosPorDefecto() {
         List<Usuario> usuarios = new ArrayList<>();
         
-        usuarios.add(new Usuario("student", "Password123"));
+        usuarios.add(new Usuario("practice", "SuperSecretPassword!"));
         usuarios.add(new Usuario("admin", "admin123"));
         usuarios.add(new Usuario("test@testautomation.com", "testpass123"));
         usuarios.add(new Usuario("demo@demo.com", "demopass"));
@@ -519,7 +519,7 @@ public class ProveedorDatos {
      * Usuarios de emergencia en caso de error.
      */
     private static Object[][] generarUsuariosValidosEmergencia() {
-        Usuario usuarioEmergencia = new Usuario("student", "Password123");
+        Usuario usuarioEmergencia = new Usuario("practice", "SuperSecretPassword!");
         return new Object[][]{{usuarioEmergencia}};
     }
     

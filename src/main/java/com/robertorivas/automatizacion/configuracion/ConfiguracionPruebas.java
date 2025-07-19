@@ -146,11 +146,21 @@ public class ConfiguracionPruebas {
     }
 
     public String obtenerUrlRegistro() {
-        return propiedades.getProperty("app.url.registro");
+        String urlBase = obtenerUrlBase();
+        String rutaRegistro = propiedades.getProperty("app.url.registro");
+        return urlBase + rutaRegistro;
     }
 
     public String obtenerUrlLogin() {
-        return propiedades.getProperty("app.url.login");
+        String urlBase = obtenerUrlBase();
+        String rutaLogin = propiedades.getProperty("app.url.login");
+        return urlBase + rutaLogin;
+    }
+
+    public String obtenerUrlPrincipal() {
+        String urlBase = obtenerUrlBase();
+        String rutaPrincipal = propiedades.getProperty("app.url.principal");
+        return urlBase + rutaPrincipal;
     }
 
     // Métodos de acceso a configuraciones de navegador
@@ -248,6 +258,7 @@ public class ConfiguracionPruebas {
         logger.info("URL Base: {}", obtenerUrlBase());
         logger.info("URL Registro: {}", obtenerUrlRegistro());
         logger.info("URL Login: {}", obtenerUrlLogin());
+        logger.info("URL Principal: {}", obtenerUrlPrincipal());
         logger.info("Navegador: {}", obtenerNavegadorDefecto());
         logger.info("Headless: {}", esNavegadorHeadless());
         logger.info("Entorno: {}", obtenerEntorno());
