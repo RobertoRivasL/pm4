@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Suite de Automatizacion Funcional" verbose="1" parallel="methods" thread-count="3">
+    
+    <!-- ====== CONFIGURACIÓN GLOBAL ====== -->
+    <parameter name="browser" value="chrome"/>
+    <parameter name="headless" value="false"/>
+    <parameter name="timeout" value="10"/>
+    <parameter name="baseUrl" value="https://example.com"/>
+    
+    <!-- ====== LISTENERS ====== -->
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+    
+    <!-- ====== GRUPOS DE PRUEBAS ====== -->
+    <groups>
+        <define name="smoke">
+            <include name="login"/>
+            <include name="registro"/>
+            <include name="positivo"/>
+        </define>
+        
+        <define name="regression">
+            <include name="login"/>
+            <include name="registro"/>
+            <include name="validacion"/>
+            <include name="negativo"/>
+            <include name="funcionalidad"/>
+        </define>
+        
+        <define name="security">
+            <include name="security"/>
+            <include name="xss"/>
+            <include name="edge-cases"/>
+        </define>
+        
+        <define name="performance">
+            <include name="performance"/>
+        </define>
+        
+        <define name="ui">
+            <include name="ui"/>
+            <include name="navegacion"/>
+        </define>
+    </groups>
+    
+    <!-- ====== TEST COMPLETO - TODAS LAS PRUEBAS ====== -->
+    <test name="Pruebas Completas" preserve-order="true">
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testLoginExitoso"/>
+                    <include name="testLoginMultiplesUsuarios"/>
+                    <include name="testLoginCredencialesInvalidas"/>
+                    <include name="testLoginEmailVacio"/>
+                    <include name="testLoginPasswordVacio"/>
+                    <include name="testLoginDatosInvalidos"/>
+                    <include name="testFuncionalidadRecordarme"/>
+                    <include name="testEnlaceOlvidoPassword"/>
+                    <include name="testEnlaceRegistro"/>
+                    <include name="testBloqueoMultiplesIntentos"/>
+                    <include name="testCaracteresEspeciales"/>
+                    <include name="testTiempoRespuestaLogin"/>
+                    <include name="testElementosInterfazUsuario"/>
+                    <include name="testLimpiezaFormulario"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testRegistroExitoso"/>
+                    <include name="testRegistroMultiplesDatos"/>
+                    <include name="testValidacionNombreVacio"/>
+                    <include name="testValidacionEmailInvalido"/>
+                    <include name="testValidacionPasswordsNoCoinciden"/>
+                    <include name="testValidacionPasswordDebil"/>
+                    <include name="testRegistroDatosInvalidos"/>
+                    <include name="testRegistroUsuarioExistente"/>
+                    <include name="testValidacionTerminosNoAceptados"/>
+                    <include name="testCamposOpcionales"/>
+                    <include name="testFuncionalidadNewsletter"/>
+                    <include name="testLimpiezaFormulario"/>
+                    <include name="testEnlaceLogin"/>
+                    <include name="testTiempoRespuestaRegistro"/>
+                    <include name="testElementosInterfazUsuario"/>
+                    <include name="testCaracteresEspeciales"/>
+                    <include name="testPrevencionXSS"/>
+                    <include name="testCamposLongitudMaxima"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+</suite>
