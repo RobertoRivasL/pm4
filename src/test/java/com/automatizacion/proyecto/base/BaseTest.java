@@ -1,12 +1,12 @@
-package com.automatizacion.proyecto.base;
+package test.java.com.automatizacion.proyecto.base;
 
-import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
-import com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
-import com.automatizacion.proyecto.enums.TipoMensaje;
-import com.automatizacion.proyecto.enums.TipoNavegador;
-import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
-import com.automatizacion.proyecto.utilidades.EsperaExplicita;
-import com.automatizacion.proyecto.utilidades.ManejadorScrollPagina;
+import main.java.com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
+import main.java.com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
+import main.java.com.automatizacion.proyecto.enums.TipoMensaje;
+import main.java.com.automatizacion.proyecto.enums.TipoNavegador;
+import main.java.com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
+import main.java.com.automatizacion.proyecto.utilidades.EsperaExplicita;
+import main.java.com.automatizacion.proyecto.utilidades.ManejadorScrollPagina;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,8 +1,9 @@
-package com.automatizacion.proyecto.utilidades;
+package main.java.com.automatizacion.proyecto.utilidades;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class EsperaExplicita {
     private static final int TIEMPO_ESPERA_DEFECTO = 10;
     
     private final WebDriverWait espera;
+    private final WebDriver driver;
     
     /**
      * Constructor que inicializa la espera con tiempo por defecto
@@ -38,6 +40,7 @@ public class EsperaExplicita {
      * @param tiempoEsperaSegundos tiempo de espera en segundos
      */
     public EsperaExplicita(WebDriver driver, int tiempoEsperaSegundos) {
+        this.driver = driver;
         this.espera = new WebDriverWait(driver, Duration.ofSeconds(tiempoEsperaSegundos));
         logger.debug("EsperaExplicita inicializada con {} segundos", tiempoEsperaSegundos);
     }
@@ -178,4 +181,77 @@ public class EsperaExplicita {
             return false;
         }
     }
-}
+
+    /**
+     * Espera a que la página se cargue completamente
+     */
+    public void esperarCargaCompleta() {
+        try {
+            espera.until(driver -> ((JavascriptExecutor) driver)
+                .executeScript("return document.readyState").equals("complete"));
+            logger.debug("Página cargada completamente");
+        } catch (Exception e) {
+            logger.warn("Timeout esperando carga completa de página: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Sube la página para evitar propaganda
+     */
+    public void subirPaginaParaEvitarPropaganda() {
+        try {
+            ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, 0);");
+            Thread.sleep(1000); // Pausa para que la propaganda desaparezca
+            logger.debug("Página subida para evitar propaganda");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            logger.debug("Error subiendo página: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Espera a que aparezca un mensaje flash y lo retorna
+     * @param localizadorMensaje By del elemento de mensaje
+     * @return texto del mensaje
+     */
+    public String esperarMensajeFlash(By localizadorMensaje) {
+        try {
+            WebElement mensaje = esperarElementoVisible(localizadorMensaje);
+            String texto = mensaje.getText().trim();
+            logger.debug("Mensaje flash obtenido: {}", texto);
+            return texto;
+        } catch (Exception e) {
+            logger.debug("No se pudo obtener mensaje flash: {}", e.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * Espera elemento con reintentos
+     * @param localizador localizador del elemento
+     * @param maxReintentos número máximo de reintentos
+     * @return WebElement encontrado
+     */
+    public WebElement esperarElementoConReintentos(By localizador, int maxReintentos) {
+        Exception ultimaExcepcion = null;
+        for (int intento = 1; intento <= maxReintentos; intento++) {
+            try {
+                return esperarElementoVisible(localizador);
+            } catch (Exception e) {
+                ultimaExcepcion = e;
+                logger.debug("Intento {} fallido para elemento {}: {}", intento, localizador, e.getMessage());
+                if (intento < maxReintentos) {
+                    try {
+                        Thread.sleep(1000); // Pausa entre reintentos
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+        }
+       logger.error("Elemento no encontrado después de {} intentos: {}", maxReintentos, localizador);
+        throw new RuntimeException("Elemento no encontrado después de " + maxReintentos + " intentos: " + localizador, ultimaExcepcion);
+    }
+} 

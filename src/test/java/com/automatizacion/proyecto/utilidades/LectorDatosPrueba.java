@@ -1,8 +1,8 @@
-package com.automatizacion.proyecto.utilidades;
+package test.java.com.automatizacion.proyecto.utilidades;
 
-import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
-import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
-import com.automatizacion.proyecto.enums.TipoMensaje;
+import main.java.com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
+import test.java.com.automatizacion.proyecto.datos.ModeloDatosPrueba;
+import main.java.com.automatizacion.proyecto.enums.TipoMensaje;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;

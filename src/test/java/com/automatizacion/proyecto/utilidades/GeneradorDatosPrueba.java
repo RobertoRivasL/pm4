@@ -1,7 +1,7 @@
-package com.automatizacion.proyecto.utilidades;
+package test.java.com.automatizacion.proyecto.utilidades;
 
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
-import com.automatizacion.proyecto.enums.TipoMensaje;
+import test.java.com.automatizacion.proyecto.datos.TipoMensaje;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +9,6 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -79,7 +78,6 @@ public class GeneradorDatosPrueba {
      * @return ModeloDatosPrueba con datos válidos
      */
     public static ModeloDatosPrueba generarUsuarioValido(String casoPrueba) {
-        String timestamp = String.valueOf(System.currentTimeMillis());
         String nombre = obtenerElementoAleatorio(NOMBRES);
         String apellido = obtenerElementoAleatorio(APELLIDOS);
         String email = generarEmailUnico(nombre, apellido);
@@ -195,23 +193,6 @@ public class GeneradorDatosPrueba {
     }
     
     /**
-     * Genera múltiples usuarios inválidos para diferentes tipos de errores
-     * @return lista de ModeloDatosPrueba con datos inválidos
-     */
-    public static List<ModeloDatosPrueba> generarUsuariosInvalidos() {
-        List<ModeloDatosPrueba> usuariosInvalidos = new ArrayList<>();
-        
-        for (TipoErrorDatos tipoError : TipoErrorDatos.values()) {
-            usuariosInvalidos.add(generarUsuarioInvalido(tipoError));
-        }
-        
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-            "Generados " + usuariosInvalidos.size() + " usuarios inválidos"));
-        
-        return usuariosInvalidos;
-    }
-    
-    /**
      * Genera datos específicos para pruebas de login
      * @param esValido indica si los datos deben ser válidos o inválidos
      * @return ModeloDatosPrueba configurado para login
@@ -236,36 +217,6 @@ public class GeneradorDatosPrueba {
                     .mensajeError("Credenciales incorrectas")
                     .build();
         }
-    }
-    
-    /**
-     * Genera múltiples conjuntos de datos de login
-     * @param cantidadValidos número de casos válidos
-     * @param cantidadInvalidos número de casos inválidos
-     * @return lista combinada de datos de login
-     */
-    public static List<ModeloDatosPrueba> generarDatosLogin(int cantidadValidos, int cantidadInvalidos) {
-        List<ModeloDatosPrueba> datosLogin = new ArrayList<>();
-        
-        // Generar casos válidos
-        for (int i = 1; i <= cantidadValidos; i++) {
-            ModeloDatosPrueba datos = generarDatosLogin(true);
-            datos.setCasoPrueba("LOGIN_VALID_" + String.format("%03d", i));
-            datosLogin.add(datos);
-        }
-        
-        // Generar casos inválidos
-        for (int i = 1; i <= cantidadInvalidos; i++) {
-            ModeloDatosPrueba datos = generarDatosLogin(false);
-            datos.setCasoPrueba("LOGIN_INVALID_" + String.format("%03d", i));
-            datosLogin.add(datos);
-        }
-        
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-            String.format("Generados %d datos de login (%d válidos, %d inválidos)", 
-                         datosLogin.size(), cantidadValidos, cantidadInvalidos)));
-        
-        return datosLogin;
     }
     
     // === MÉTODOS PRIVADOS DE GENERACIÓN ===
@@ -364,9 +315,9 @@ public class GeneradorDatosPrueba {
         LocalDate fechaMaxima = fechaActual.minusYears(18);
         
         long diasDiferencia = fechaMaxima.toEpochDay() - fechaMinima.toEpochDay();
-        long diasAleatorios = random.nextLong() % diasDiferencia;
+        long diasAleatorios = Math.abs(random.nextLong()) % diasDiferencia;
         
-        LocalDate fechaNacimiento = fechaMinima.plusDays(Math.abs(diasAleatorios));
+        LocalDate fechaNacimiento = fechaMinima.plusDays(diasAleatorios);
         
         return fechaNacimiento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
@@ -379,8 +330,6 @@ public class GeneradorDatosPrueba {
     private static String obtenerElementoAleatorio(String[] array) {
         return array[random.nextInt(array.length)];
     }
-    
-    // === MÉTODOS DE GENERACIÓN ESPECÍFICA ===
     
     /**
      * Genera datos específicos para pruebas de seguridad
@@ -418,110 +367,6 @@ public class GeneradorDatosPrueba {
     }
     
     /**
-     * Genera datos con longitudes máximas para pruebas de límites
-     * @return ModeloDatosPrueba con campos de longitud máxima
-     */
-    public static ModeloDatosPrueba generarDatosLongitudMaxima() {
-        String nombreLargo = "A".repeat(50);
-        String apellidoLargo = "B".repeat(50);
-        
-        return ModeloDatosPrueba.builder()
-                .casoPrueba("LONG_MAX_001")
-                .descripcion("Datos con longitud máxima")
-                .nombre(nombreLargo)
-                .apellido(apellidoLargo)
-                .email("longitud.maxima." + System.currentTimeMillis() + "@test.com")
-                .password("Password123!")
-                .confirmacionPassword("Password123!")
-                .esValido(false)
-                .mensajeError("Campo excede longitud máxima")
-                .build();
-    }
-    
-    /**
-     * Genera un batch de datos para pruebas de carga
-     * @param cantidad número de usuarios a generar
-     * @return lista de usuarios para pruebas de carga
-     */
-    public static List<ModeloDatosPrueba> generarDatosCarga(int cantidad) {
-        List<ModeloDatosPrueba> datosCarga = new ArrayList<>();
-        
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-            "Generando " + cantidad + " usuarios para pruebas de carga"));
-        
-        for (int i = 1; i <= cantidad; i++) {
-            String casoPrueba = String.format("LOAD_TEST_%06d", i);
-            ModeloDatosPrueba datos = generarUsuarioValido(casoPrueba);
-            datos.setDescripcionCaso("Usuario para prueba de carga #" + i);
-            datosCarga.add(datos);
-            
-            // Log cada 1000 usuarios generados
-            if (i % 1000 == 0) {
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                    "Generados " + i + " usuarios de " + cantidad));
-            }
-        }
-        
-        logger.info(TipoMensaje.EXITO.formatearMensaje(
-            "Generación de datos de carga completada: " + cantidad + " usuarios"));
-        
-        return datosCarga;
-    }
-    
-    /**
-     * Genera datos combinando diferentes escenarios de error
-     * @return lista de datos con múltiples tipos de errores
-     */
-    public static List<ModeloDatosPrueba> generarEscenariosComplejos() {
-        List<ModeloDatosPrueba> escenarios = new ArrayList<>();
-        
-        // Escenario: Email válido pero password inválido
-        escenarios.add(ModeloDatosPrueba.builder()
-                .casoPrueba("COMPLEX_001")
-                .descripcion("Email válido, password inválido")
-                .nombre("Test")
-                .apellido("User")
-                .email("valid.email@test.com")
-                .password("123")
-                .confirmacionPassword("123")
-                .esValido(false)
-                .mensajeError("Password muy corto")
-                .build());
-        
-        // Escenario: Todo válido excepto términos no aceptados
-        escenarios.add(ModeloDatosPrueba.builder()
-                .casoPrueba("COMPLEX_002")
-                .descripcion("Datos válidos, términos no aceptados")
-                .nombre("Valid")
-                .apellido("User")
-                .email("terms.test@test.com")
-                .password("Password123!")
-                .confirmacionPassword("Password123!")
-                .esValido(false)
-                .mensajeError("Debe aceptar términos y condiciones")
-                .build());
-        
-        // Escenario: Caracteres especiales en email
-        escenarios.add(ModeloDatosPrueba.builder()
-                .casoPrueba("COMPLEX_003")
-                .descripcion("Email con caracteres especiales")
-                .nombre("Special")
-                .apellido("Chars")
-                .email("test+tag@sub-domain.co.uk")
-                .password("Password123!")
-                .confirmacionPassword("Password123!")
-                .esValido(true)
-                .build());
-        
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-            "Generados " + escenarios.size() + " escenarios complejos"));
-        
-        return escenarios;
-    }
-    
-    // === ENUMERACIÓN DE TIPOS DE ERROR ===
-    
-    /**
      * Enumeración que define los tipos de errores para generar datos inválidos
      */
     public enum TipoErrorDatos {
@@ -545,50 +390,5 @@ public class GeneradorDatosPrueba {
         public String getDescripcion() {
             return descripcion;
         }
-    }
-    
-    // === MÉTODOS DE UTILIDAD ===
-    
-    /**
-     * Valida si un conjunto de datos generados es consistente
-     * @param datos datos a validar
-     * @return true si los datos son consistentes con su validez declarada
-     */
-    public static boolean validarConsistenciaDatos(ModeloDatosPrueba datos) {
-        if (datos == null) {
-            return false;
-        }
-        
-        boolean datosCompletos = datos.camposObligatoriosCompletos();
-        boolean emailValido = datos.esEmailValido();
-        boolean passwordsCoinciden = datos.passwordsCoinciden();
-        
-        // Si los datos son marcados como válidos, deberían cumplir criterios básicos
-        if (datos.isEsValido()) {
-            return datosCompletos && emailValido && passwordsCoinciden;
-        }
-        
-        // Si los datos son marcados como inválidos, al menos un criterio debería fallar
-        return !datosCompletos || !emailValido || !passwordsCoinciden;
-    }
-    
-    /**
-     * Genera un resumen estadístico de una lista de datos de prueba
-     * @param listaDeatos lista de datos a analizar
-     * @return string con estadísticas
-     */
-    public static String generarEstadisticas(List<ModeloDatosPrueba> listaDatos) {
-        if (listaDatos == null || listaDatos.isEmpty()) {
-            return "No hay datos para analizar";
-        }
-        
-        long validos = listaDatos.stream().mapToLong(d -> d.isEsValido() ? 1 : 0).sum();
-        long invalidos = listaDatos.size() - validos;
-        
-        return String.format("Total: %d | Válidos: %d | Inválidos: %d | Ratio V/I: %.2f", 
-                           listaDatos.size(), 
-                           validos, 
-                           invalidos, 
-                           invalidos > 0 ? (double) validos / invalidos : validos);
     }
 }

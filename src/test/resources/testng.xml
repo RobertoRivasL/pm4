@@ -7,7 +7,7 @@
     <parameter name="browser" value="chrome"/>
     <parameter name="headless" value="false"/>
     <parameter name="timeout" value="10"/>
-    <parameter name="baseUrl" value="https://example.com"/>
+    <parameter name="baseUrl" value="https://practice.expandtesting.com"/>
     
     <!-- ====== LISTENERS ====== -->
     <listeners>

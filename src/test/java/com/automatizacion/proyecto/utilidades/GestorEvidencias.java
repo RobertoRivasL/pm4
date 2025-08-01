@@ -1,4 +1,4 @@
-package com.automatizacion.proyecto.utilidades;
+package test.java.com.automatizacion.proyecto.utilidades;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TakesScreenshot;

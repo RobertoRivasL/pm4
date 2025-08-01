@@ -1,4 +1,4 @@
-package com.automatizacion.proyecto.enums;
+package main.java.com.automatizacion.proyecto.enums;
 
 /**
  * Enumeración que define los tipos de navegadores soportados

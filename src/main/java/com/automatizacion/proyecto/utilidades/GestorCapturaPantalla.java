@@ -1,7 +1,7 @@
-package com.automatizacion.proyecto.utilidades;
+package  ;
 
-import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
-import com.automatizacion.proyecto.enums.TipoMensaje;
+import main.java.com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
+import main.java.com.automatizacion.proyecto.enums.TipoMensaje;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
