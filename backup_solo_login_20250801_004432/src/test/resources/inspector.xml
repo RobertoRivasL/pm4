@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="InspectorPagina" verbose="1">
+    <test name="InspeccionElementos">
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.InspectorPagina"/>
+        </classes>
+    </test>
+</suite>

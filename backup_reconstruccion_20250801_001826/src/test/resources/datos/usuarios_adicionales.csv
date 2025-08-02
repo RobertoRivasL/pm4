@@ -1,0 +1,6 @@
+caso_prueba,descripcion,nombre,apellido,email,password,confirmar_password,telefono,genero,pais,ciudad,fecha_nacimiento,es_valido,resultado_esperado,mensaje_error
+REG_ADD_001,Usuario adicional 1,Pedro,Martinez,pedro.martinez@test.com,Password123!,Password123!,+56912345678,Masculino,Chile,Santiago,01/01/1990,true,Registro exitoso,
+REG_ADD_002,Usuario adicional 2,Laura,Silva,laura.silva@test.com,SecurePass456#,SecurePass456#,+56987654321,Femenino,Chile,Valparaíso,15/05/1985,true,Registro exitoso,
+REG_ADD_003,Usuario adicional 3,Miguel,Torres,miguel.torres@test.com,StrongPwd789$,StrongPwd789$,+56976543210,Masculino,Chile,Concepción,20/12/1988,true,Registro exitoso,
+REG_ADD_004,Error - Email duplicado,Roberto,Rivas,roberto.rivas.test@email.com,Password123!,Password123!,+56912345678,,,,,false,Error de registro,Email ya existe
+REG_ADD_005,Error - Contraseña muy simple,Usuario,Prueba,usuario.prueba@test.com,123456,123456,+56912345678,,,,,false,Error de validación,Contraseña muy simple

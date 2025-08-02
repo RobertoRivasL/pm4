@@ -1,439 +1,207 @@
-package test.java.com.automatizacion.proyecto.paginas;
+package com.automatizacion.proyecto.paginas;
 
-import test.java.com.automatizacion.proyecto.datos.datos.ModeloDatosPrueba;
-import main.java.com.automatizacion.proyecto.enums.TipoMensaje;
-import com.automatizacion.proyecto.paginas.interfaces.IPaginaLogin;
+import com.automatizacion.proyecto.utilidades.EsperaExplicita;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Página de inicio de sesión implementando el patrón Page Object Model.
- * Encapsula todos los elementos y acciones relacionadas con el login.
- * 
- * Implementa la interfaz IPaginaLogin siguiendo el principio de
- * Inversión de Dependencias del SOLID.
- * 
+ * Página de Login - LOCALIZADORES BASADOS EN IMÁGENES REALES
  * @author Roberto Rivas Lopez
- * @version 1.0
  */
-public class PaginaLogin extends PaginaBase implements IPaginaLogin {
-
-    private static final Logger logger = LoggerFactory.getLogger(PaginaLogin.class);
-
-    private PaginaLogin paginaLogin;
-    private PaginaRegistro paginaRegistro;
-
-    // === ELEMENTOS DE LA PÁGINA ===
-
-    @FindBy(id = "email")
-    private WebElement campoEmail;
-
-    @FindBy(id = "password")
-    private WebElement campoPassword;
-
-    @FindBy(id = "loginButton")
-    private WebElement botonLogin;
-
-    @FindBy(id = "forgotPasswordLink")
-    private WebElement enlaceOlvidoPassword;
-
-    @FindBy(id = "registerLink")
-    private WebElement enlaceRegistro;
-
-    @FindBy(className = "login-form")
-    private WebElement formularioLogin;
-
-    @FindBy(className = "error-message")
-    private WebElement mensajeError;
-
-    @FindBy(className = "success-message")
-    private WebElement mensajeExito;
-
-    @FindBy(id = "rememberMe")
-    private WebElement checkboxRecordarme;
-
-    @FindBy(className = "loading-spinner")
-    private WebElement spinnerCarga;
-
-    // Elementos adicionales para validaciones
-    @FindBy(xpath = "//div[@class='field-error'][contains(.,'email')]")
-    private WebElement errorEmail;
-
-    @FindBy(xpath = "//div[@class='field-error'][contains(.,'password')]")
-    private WebElement errorPassword;
-
-    @FindBy(id = "loginTitle")
-    private WebElement tituloLogin;
-
-    @FindBy(className = "success-message")
-    private WebElement mensajeBienvenida;
-
-    /**
-     * Constructor que inicializa la página con el driver
-     * 
-     * @param driver instancia de WebDriver
-     */
-    public PaginaLogin(WebDriver driver) {
-        super(driver);
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("PaginaLogin inicializada"));
+public class PaginaLogin extends PaginaBase {
+    
+    // *** LOCALIZADORES BASADOS EN LAS IMÁGENES REALES ***
+    // Usando placeholders ya que no se ven IDs en la interfaz
+    private final By campoUsuario = By.xpath("//input[@placeholder='Username']");
+    private final By campoPassword = By.xpath("//input[@placeholder='Password']");
+    private final By botonLogin = By.xpath("//button[contains(text(),'Login')]");
+    
+    // Elementos adicionales para verificación
+    private final By mensajeFlash = By.id("flash");
+    private final By contenedorLogin = By.xpath("//div[contains(text(),'Test Login page')]");
+    
+    public PaginaLogin(WebDriver driver, EsperaExplicita espera) {
+        super(driver, espera);
     }
-
-    // === IMPLEMENTACIÓN DE INTERFAZ IPaginaLogin ===
-
+    
+    public void ingresarUsuario(String usuario) {
+        System.out.println("🔤 Ingresando usuario: " + usuario);
+        try {
+            WebElement campo = espera.esperarElementoVisible(campoUsuario);
+            campo.clear();
+            campo.sendKeys(usuario);
+            System.out.println("   ✅ Usuario ingresado correctamente");
+        } catch (Exception e) {
+            System.out.println("   ❌ Error ingresando usuario: " + e.getMessage());
+            obtenerGestorCaptura().capturarPantalla(driver, "error_usuario");
+            throw e;
+        }
+    }
+    
+    public void ingresarPassword(String password) {
+        System.out.println("🔐 Ingresando password: " + "*".repeat(password.length()));
+        try {
+            WebElement campo = espera.esperarElementoVisible(campoPassword);
+            campo.clear();
+            campo.sendKeys(password);
+            System.out.println("   ✅ Password ingresado correctamente");
+        } catch (Exception e) {
+            System.out.println("   ❌ Error ingresando password: " + e.getMessage());
+            obtenerGestorCaptura().capturarPantalla(driver, "error_password");
+            throw e;
+        }
+    }
+    
+    public void hacerClicLogin() {
+        System.out.println("🖱️ Haciendo clic en botón Login");
+        try {
+            WebElement boton = espera.esperarElementoClickeable(botonLogin);
+            System.out.println("   📍 Botón encontrado: " + boton.getText());
+            boton.click();
+            System.out.println("   ✅ Clic realizado correctamente");
+            
+            // Esperar respuesta
+            Thread.sleep(3000);
+            
+        } catch (Exception e) {
+            System.out.println("   ❌ Error haciendo clic: " + e.getMessage());
+            obtenerGestorCaptura().capturarPantalla(driver, "error_click_login");
+            throw e;
+        }
+    }
+    
+    public void realizarLogin(String usuario, String password) {
+        System.out.println("\n🚀 === INICIANDO LOGIN COMPLETO ===");
+        System.out.println("📄 URL inicial: " + driver.getCurrentUrl());
+        System.out.println("📋 Título inicial: " + driver.getTitle());
+        
+        // Capturar pantalla inicial
+        obtenerGestorCaptura().capturarPantalla(driver, "login_inicio");
+        
+        try {
+            ingresarUsuario(usuario);
+            ingresarPassword(password);
+            hacerClicLogin();
+            
+            System.out.println("📄 URL después del login: " + driver.getCurrentUrl());
+            System.out.println("📋 Título después del login: " + driver.getTitle());
+            
+            // Capturar pantalla final
+            obtenerGestorCaptura().capturarPantalla(driver, "login_resultado");
+            
+            System.out.println("✅ === LOGIN PROCESO COMPLETADO ===\n");
+            
+        } catch (Exception e) {
+            System.out.println("❌ === ERROR EN LOGIN ===");
+            System.out.println("Error: " + e.getMessage());
+            obtenerGestorCaptura().capturarPantalla(driver, "login_error_general");
+            throw e;
+        }
+    }
+    
+    public String obtenerMensajeFlash() {
+        try {
+            if (esElementoVisible(mensajeFlash)) {
+                String mensaje = obtenerTextoElemento(mensajeFlash);
+                System.out.println("💬 Mensaje flash: " + mensaje);
+                return mensaje;
+            }
+        } catch (Exception e) {
+            System.out.println("❌ No se encontró mensaje flash: " + e.getMessage());
+        }
+        return "";
+    }
+    
     @Override
     public boolean esPaginaVisible() {
         try {
-            return esperarElementoVisible(formularioLogin, 10) != null &&
-                    esperarElementoVisible(campoEmail, 5) != null &&
-                    esperarElementoVisible(campoPassword, 5) != null &&
-                    esperarElementoVisible(botonLogin, 5) != null;
+            System.out.println("🔍 === VERIFICANDO VISIBILIDAD DE PÁGINA ===");
+            System.out.println("   📄 URL: " + driver.getCurrentUrl());
+            System.out.println("   📋 Título: " + driver.getTitle());
+            
+            // Verificar elementos uno por uno con logging detallado
+            System.out.println("   🔍 Buscando campo usuario...");
+            boolean usuarioVisible = esElementoVisible(campoUsuario);
+            System.out.println("   👤 Campo usuario visible: " + usuarioVisible);
+            
+            System.out.println("   🔍 Buscando campo password...");
+            boolean passwordVisible = esElementoVisible(campoPassword);
+            System.out.println("   🔐 Campo password visible: " + passwordVisible);
+            
+            System.out.println("   🔍 Buscando botón login...");
+            boolean botonVisible = esElementoVisible(botonLogin);
+            System.out.println("   🔘 Botón login visible: " + botonVisible);
+            
+            boolean paginaVisible = usuarioVisible && passwordVisible && botonVisible;
+            System.out.println("   ✅ PÁGINA VISIBLE: " + paginaVisible);
+            
+            if (!paginaVisible) {
+                System.out.println("   📸 Capturando pantalla para debug...");
+                obtenerGestorCaptura().capturarPantalla(driver, "pagina_no_visible_debug");
+            }
+            
+            System.out.println("=== FIN VERIFICACIÓN ===\n");
+            return paginaVisible;
+            
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error verificando visibilidad de página login: " + e.getMessage()));
+            System.out.println("❌ Error verificando página: " + e.getMessage());
+            obtenerGestorCaptura().capturarPantalla(driver, "error_verificacion");
             return false;
         }
     }
-
-    @Override
-    public void navegarAtras() {
-        driver.navigate().back();
-    }
-
-    @Override
-    public boolean esperarCargaPagina(int segundos) {
-        try {
-            return esperarElementoVisible(formularioLogin, segundos) != null;
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error esperando carga de la página de login: " + e.getMessage()));
-            return false;
-        }
-    }
-
-    @Override
-    public void ingresarCredenciales(String email, String password) {
-        try {
-            logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(
-                    "Ingresando credenciales - Email: " + enmascararTexto(email)));
-
-            ingresarEmail(email);
-            ingresarPassword(password);
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error al ingresar credenciales: " + e.getMessage()));
-            throw new RuntimeException("No se pudieron ingresar las credenciales", e);
-        }
-    }
-
-    @Override
-    public void ingresarEmail(String email) {
-        try {
-            esperarElementoClicable(campoEmail, 10);
-            limpiarYEscribir(campoEmail, email);
-
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                    "Email ingresado: " + enmascararTexto(email)));
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error al ingresar email: " + e.getMessage()));
-            throw new RuntimeException("No se pudo ingresar el email", e);
-        }
-    }
-
-    @Override
-    public void ingresarPassword(String password) {
-        try {
-            esperarElementoClicable(campoPassword, 10);
-            limpiarYEscribir(campoPassword, password);
-
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Password ingresado"));
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error al ingresar password: " + e.getMessage()));
-            throw new RuntimeException("No se pudo ingresar el password", e);
-        }
-    }
-
-    @Override
-    public void clickBotonLogin() {
-        try {
-            esperarElementoClicable(botonLogin, 10);
-            hacerClick(botonLogin);
-
-            logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje("Click en botón Login ejecutado"));
-
-            // Esperar que desaparezca el spinner si está presente
-            if (esElementoVisible(spinnerCarga)) {
-                esperarElementoInvisible(spinnerCarga, 15);
-            }
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error al hacer click en botón login: " + e.getMessage()));
-            throw new RuntimeException("No se pudo hacer click en el botón login", e);
-        }
-    }
-
-    @Override
-    public boolean iniciarSesion(ModeloDatosPrueba datos) {
-        try {
-            if (!datos.camposLoginCompletos()) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                        "Datos de login incompletos"));
-                return false;
-            }
-
-            logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(
-                    "Iniciando sesión con: " + datos.generarResumen()));
-
-            ingresarCredenciales(datos.getEmail(), datos.getPassword());
-            clickBotonLogin();
-
-            // Verificar resultado
-            if (datos.isEsValido()) {
-                return verificarLoginExitoso();
-            } else {
-                return verificarLoginFallido();
-            }
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error en proceso de inicio de sesión: " + e.getMessage()));
-            return false;
-        }
-    }
-
-    @Override
-    public boolean verificarLoginExitoso() {
-        try {
-            // Ajusta el selector según tu página real
-            return esElementoVisible(mensajeBienvenida) || fueRedirigidoADashboard();
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error verificando login exitoso: " + e.getMessage()));
-            return false;
-        }
-    }
-
-    @Override
-    public boolean verificarLoginFallido() {
-        try {
-            return esElementoVisible(mensajeError) ||
-                    esElementoVisible(errorEmail) ||
-                    esElementoVisible(errorPassword);
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error verificando login fallido: " + e.getMessage()));
-            return false;
-        }
-    }
-
-    @Override
-    public String obtenerMensajeError() {
-        try {
-            if (esElementoVisible(mensajeError)) {
-                return obtenerTexto(mensajeError);
-            }
-
-            if (esElementoVisible(errorEmail)) {
-                return obtenerTexto(errorEmail);
-            }
-
-            if (esElementoVisible(errorPassword)) {
-                return obtenerTexto(errorPassword);
-            }
-
-            return "";
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error obteniendo mensaje de error: " + e.getMessage()));
-            return "";
-        }
-    }
-
-    // === MÉTODOS ADICIONALES ESPECÍFICOS DE ESTA PÁGINA ===
-
-    /**
-     * Activa o desactiva el checkbox "Recordarme"
-     * 
-     * @param activar true para activar, false para desactivar
-     */
-    public void establecerRecordarme(boolean activar) {
-        try {
-            if (esElementoVisible(checkboxRecordarme)) {
-                boolean estaSeleccionado = checkboxRecordarme.isSelected();
-
-                if (activar && !estaSeleccionado) {
-                    hacerClick(checkboxRecordarme);
-                    logger.debug(TipoMensaje.DEBUG.formatearMensaje("Checkbox 'Recordarme' activado"));
-                } else if (!activar && estaSeleccionado) {
-                    hacerClick(checkboxRecordarme);
-                    logger.debug(TipoMensaje.DEBUG.formatearMensaje("Checkbox 'Recordarme' desactivado"));
-                }
-            }
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error estableciendo checkbox recordarme: " + e.getMessage()));
-        }
-    }
-
-    /**
-     * Hace click en el enlace "Olvidé mi contraseña"
-     */
-    public void clickOlvidoPassword() {
-        try {
-            esperarElementoClicable(enlaceOlvidoPassword, 10);
-            hacerClick(enlaceOlvidoPassword);
-
-            logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(
-                    "Click en enlace 'Olvidé mi contraseña'"));
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error al hacer click en olvido password: " + e.getMessage()));
-            throw new RuntimeException("No se pudo hacer click en olvido password", e);
-        }
-    }
-
-    /**
-     * Navega a la página de registro
-     */
-    public void irARegistro() {
-        try {
-            esperarElementoClicable(enlaceRegistro, 10);
-            hacerClick(enlaceRegistro);
-
-            logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(
-                    "Navegando a página de registro"));
-
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error navegando a registro: " + e.getMessage()));
-            throw new RuntimeException("No se pudo navegar a registro", e);
-        }
-    }
-
-    /**
-     * Verifica si el formulario está en estado de carga
-     * 
-     * @return true si está cargando
-     */
-    public boolean estaEnCarga() {
-        return esElementoVisible(spinnerCarga);
-    }
-
-    /**
-     * Obtiene el título de la página de login
-     * 
-     * @return texto del título
-     */
+    
     public String obtenerTitulo() {
-        try {
-            if (esElementoVisible(tituloLogin)) {
-                return obtenerTexto(tituloLogin);
-            }
-            return driver.getTitle();
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error obteniendo título: " + e.getMessage()));
-            return "";
-        }
+        return driver.getTitle();
     }
-
-    /**
-     * Verifica si todos los elementos principales están visibles
-     * 
-     * @return true si todos los elementos están presentes
-     */
-    @Override
-    public void validarElementosPagina() {
-        try {
-            boolean todosPresentes = esElementoVisible(campoEmail) &&
-                    esElementoVisible(campoPassword) &&
-                    esElementoVisible(botonLogin) &&
-                    esElementoVisible(formularioLogin);
-
-            if (todosPresentes) {
-                logger.info(TipoMensaje.VALIDACION.formatearMensaje(
-                        "Todos los elementos de la página login están presentes"));
-            } else {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                        "Faltan elementos en la página login"));
-            }
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error validando elementos de página: " + e.getMessage()));
-        }
+    
+    public boolean validarElementosPagina() {
+        return esPaginaVisible();
     }
-
-    /**
-     * Limpia todos los campos del formulario
-     */
+    
     public void limpiarFormulario() {
         try {
-            if (esElementoVisible(campoEmail)) {
-                campoEmail.clear();
+            if (esElementoVisible(campoUsuario)) {
+                driver.findElement(campoUsuario).clear();
             }
             if (esElementoVisible(campoPassword)) {
-                campoPassword.clear();
+                driver.findElement(campoPassword).clear();
             }
-
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Formulario de login limpiado"));
-
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                    "Error limpiando formulario: " + e.getMessage()));
+            System.out.println("Error limpiando formulario: " + e.getMessage());
         }
     }
-
-    /**
-     * Verifica si hay errores de validación en los campos
-     * 
-     * @return true si hay errores visibles
-     */
-    public boolean hayErroresValidacion() {
-        return esElementoVisible(errorEmail) ||
-                esElementoVisible(errorPassword) ||
-                esElementoVisible(mensajeError);
-    }
-
-    @Override
-    public void actualizarPagina() {
-        // Implementa la lógica necesaria aquí
-    }
-
-    /**
-     * Enmascara texto sensible para logs
-     * 
-     * @param texto texto a enmascarar
-     * @return texto enmascarado
-     */
-    private String enmascararTexto(String texto) {
-        if (texto == null || texto.length() < 3) {
-            return "***";
+    
+    // Método adicional para debug
+    public void debugElementos() {
+        System.out.println("\n🐛 === DEBUG DE ELEMENTOS ===");
+        
+        try {
+            // Buscar todos los inputs
+            java.util.List<WebElement> inputs = driver.findElements(By.tagName("input"));
+            System.out.println("📋 Total inputs encontrados: " + inputs.size());
+            
+            for (int i = 0; i < inputs.size(); i++) {
+                WebElement input = inputs.get(i);
+                String placeholder = input.getAttribute("placeholder");
+                String type = input.getAttribute("type");
+                System.out.println("   Input " + (i+1) + ": placeholder='" + placeholder + "', type='" + type + "'");
+            }
+            
+            // Buscar todos los botones
+            java.util.List<WebElement> buttons = driver.findElements(By.tagName("button"));
+            System.out.println("🔘 Total botones encontrados: " + buttons.size());
+            
+            for (int i = 0; i < buttons.size(); i++) {
+                WebElement button = buttons.get(i);
+                String texto = button.getText();
+                System.out.println("   Botón " + (i+1) + ": texto='" + texto + "'");
+            }
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error en debug: " + e.getMessage());
         }
-
-        if (texto.contains("@")) {
-            // Es un email
-            int posArroba = texto.indexOf('@');
-            return texto.substring(0, 2) + "***@" + texto.substring(posArroba + 1);
-        }
-
-        // Texto genérico
-        return texto.substring(0, 2) + "***";
-    }
-
-    public boolean fueRedirigidoADashboard() {
-        // Ajusta el selector según la URL o algún elemento único del dashboard/área
-        // segura
-        return driver.getCurrentUrl().contains("/secure");
+        
+        System.out.println("=== FIN DEBUG ===\n");
     }
 }

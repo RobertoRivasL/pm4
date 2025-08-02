@@ -1,0 +1,16 @@
+caso_prueba,descripcion,email,password,es_valido,resultado_esperado,mensaje_error
+LOGIN_001,"Login exitoso con credenciales válidas",usuario.valido@test.com,Password123!,true,"Login exitoso y redirección",
+LOGIN_002,"Login con email válido alternativo",admin@test.com,AdminPass456#,true,"Login exitoso",
+LOGIN_003,"Login con usuario de prueba",qa.tester@test.com,QATest789$,true,"Acceso permitido",
+LOGIN_004,"Usuario con caracteres especiales",test.special@tést.com,Spëcïal123!,true,"Login exitoso",
+LOGIN_005,"Email con formato complejo","test+tag@sub-domain.co.uk",TestPass123#,true,"Login exitoso",
+LOGIN_006,"Credenciales inválidas - email incorrecto",usuario.incorrecto@test.com,Password123!,false,"Login rechazado","Email no encontrado"
+LOGIN_007,"Credenciales inválidas - password incorrecto",usuario.valido@test.com,PasswordIncorrecto,false,"Login rechazado","Contraseña incorrecta"
+LOGIN_008,"Email vacío",,Password123!,false,"Error de validación","Email es obligatorio"
+LOGIN_009,"Password vacío",usuario.valido@test.com,,false,"Error de validación","Contraseña es obligatoria"
+LOGIN_010,"Ambos campos vacíos",,"",false,"Error de validación","Campos obligatorios vacíos"
+LOGIN_011,"Email con formato inválido",email-sin-arroba.com,Password123!,false,"Error de validación","Formato de email inválido"
+LOGIN_012,"Email con espacios","usuario con espacios@test.com",Password123!,false,"Error de validación","Email contiene caracteres inválidos"
+LOGIN_013,"Password muy corta",usuario.valido@test.com,123,false,"Error de validación","Contraseña muy corta"
+LOGIN_014,"Inyección SQL en email","admin'OR'1'='1",Password123!,false,"Error de seguridad","Caracteres no permitidos"
+LOGIN_015,"Intento de XSS en password",usuario.test@test.com,"<script>alert('xss')</script>",false,"Error de seguridad","Caracteres no permitidos"

@@ -1,0 +1,49 @@
+# ====================================================================
+# ESTRUCTURA PARA ARCHIVO EXCEL: usuarios_prueba.xlsx
+# Instrucciones para crear el archivo Excel manualmente
+# ====================================================================
+
+## HOJA 1: Datos_Registro_Validos
+Encabezados: caso_prueba | descripcion | nombre | apellido | email | password | confirmar_password | telefono | genero | pais | ciudad | fecha_nacimiento | es_valido | resultado_esperado
+
+Datos:
+REG_001 | Usuario completo válido | Roberto | Rivas | roberto.test@email.com | Password123! | Password123! | +56912345678 | Masculino | Chile | Santiago | 01/01/1990 | TRUE | Registro exitoso
+REG_002 | Usuario mínimo válido | Ana | García | ana.garcia@test.com | SecurePass456# | SecurePass456# |  | Femenino | Chile | Valparaíso | 15/05/1985 | TRUE | Registro exitoso
+REG_003 | Usuario con caracteres especiales | José María | Pérez-González | jose.maria@test.com | StrongPwd789$ | StrongPwd789$ | +56987654321 | Masculino | España | Madrid | 20/12/1975 | TRUE | Registro exitoso
+REG_004 | Usuario internacional | John | Smith | john.smith@international.com | MySecure2024! | MySecure2024! | +1234567890 | Masculino | USA | New York | 10/03/1988 | TRUE | Registro exitoso
+REG_005 | Usuario con email especial | Test User | Apellido-Compuesto | test+tag@sub-domain.co.uk | TestPass123# | TestPass123# | +44123456789 | Otro | Reino Unido | Londres | 25/07/1992 | TRUE | Registro exitoso
+
+## HOJA 2: Datos_Registro_Invalidos
+Encabezados: caso_prueba | descripcion | nombre | apellido | email | password | confirmar_password | telefono | es_valido | mensaje_error
+
+Datos:
+REG_INV_001 | Nombre vacío |  | García | vacio.nombre@test.com | Password123! | Password123! | +56912345678 | FALSE | El nombre es obligatorio
+REG_INV_002 | Apellido vacío | Roberto |  | vacio.apellido@test.com | Password123! | Password123! | +56912345678 | FALSE | El apellido es obligatorio
+REG_INV_003 | Email inválido | Roberto | Rivas | email-sin-arroba.com | Password123! | Password123! | +56912345678 | FALSE | Formato de email inválido
+REG_INV_004 | Contraseñas no coinciden | Roberto | Rivas | no.coinciden@test.com | Password123! | DiferentePass456! | +56912345678 | FALSE | Las contraseñas no coinciden
+REG_INV_005 | Contraseña débil | Roberto | Rivas | password.debil@test.com | 123 | 123 | +56912345678 | FALSE | La contraseña no cumple los requisitos
+REG_INV_006 | Todos los campos vacíos |  |  |  |  |  |  | FALSE | Campos obligatorios vacíos
+REG_INV_007 | Email con espacios | Roberto | Rivas | email con espacios@test.com | Password123! | Password123! | +56912345678 | FALSE | Email contiene caracteres inválidos
+REG_INV_008 | Inyección XSS en nombre | <script>alert('XSS')</script> | Rivas | xss.test@test.com | Password123! | Password123! | +56912345678 | FALSE | Caracteres no permitidos
+REG_INV_009 | Longitud excesiva en nombre | AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | Apellido | longitud.maxima@test.com | Password123! | Password123! | +56912345678 | FALSE | Campo excede longitud máxima
+REG_INV_010 | Teléfono inválido | Roberto | Rivas | telefono.invalido@test.com | Password123! | Password123! | telefono-invalido | FALSE | Formato de teléfono inválido
+
+## HOJA 3: Datos_Login_Mixtos
+Encabezados: caso_prueba | descripcion | email | password | es_valido | resultado_esperado | mensaje_error
+
+Datos:
+LOGIN_XLSX_001 | Login válido desde Excel | usuario.excel@test.com | ExcelPass123! | TRUE | Login exitoso | 
+LOGIN_XLSX_002 | Login inválido desde Excel | usuario.inexistente@test.com | PasswordIncorrecto | FALSE | Login rechazado | Usuario no encontrado
+LOGIN_XLSX_003 | Email válido password inválido | usuario.valido@test.com | PasswordMalo | FALSE | Login rechazado | Contraseña incorrecta
+LOGIN_XLSX_004 | Credenciales de administrador | admin.excel@test.com | AdminExcel456# | TRUE | Login exitoso | 
+LOGIN_XLSX_005 | Caso especial de caracteres | test.special@tést.com | Spëcïal123! | TRUE | Login exitoso | 
+
+## INSTRUCCIONES PARA CREAR EL ARCHIVO EXCEL:
+1. Abrir Excel o LibreOffice Calc
+2. Crear un nuevo libro con 3 hojas
+3. Nombrar las hojas: "Datos_Registro_Validos", "Datos_Registro_Invalidos", "Datos_Login_Mixtos"
+4. Copiar los encabezados y datos en cada hoja correspondiente
+5. Asegurarse de que los valores TRUE/FALSE sean booleanos
+6. Guardar como "usuarios_prueba.xlsx" en la carpeta de datos
+7. Verificar que las fechas estén en formato dd/MM/yyyy
+

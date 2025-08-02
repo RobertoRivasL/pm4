@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SuiteAutomatizacionFuncional" verbose="1">
+    <test name="PruebasLogin">
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin"/>
+        </classes>
+    </test>
+</suite>

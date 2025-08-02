@@ -1,0 +1,21 @@
+usuario,contrasena,descripcion,esperado
+tomsmith,SuperSecretPassword!,Usuario válido por defecto,true
+roberto.rivas@test.com,Password123!,Usuario Roberto - Proyecto,true
+admin@automation.com,AdminPass456#,Usuario administrador,true
+qa.tester@test.com,QATest789$,Usuario de pruebas QA,true
+test@email.com,TestPass123!,Usuario de prueba genérico,true
+usuario.valido@test.com,SecurePass789!,Usuario válido adicional,true
+test.special@tëst.com,Spëcïal123!,Usuario con caracteres especiales,true
+usuario.invalido@test.com,PasswordIncorrecto,Usuario con password incorrecto,false
+usuario.inexistente@fake.com,Password123!,Usuario que no existe,false
+,Password123!,Email vacío,false
+roberto.rivas@test.com,,Password vacío,false
+,,Ambos campos vacíos,false
+email-sin-arroba.com,Password123!,Email con formato inválido,false
+usuario con espacios@test.com,Password123!,Email con espacios,false
+test@test.com,123,Password muy corta,false
+admin'; DROP TABLE users; --,Password123!,Intento de SQL Injection,false
+usuario@test.com,<script>alert('xss')</script>,Intento de XSS en password,false
+very.long.email@very-long-domain.com,VeryLongPassword123!,Credenciales largas,false
+usuario@test,Password123!,Email sin dominio completo,false
+@test.com,Password123!,Email sin parte local,false
