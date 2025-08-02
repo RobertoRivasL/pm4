@@ -1,0 +1,34 @@
+tipo_validacion,campo,valor,es_valido,mensaje_esperado,descripcion
+EMAIL,email,test@email.com,true,,Email válido básico
+EMAIL,email,user.name@domain.co.uk,true,,Email válido con subdominio
+EMAIL,email,test.email+tag@example.com,true,,Email válido con plus
+EMAIL,email,email@subdomain.example.com,true,,Email válido con subdominio
+EMAIL,email,firstname-lastname@example.com,true,,Email válido con guión
+EMAIL,email,plainaddress,false,Ingrese un email válido,Email sin @
+EMAIL,email,@missingusername.com,false,Ingrese un email válido,Email sin usuario
+EMAIL,email,username@.com,false,Ingrese un email válido,Email sin dominio
+EMAIL,email,username@com,false,Ingrese un email válido,Email sin punto en dominio
+EMAIL,email,username..double.dot@example.com,false,Ingrese un email válido,Email con doble punto
+PASSWORD,password,Password123!,true,,Password válida completa
+PASSWORD,password,MySecure2024!,true,,Password válida alternativa
+PASSWORD,password,Test@Pass123,true,,Password válida con @
+PASSWORD,password,Automation$2024,true,,Password válida con $
+PASSWORD,password,QA#Testing456,true,,Password válida con #
+PASSWORD,password,123,false,Password muy corta,Password de 3 caracteres
+PASSWORD,password,password,false,Password debe contener mayúsculas,Solo minúsculas
+PASSWORD,password,PASSWORD,false,Password debe contener minúsculas,Solo mayúsculas
+PASSWORD,password,Password,false,Password debe contener números,Sin números
+PASSWORD,password,Password123,false,Password debe contener símbolos,Sin símbolos especiales
+TELEFONO,telefono,+56912345678,true,,Teléfono chileno válido
+TELEFONO,telefono,+34123456789,true,,Teléfono español válido
+TELEFONO,telefono,+1234567890,true,,Teléfono internacional válido
+TELEFONO,telefono,912345678,true,,Teléfono sin código país
+TELEFONO,telefono,123,false,Formato de teléfono inválido,Teléfono muy corto
+TELEFONO,telefono,abcdefghij,false,Formato de teléfono inválido,Teléfono con letras
+NOMBRE,nombre,Juan,true,,Nombre válido simple
+NOMBRE,nombre,María José,true,,Nombre válido compuesto
+NOMBRE,nombre,José María,true,,Nombre válido con espacio
+NOMBRE,nombre,Ana-Sofía,true,,Nombre válido con guión
+NOMBRE,nombre,123,false,Nombre debe contener solo letras,Nombre con números
+NOMBRE,nombre,Juan123,false,Nombre debe contener solo letras,Nombre mixto
+NOMBRE,nombre,,false,El nombre es obligatorio,Nombre vacío

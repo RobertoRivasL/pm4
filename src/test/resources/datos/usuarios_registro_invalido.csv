@@ -1,0 +1,21 @@
+caso_prueba,nombre,apellido,email,password,confirmar_password,telefono,genero,aceptar_terminos,mensaje_esperado,descripcion
+REG_INV_001,,López,email.sin.nombre@test.com,Password123!,Password123!,,Masculino,true,El nombre es obligatorio,Nombre vacío
+REG_INV_002,Ana,,ana.sin.apellido@test.com,Password123!,Password123!,,Femenino,true,El apellido es obligatorio,Apellido vacío
+REG_INV_003,Pedro,Silva,,Password123!,Password123!,,Masculino,true,El email es obligatorio,Email vacío
+REG_INV_004,Laura,Morales,laura.morales@test.com,,Password123!,,Femenino,true,La contraseña es obligatoria,Password vacío
+REG_INV_005,Diego,Fernández,diego.fernandez@test.com,Password123!,,,Masculino,true,Confirme su contraseña,Confirmar password vacío
+REG_INV_006,Sofia,Mendoza,email.invalido,Password123!,Password123!,,Femenino,true,Ingrese un email válido,Email formato inválido
+REG_INV_007,Roberto,Castro,test@,Password123!,Password123!,,Masculino,true,Ingrese un email válido,Email incompleto
+REG_INV_008,Valentina,Torres,@test.com,Password123!,Password123!,,Femenino,true,Ingrese un email válido,Email sin usuario
+REG_INV_009,Mateo,Ruiz,test..test@email.com,Password123!,Password123!,,Masculino,true,Ingrese un email válido,Email con doble punto
+REG_INV_010,Carmen,Jiménez,carmen.jimenez@test.com,123,123,,Femenino,true,La contraseña debe tener al menos 8 caracteres,Password muy corta
+REG_INV_011,Manuel,Díaz,manuel.diaz@test.com,password,password,,Masculino,true,La contraseña debe contener mayúsculas,Password sin mayúsculas
+REG_INV_012,Isabel,Moreno,isabel.moreno@test.com,PASSWORD,PASSWORD,,Femenino,true,La contraseña debe contener minúsculas,Password sin minúsculas
+REG_INV_013,Antonio,Álvarez,antonio.alvarez@test.com,Password,Password,,Masculino,true,La contraseña debe contener números,Password sin números
+REG_INV_014,Rosa,Muñoz,rosa.munoz@test.com,Password123,Password123,,Femenino,true,La contraseña debe contener símbolos,Password sin símbolos
+REG_INV_015,Francisco,Romero,francisco.romero@test.com,Password123!,Password456!,,Masculino,true,Las contraseñas no coinciden,Passwords no coinciden
+REG_INV_016,Teresa,Alonso,teresa.alonso@test.com,Password123!,Password123!,,Femenino,false,Debe aceptar los términos y condiciones,Términos no aceptados
+REG_INV_017,José,Gutiérrez,usuario.existente@test.com,Password123!,Password123!,,Masculino,true,El usuario ya existe,Email ya registrado
+REG_INV_018,Mercedes,Navarro,mercedes.navarro@test.com,abc,def,,Femenino,true,Las contraseñas deben coincidir y cumplir requisitos,Passwords diferentes e inválidas
+REG_INV_019,,,,,,,,false,Complete todos los campos obligatorios,Todos los campos vacíos
+REG_INV_020,Test,User,test@user@email.com,Password123!,Password123!,,Masculino,true,Ingrese un email válido,Email con múltiples @

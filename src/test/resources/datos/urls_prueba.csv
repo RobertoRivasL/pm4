@@ -1,0 +1,11 @@
+nombre,url,descripcion,estado_esperado
+HOME,https://example.com,Página principal,200
+LOGIN,https://example.com/login,Página de login,200
+REGISTRO,https://example.com/register,Página de registro,200
+DASHBOARD,https://example.com/dashboard,Dashboard usuario,200
+PERFIL,https://example.com/profile,Perfil de usuario,200
+CONFIGURACION,https://example.com/settings,Configuración,200
+LOGOUT,https://example.com/logout,Cerrar sesión,302
+API_LOGIN,https://example.com/api/login,API de login,200
+API_REGISTER,https://example.com/api/register,API de registro,200
+PAGINA_404,https://example.com/no-existe,Página no encontrada,404

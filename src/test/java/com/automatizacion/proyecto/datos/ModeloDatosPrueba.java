@@ -1,121 +1,59 @@
 package com.automatizacion.proyecto.datos;
 
 /**
- * Modelo de datos para encapsular información de pruebas.
- * Representa los datos necesarios para ejecutar casos de prueba
- * de login y registro.
+ * Modelo de datos que encapsula toda la información necesaria para las pruebas.
+ * Implementa el patrón Builder para facilitar la creación de objetos inmutables.
  * 
- * Implementa el patrón Data Transfer Object (DTO) y sigue
- * el principio de Encapsulación.
+ * Principios SOLID aplicados:
+ * - SRP: Responsabilidad única de encapsular datos de prueba
+ * - OCP: Abierto para extensión, cerrado para modificación
+ * - Encapsulación: Datos privados con getters públicos
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
  */
 public class ModeloDatosPrueba {
     
-    // === DATOS BÁSICOS ===
-    private String casoPrueba;
-    private String descripcion;
-    private boolean esValido;
-    private String resultadoEsperado;
+    // ===== CAMPOS PRINCIPALES =====
+    private final String casoPrueba;
+    private final String nombre;
+    private final String apellido;
+    private final String email;
+    private final String password;
+    private final String confirmarPassword;
+    private final String telefono;
+    private final String fechaNacimiento;
+    private final String genero;
+    private final boolean aceptarTerminos;
+    private final boolean suscribirseNewsletter;
+    private final boolean recordarme;
+    private final boolean esValido;
+    private final String mensajeError;
+    private final String descripcion;
     
-    // === DATOS DE LOGIN ===
-    private String email;
-    private String usuario;
-    private String password;
-    private String confirmarPassword;
-    
-    // === DATOS DE REGISTRO ===
-    private String nombre;
-    private String apellido;
-    private String telefono;
-    private String fechaNacimiento;
-    private String genero;
-    private String pais;
-    private String ciudad;
-    
-    // === CONFIGURACIÓN DE PRUEBA ===
-    private boolean recordarme;
-    private boolean aceptarTerminos;
-    private boolean suscribirseNewsletter;
-    
-    // === VALIDACIONES Y MENSAJES ===
-    private String mensajeError;
-    private String mensajeExito;
-    private String tipoValidacion;
-    
-    // === CONSTRUCTORS ===
-    
-    /**
-     * Constructor por defecto
-     */
-    public ModeloDatosPrueba() {
-        // Constructor vacío para flexibilidad
+    // ===== CONSTRUCTOR PRIVADO =====
+    private ModeloDatosPrueba(Builder builder) {
+        this.casoPrueba = builder.casoPrueba;
+        this.nombre = builder.nombre;
+        this.apellido = builder.apellido;
+        this.email = builder.email;
+        this.password = builder.password;
+        this.confirmarPassword = builder.confirmarPassword;
+        this.telefono = builder.telefono;
+        this.fechaNacimiento = builder.fechaNacimiento;
+        this.genero = builder.genero;
+        this.aceptarTerminos = builder.aceptarTerminos;
+        this.suscribirseNewsletter = builder.suscribirseNewsletter;
+        this.recordarme = builder.recordarme;
+        this.esValido = builder.esValido;
+        this.mensajeError = builder.mensajeError;
+        this.descripcion = builder.descripcion;
     }
     
-    /**
-     * Constructor para datos básicos de login
-     * 
-     * @param email email del usuario
-     * @param password contraseña del usuario
-     */
-    public ModeloDatosPrueba(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-    
-    /**
-     * Constructor completo para casos de prueba
-     * 
-     * @param casoPrueba identificador del caso
-     * @param descripcion descripción del caso
-     * @param email email del usuario
-     * @param password contraseña del usuario
-     * @param esValido si los datos son válidos
-     * @param resultadoEsperado resultado esperado
-     */
-    public ModeloDatosPrueba(String casoPrueba, String descripcion, String email, 
-                           String password, boolean esValido, String resultadoEsperado) {
-        this.casoPrueba = casoPrueba;
-        this.descripcion = descripcion;
-        this.email = email;
-        this.password = password;
-        this.esValido = esValido;
-        this.resultadoEsperado = resultadoEsperado;
-    }
-    
-    // === MÉTODOS GETTER ===
+    // ===== GETTERS =====
     
     public String getCasoPrueba() {
         return casoPrueba;
-    }
-    
-    public String getDescripcion() {
-        return descripcion;
-    }
-    
-    public boolean isEsValido() {
-        return esValido;
-    }
-    
-    public String getResultadoEsperado() {
-        return resultadoEsperado;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public String getUsuario() {
-        return usuario;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public String getConfirmarPassword() {
-        return confirmarPassword;
     }
     
     public String getNombre() {
@@ -124,6 +62,18 @@ public class ModeloDatosPrueba {
     
     public String getApellido() {
         return apellido;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public String getConfirmarPassword() {
+        return confirmarPassword;
     }
     
     public String getTelefono() {
@@ -138,18 +88,6 @@ public class ModeloDatosPrueba {
         return genero;
     }
     
-    public String getPais() {
-        return pais;
-    }
-    
-    public String getCiudad() {
-        return ciudad;
-    }
-    
-    public boolean isRecordarme() {
-        return recordarme;
-    }
-    
     public boolean isAceptarTerminos() {
         return aceptarTerminos;
     }
@@ -158,132 +96,40 @@ public class ModeloDatosPrueba {
         return suscribirseNewsletter;
     }
     
+    public boolean isRecordarme() {
+        return recordarme;
+    }
+    
+    public boolean isEsValido() {
+        return esValido;
+    }
+    
     public String getMensajeError() {
         return mensajeError;
     }
     
-    public String getMensajeExito() {
-        return mensajeExito;
+    public String getDescripcion() {
+        return descripcion;
     }
     
-    public String getTipoValidacion() {
-        return tipoValidacion;
-    }
-    
-    // === MÉTODOS SETTER ===
-    
-    public void setCasoPrueba(String casoPrueba) {
-        this.casoPrueba = casoPrueba;
-    }
-    
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    
-    public void setEsValido(boolean esValido) {
-        this.esValido = esValido;
-    }
-    
-    public void setResultadoEsperado(String resultadoEsperado) {
-        this.resultadoEsperado = resultadoEsperado;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public void setConfirmarPassword(String confirmarPassword) {
-        this.confirmarPassword = confirmarPassword;
-    }
-    
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-    
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-    
-    public void setFechaNacimiento(String fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-    
-    public void setGenero(String genero) {
-        this.genero = genero;
-    }
-    
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-    
-    public void setCiudad(String ciudad) {
-        this.ciudad = ciudad;
-    }
-    
-    public void setRecordarme(boolean recordarme) {
-        this.recordarme = recordarme;
-    }
-    
-    public void setAceptarTerminos(boolean aceptarTerminos) {
-        this.aceptarTerminos = aceptarTerminos;
-    }
-    
-    public void setSuscribirseNewsletter(boolean suscribirseNewsletter) {
-        this.suscribirseNewsletter = suscribirseNewsletter;
-    }
-    
-    public void setMensajeError(String mensajeError) {
-        this.mensajeError = mensajeError;
-    }
-    
-    public void setMensajeExito(String mensajeExito) {
-        this.mensajeExito = mensajeExito;
-    }
-    
-    public void setTipoValidacion(String tipoValidacion) {
-        this.tipoValidacion = tipoValidacion;
-    }
-    
-    // === MÉTODOS DE UTILIDAD ===
+    // ===== MÉTODOS UTILITARIOS =====
     
     /**
-     * Verifica si los datos básicos de login están completos
-     * 
-     * @return true si email y password no están vacíos
+     * Obtiene el nombre completo concatenando nombre y apellido.
      */
-    public boolean tieneDatosLoginCompletos() {
-        return email != null && !email.trim().isEmpty() &&
-               password != null && !password.trim().isEmpty();
+    public String getNombreCompleto() {
+        if (nombre != null && apellido != null) {
+            return nombre + " " + apellido;
+        } else if (nombre != null) {
+            return nombre;
+        } else if (apellido != null) {
+            return apellido;
+        }
+        return "";
     }
     
     /**
-     * Verifica si los datos de registro están completos
-     * 
-     * @return true si los campos obligatorios están llenos
-     */
-    public boolean tieneDatosRegistroCompletos() {
-        return tieneDatosLoginCompletos() &&
-               nombre != null && !nombre.trim().isEmpty() &&
-               apellido != null && !apellido.trim().isEmpty() &&
-               confirmarPassword != null && !confirmarPassword.trim().isEmpty();
-    }
-    
-    /**
-     * Verifica si las contraseñas coinciden
-     * 
-     * @return true si password y confirmarPassword son iguales
+     * Verifica si los passwords coinciden.
      */
     public boolean passwordsCoinciden() {
         if (password == null || confirmarPassword == null) {
@@ -293,99 +139,238 @@ public class ModeloDatosPrueba {
     }
     
     /**
-     * Genera un nombre completo combinando nombre y apellido
-     * 
-     * @return nombre completo o cadena vacía si faltan datos
+     * Verifica si es un caso de prueba de registro válido.
      */
-    public String obtenerNombreCompleto() {
-        if (nombre == null && apellido == null) {
-            return "";
-        }
-        
-        StringBuilder nombreCompleto = new StringBuilder();
-        if (nombre != null && !nombre.trim().isEmpty()) {
-            nombreCompleto.append(nombre.trim());
-        }
-        if (apellido != null && !apellido.trim().isEmpty()) {
-            if (nombreCompleto.length() > 0) {
-                nombreCompleto.append(" ");
-            }
-            nombreCompleto.append(apellido.trim());
-        }
-        
-        return nombreCompleto.toString();
+    public boolean esCasoRegistroValido() {
+        return nombre != null && !nombre.trim().isEmpty() &&
+               apellido != null && !apellido.trim().isEmpty() &&
+               email != null && !email.trim().isEmpty() &&
+               password != null && !password.trim().isEmpty() &&
+               passwordsCoinciden() &&
+               aceptarTerminos;
     }
     
     /**
-     * Crea una copia del modelo con datos limpios
-     * 
-     * @return nueva instancia con datos trimmed
+     * Verifica si es un caso de prueba de login válido.
      */
-    public ModeloDatosPrueba crearCopiaLimpia() {
-        ModeloDatosPrueba copia = new ModeloDatosPrueba();
-        
-        copia.casoPrueba = limpiarCadena(this.casoPrueba);
-        copia.descripcion = limpiarCadena(this.descripcion);
-        copia.email = limpiarCadena(this.email);
-        copia.usuario = limpiarCadena(this.usuario);
-        copia.password = this.password; // No limpiar passwords
-        copia.confirmarPassword = this.confirmarPassword;
-        copia.nombre = limpiarCadena(this.nombre);
-        copia.apellido = limpiarCadena(this.apellido);
-        copia.telefono = limpiarCadena(this.telefono);
-        copia.fechaNacimiento = limpiarCadena(this.fechaNacimiento);
-        copia.genero = limpiarCadena(this.genero);
-        copia.pais = limpiarCadena(this.pais);
-        copia.ciudad = limpiarCadena(this.ciudad);
-        copia.mensajeError = limpiarCadena(this.mensajeError);
-        copia.mensajeExito = limpiarCadena(this.mensajeExito);
-        copia.tipoValidacion = limpiarCadena(this.tipoValidacion);
-        copia.resultadoEsperado = limpiarCadena(this.resultadoEsperado);
-        
-        // Copiar booleanos
-        copia.esValido = this.esValido;
-        copia.recordarme = this.recordarme;
-        copia.aceptarTerminos = this.aceptarTerminos;
-        copia.suscribirseNewsletter = this.suscribirseNewsletter;
-        
-        return copia;
+    public boolean esCasoLoginValido() {
+        return email != null && !email.trim().isEmpty() &&
+               password != null && !password.trim().isEmpty();
     }
-    
-    /**
-     * Método auxiliar para limpiar cadenas
-     * 
-     * @param cadena cadena a limpiar
-     * @return cadena limpia o null si era null
-     */
-    private String limpiarCadena(String cadena) {
-        return cadena != null ? cadena.trim() : null;
-    }
-    
-    // === MÉTODOS ESTÁNDAR ===
     
     @Override
     public String toString() {
         return "ModeloDatosPrueba{" +
                 "casoPrueba='" + casoPrueba + '\'' +
-                ", descripcion='" + descripcion + '\'' +
                 ", email='" + email + '\'' +
+                ", nombre='" + getNombreCompleto() + '\'' +
                 ", esValido=" + esValido +
-                ", resultadoEsperado='" + resultadoEsperado + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 '}';
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        
-        ModeloDatosPrueba that = (ModeloDatosPrueba) obj;
-        
-        return casoPrueba != null ? casoPrueba.equals(that.casoPrueba) : that.casoPrueba == null;
+    // ===== BUILDER PATTERN =====
+    
+    /**
+     * Método estático para crear un nuevo builder.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
     
-    @Override
-    public int hashCode() {
-        return casoPrueba != null ? casoPrueba.hashCode() : 0;
+    /**
+     * Clase Builder para construcción fluida de objetos ModeloDatosPrueba.
+     * Implementa el patrón Builder para facilitar la creación de objetos complejos.
+     */
+    public static class Builder {
+        private String casoPrueba;
+        private String nombre;
+        private String apellido;
+        private String email;
+        private String password;
+        private String confirmarPassword;
+        private String telefono;
+        private String fechaNacimiento;
+        private String genero;
+        private boolean aceptarTerminos = false;
+        private boolean suscribirseNewsletter = false;
+        private boolean recordarme = false;
+        private boolean esValido = true;
+        private String mensajeError;
+        private String descripcion;
+        
+        public Builder casoPrueba(String casoPrueba) {
+            this.casoPrueba = casoPrueba;
+            return this;
+        }
+        
+        public Builder nombre(String nombre) {
+            this.nombre = nombre;
+            return this;
+        }
+        
+        public Builder apellido(String apellido) {
+            this.apellido = apellido;
+            return this;
+        }
+        
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+        
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+        
+        public Builder confirmarPassword(String confirmarPassword) {
+            this.confirmarPassword = confirmarPassword;
+            return this;
+        }
+        
+        public Builder telefono(String telefono) {
+            this.telefono = telefono;
+            return this;
+        }
+        
+        public Builder fechaNacimiento(String fechaNacimiento) {
+            this.fechaNacimiento = fechaNacimiento;
+            return this;
+        }
+        
+        public Builder genero(String genero) {
+            this.genero = genero;
+            return this;
+        }
+        
+        public Builder aceptarTerminos(boolean aceptarTerminos) {
+            this.aceptarTerminos = aceptarTerminos;
+            return this;
+        }
+        
+        public Builder suscribirseNewsletter(boolean suscribirseNewsletter) {
+            this.suscribirseNewsletter = suscribirseNewsletter;
+            return this;
+        }
+        
+        public Builder recordarme(boolean recordarme) {
+            this.recordarme = recordarme;
+            return this;
+        }
+        
+        public Builder esValido(boolean esValido) {
+            this.esValido = esValido;
+            return this;
+        }
+        
+        public Builder mensajeError(String mensajeError) {
+            this.mensajeError = mensajeError;
+            return this;
+        }
+        
+        public Builder descripcion(String descripcion) {
+            this.descripcion = descripcion;
+            return this;
+        }
+        
+        /**
+         * Método de conveniencia para casos de login.
+         */
+        public Builder datosLogin(String email, String password) {
+            this.email = email;
+            this.password = password;
+            return this;
+        }
+        
+        /**
+         * Método de conveniencia para casos de registro básico.
+         */
+        public Builder datosRegistroBasico(String nombre, String apellido, String email, String password) {
+            this.nombre = nombre;
+            this.apellido = apellido;
+            this.email = email;
+            this.password = password;
+            this.confirmarPassword = password;
+            this.aceptarTerminos = true;
+            return this;
+        }
+        
+        /**
+         * Método de conveniencia para casos de prueba inválidos.
+         */
+        public Builder casoInvalido(String mensajeError) {
+            this.esValido = false;
+            this.mensajeError = mensajeError;
+            return this;
+        }
+        
+        /**
+         * Construye el objeto ModeloDatosPrueba final.
+         */
+        public ModeloDatosPrueba build() {
+            // Validación básica antes de construir
+            if (casoPrueba == null || casoPrueba.trim().isEmpty()) {
+                throw new IllegalArgumentException("El caso de prueba es obligatorio");
+            }
+            
+            return new ModeloDatosPrueba(this);
+        }
+    }
+    
+    // ===== MÉTODOS FACTORY PARA CASOS COMUNES =====
+    
+    /**
+     * Crea un modelo para login válido.
+     */
+    public static ModeloDatosPrueba loginValido(String casoPrueba, String email, String password) {
+        return builder()
+                .casoPrueba(casoPrueba)
+                .email(email)
+                .password(password)
+                .descripcion("Caso de login válido")
+                .build();
+    }
+    
+    /**
+     * Crea un modelo para login inválido.
+     */
+    public static ModeloDatosPrueba loginInvalido(String casoPrueba, String email, String password, String mensajeError) {
+        return builder()
+                .casoPrueba(casoPrueba)
+                .email(email)
+                .password(password)
+                .esValido(false)
+                .mensajeError(mensajeError)
+                .descripcion("Caso de login inválido")
+                .build();
+    }
+    
+    /**
+     * Crea un modelo para registro válido.
+     */
+    public static ModeloDatosPrueba registroValido(String casoPrueba, String nombre, String apellido, String email, String password) {
+        return builder()
+                .casoPrueba(casoPrueba)
+                .datosRegistroBasico(nombre, apellido, email, password)
+                .descripcion("Caso de registro válido")
+                .build();
+    }
+    
+    /**
+     * Crea un modelo para registro inválido.
+     */
+    public static ModeloDatosPrueba registroInvalido(String casoPrueba, String nombre, String apellido, String email, String password, String mensajeError) {
+        return builder()
+                .casoPrueba(casoPrueba)
+                .nombre(nombre)
+                .apellido(apellido)
+                .email(email)
+                .password(password)
+                .confirmarPassword(password)
+                .esValido(false)
+                .mensajeError(mensajeError)
+                .descripcion("Caso de registro inválido")
+                .build();
     }
 }

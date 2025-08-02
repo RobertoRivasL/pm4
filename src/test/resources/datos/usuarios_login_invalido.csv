@@ -1,0 +1,16 @@
+caso_prueba,email,password,recordarme,mensaje_esperado,descripcion
+LOGIN_INV_001,usuario.inexistente@test.com,Password123!,false,Usuario no encontrado,Email no registrado
+LOGIN_INV_002,admin@test.com,WrongPassword,false,Credenciales incorrectas,Password incorrecta
+LOGIN_INV_003,,Password123!,false,Complete todos los campos,Email vacío
+LOGIN_INV_004,usuario.valido@email.com,,false,Complete todos los campos,Password vacío
+LOGIN_INV_005,formato.invalido,Password123!,false,Ingrese un email válido,Email formato inválido
+LOGIN_INV_006,test@,Password123!,false,Ingrese un email válido,Email incompleto
+LOGIN_INV_007,@test.com,Password123!,false,Ingrese un email válido,Email sin usuario
+LOGIN_INV_008,test..test@email.com,Password123!,false,Ingrese un email válido,Email con doble punto
+LOGIN_INV_009,usuario.bloqueado@test.com,Password123!,false,Su cuenta ha sido bloqueada,Usuario bloqueado
+LOGIN_INV_010,admin@test.com,123,false,Credenciales incorrectas,Password muy corta
+LOGIN_INV_011,test@email.com,password,false,Credenciales incorrectas,Password sin mayúsculas
+LOGIN_INV_012,user@test.com,PASSWORD,false,Credenciales incorrectas,Password sin minúsculas
+LOGIN_INV_013,demo@test.com,Password,false,Credenciales incorrectas,Password sin números
+LOGIN_INV_014,test@demo.com,Password123,false,Credenciales incorrectas,Password sin símbolos
+LOGIN_INV_015,,,false,Complete todos los campos,Ambos campos vacíos

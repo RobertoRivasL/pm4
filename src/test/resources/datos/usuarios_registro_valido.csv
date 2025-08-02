@@ -1,0 +1,11 @@
+caso_prueba,nombre,apellido,email,password,confirmar_password,telefono,genero,aceptar_terminos,descripcion
+REG_001,Juan,Pérez,juan.perez@email.com,Password123!,Password123!,+56912345678,Masculino,true,Registro completo con teléfono
+REG_002,María,González,maria.gonzalez@email.com,SecurePass456!,SecurePass456!,+56987654321,Femenino,true,Registro femenino completo
+REG_003,Carlos,Rodríguez,carlos.rodriguez@email.com,MyPassword789!,MyPassword789!,,Masculino,true,Registro sin teléfono
+REG_004,Ana,López,ana.lopez@gmail.com,TestPass2024!,TestPass2024!,+56923456789,Femenino,true,Registro con Gmail
+REG_005,Pedro,Silva,pedro.silva@yahoo.com,AutoTest123!,AutoTest123!,,Masculino,true,Registro con Yahoo
+REG_006,Laura,Morales,laura.morales@hotmail.com,QATest456!,QATest456!,+56934567890,Femenino,true,Registro con Hotmail
+REG_007,Diego,Fernández,diego.fernandez@outlook.com,SeleniumTest789!,SeleniumTest789!,,Masculino,true,Registro con Outlook
+REG_008,Sofia,Mendoza,sofia.mendoza@test.com,JavaTest2024!,JavaTest2024!,+56945678901,Femenino,true,Registro dominio test
+REG_009,Roberto,Castro,roberto.castro@email.com,StrongPass123!,StrongPass123!,+56956789012,Masculino,true,Registro autor proyecto
+REG_010,Valentina,Torres,valentina.torres@correo.cl,ValidPass456!,ValidPass456!,,Femenino,true,Registro dominio chileno

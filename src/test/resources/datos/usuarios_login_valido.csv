@@ -1,0 +1,11 @@
+caso_prueba,email,password,recordarme,descripcion
+LOGIN_001,admin@test.com,Password123!,true,Usuario administrador
+LOGIN_002,usuario.valido@email.com,SecurePass456!,false,Usuario estándar
+LOGIN_003,qa.tester@test.com,TestPass789!,true,Usuario de QA
+LOGIN_004,roberto.rivas@email.com,MyPassword2024!,false,Usuario desarrollador
+LOGIN_005,test.user@gmail.com,ValidPass123!,true,Usuario de pruebas
+LOGIN_006,manager@test.com,ManagerPass456!,false,Usuario manager
+LOGIN_007,cliente@email.com,ClientPass789!,true,Usuario cliente
+LOGIN_008,soporte@test.com,SupportPass123!,false,Usuario soporte
+LOGIN_009,vendedor@email.com,SalesPass456!,true,Usuario ventas
+LOGIN_010,analista@test.com,AnalystPass789!,false,Usuario analista

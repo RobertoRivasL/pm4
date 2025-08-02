@@ -4,20 +4,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.PageFactory;
+import com.automatizacion.proyecto.utilidades.EsperaExplicita;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.automatizacion.proyecto.utilidades.EsperaExplicita;
-import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
-import com.automatizacion.proyecto.utilidades.ManejadorScrollPagina;
-import com.automatizacion.proyecto.paginas.interfaces.IPaginaBase;
-import com.automatizacion.proyecto.enums.TipoMensaje;
-
-import java.time.Duration;
 
 /**
  * Clase base para todos los Page Objects.
@@ -27,460 +19,441 @@ import java.time.Duration;
  * - SRP: Funcionalidad base común para todas las páginas
  * - DRY: Evita repetición de código en Page Objects
  * - Template Method: Define estructura común para páginas
+ * - Encapsulación: Métodos protegidos para uso de subclases
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
  */
-public abstract class PaginaBase implements IPaginaBase {
+public abstract class PaginaBase {
     
     private static final Logger logger = LoggerFactory.getLogger(PaginaBase.class);
     
     protected final WebDriver driver;
     protected final EsperaExplicita espera;
-    protected final GestorCapturaPantalla gestorCaptura;
-    protected final ManejadorScrollPagina manejadorScroll;
-    
     protected static final int TIEMPO_ESPERA_ELEMENTOS = 15;
     protected static final int MAX_REINTENTOS = 3;
-    protected static final int PAUSA_ENTRE_ACCIONES = 300;
+    protected static final int TIEMPO_ESPERA_CORTO = 5;
     
     /**
-     * Constructor base que inicializa el driver y las utilidades.
-     * 
-     * @param driver instancia de WebDriver
-     * @param tiempoEsperaSegundos tiempo de espera personalizado
+     * Constructor base que inicializa el driver y las esperas.
      */
     protected PaginaBase(WebDriver driver, int tiempoEsperaSegundos) {
         this.driver = driver;
         this.espera = new EsperaExplicita(driver, tiempoEsperaSegundos);
-        this.gestorCaptura = new GestorCapturaPantalla();
-        this.manejadorScroll = new ManejadorScrollPagina(driver);
-        
         PageFactory.initElements(driver, this);
-        
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-            "PaginaBase inicializada para " + this.getClass().getSimpleName()));
+        logger.debug("Página base inicializada con timeout: {} segundos", tiempoEsperaSegundos);
     }
     
     /**
      * Constructor con tiempo de espera por defecto.
-     * 
-     * @param driver instancia de WebDriver
      */
     protected PaginaBase(WebDriver driver) {
         this(driver, TIEMPO_ESPERA_ELEMENTOS);
     }
     
-    // === IMPLEMENTACIÓN DE IPaginaBase ===
+    // ===== MÉTODOS DE NAVEGACIÓN =====
     
-    @Override
-    public String obtenerTituloPagina() {
-        try {
-            String titulo = driver.getTitle();
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Título de página obtenido: " + titulo));
-            return titulo;
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error obteniendo título de página: " + e.getMessage()));
-            return "";
-        }
-    }
-    
-    @Override
-    public String obtenerUrlActual() {
-        try {
-            String url = driver.getCurrentUrl();
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje("URL actual obtenida: " + url));
-            return url;
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error obteniendo URL actual: " + e.getMessage()));
-            return "";
-        }
-    }
-    
-    @Override
+    /**
+     * Navega a la URL especificada.
+     */
     public void navegarA(String url) {
         try {
-            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Navegando a: " + url));
-            
+            logger.info("Navegando a: {}", url);
             driver.get(url);
-            esperarCargaCompleta();
+            espera.esperarCargaCompleta();
             
-            // Pequeña pausa para estabilidad
-            Thread.sleep(PAUSA_ENTRE_ACCIONES);
+            // Esperar un momento adicional para elementos dinámicos
+            Thread.sleep(1000);
             
-            logger.info(TipoMensaje.EXITO.formatearMensaje("Navegación exitosa a: " + url));
-            
+            logger.debug("Navegación completada exitosamente");
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error navegando a URL: " + url + " - " + e.getMessage()));
+            logger.error("Error al navegar a la URL: {}", url, e);
             throw new RuntimeException("Error al navegar a la URL: " + url, e);
         }
     }
     
-    @Override
-    public WebElement esperarElementoVisible(By localizador, int timeoutSegundos) {
+    /**
+     * Actualiza la página actual.
+     */
+    public void actualizarPagina() {
         try {
-            return espera.esperarElementoVisible(localizador, timeoutSegundos);
+            logger.debug("Actualizando página");
+            driver.navigate().refresh();
+            espera.esperarCargaCompleta();
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Elemento no visible: " + localizador.toString()));
-            throw e;
+            logger.error("Error al actualizar página", e);
+            throw new RuntimeException("Error al actualizar página", e);
         }
     }
     
-    @Override
-    public WebElement esperarElementoClickeable(By localizador, int timeoutSegundos) {
+    // ===== MÉTODOS DE INFORMACIÓN =====
+    
+    /**
+     * Obtiene el título de la página actual.
+     */
+    public String obtenerTituloPagina() {
         try {
-            WebDriverWait esperaPersonalizada = new WebDriverWait(driver, Duration.ofSeconds(timeoutSegundos));
-            return esperaPersonalizada.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(localizador));
+            String titulo = driver.getTitle();
+            logger.debug("Título de página: {}", titulo);
+            return titulo;
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Elemento no clickeable: " + localizador.toString()));
-            throw e;
-        }
-    }
-    
-    @Override
-    public boolean estaElementoPresente(By localizador) {
-        try {
-            driver.findElement(localizador);
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Elemento presente: " + localizador.toString()));
-            return true;
-        } catch (NoSuchElementException e) {
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Elemento no presente: " + localizador.toString()));
-            return false;
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error verificando presencia de elemento: " + e.getMessage()));
-            return false;
-        }
-    }
-    
-    @Override
-    public boolean clickElementoSeguro(WebElement elemento) {
-        for (int intento = 1; intento <= MAX_REINTENTOS; intento++) {
-            try {
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                    "Intento " + intento + " de click en elemento"));
-                
-                // Verificar que el elemento esté habilitado
-                if (!elemento.isEnabled()) {
-                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                        "Elemento no habilitado para click"));
-                    return false;
-                }
-                
-                // Hacer scroll hasta el elemento si es necesario
-                scrollHastaElemento(elemento);
-                
-                // Pequeña pausa para estabilidad
-                Thread.sleep(PAUSA_ENTRE_ACCIONES);
-                
-                // Intentar click normal
-                elemento.click();
-                
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje("Click exitoso en elemento"));
-                return true;
-                
-            } catch (Exception e) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Intento " + intento + " de click falló: " + e.getMessage()));
-                
-                if (intento == MAX_REINTENTOS) {
-                    // Último intento: usar JavaScript
-                    try {
-                        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                            "Intentando click con JavaScript"));
-                        
-                        JavascriptExecutor js = (JavascriptExecutor) driver;
-                        js.executeScript("arguments[0].click();", elemento);
-                        
-                        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                            "Click con JavaScript exitoso"));
-                        return true;
-                        
-                    } catch (Exception jsException) {
-                        logger.error(TipoMensaje.ERROR.formatearMensaje(
-                            "Click con JavaScript también falló: " + jsException.getMessage()));
-                        return false;
-                    }
-                }
-                
-                // Pausa antes del siguiente intento
-                try {
-                    Thread.sleep(PAUSA_ENTRE_ACCIONES);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-    
-    @Override
-    public boolean ingresarTextoSeguro(WebElement elemento, String texto) {
-        if (texto == null) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Texto es null, no se puede ingresar"));
-            return false;
-        }
-        
-        for (int intento = 1; intento <= MAX_REINTENTOS; intento++) {
-            try {
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                    "Intento " + intento + " de ingresar texto: " + texto));
-                
-                // Verificar que el elemento esté habilitado
-                if (!elemento.isEnabled()) {
-                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                        "Elemento no habilitado para ingresar texto"));
-                    return false;
-                }
-                
-                // Hacer scroll hasta el elemento
-                scrollHastaElemento(elemento);
-                
-                // Limpiar campo primero
-                elemento.clear();
-                Thread.sleep(100);
-                
-                // Ingresar texto
-                elemento.sendKeys(texto);
-                
-                // Verificar que el texto se ingresó correctamente
-                String textoActual = elemento.getAttribute("value");
-                if (texto.equals(textoActual)) {
-                    logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                        "Texto ingresado exitosamente"));
-                    return true;
-                }
-                
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Texto no coincide. Esperado: " + texto + ", Actual: " + textoActual));
-                
-            } catch (Exception e) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Intento " + intento + " de ingresar texto falló: " + e.getMessage()));
-                
-                if (intento < MAX_REINTENTOS) {
-                    try {
-                        Thread.sleep(PAUSA_ENTRE_ACCIONES);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        return false;
-                    }
-                }
-            }
-        }
-        
-        logger.error(TipoMensaje.ERROR.formatearMensaje(
-            "No se pudo ingresar texto después de " + MAX_REINTENTOS + " intentos"));
-        return false;
-    }
-    
-    @Override
-    public boolean limpiarCampo(WebElement elemento) {
-        try {
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Limpiando campo"));
-            
-            if (!elemento.isEnabled()) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Elemento no habilitado para limpiar"));
-                return false;
-            }
-            
-            scrollHastaElemento(elemento);
-            elemento.clear();
-            
-            // Verificar que se limpió
-            String valorActual = elemento.getAttribute("value");
-            boolean limpio = valorActual == null || valorActual.isEmpty();
-            
-            if (limpio) {
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje("Campo limpiado exitosamente"));
-            } else {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Campo no se limpió completamente. Valor actual: " + valorActual));
-            }
-            
-            return limpio;
-            
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error limpiando campo: " + e.getMessage()));
-            return false;
-        }
-    }
-    
-    @Override
-    public String obtenerTextoElemento(WebElement elemento) {
-        try {
-            String texto = elemento.getText();
-            if (texto == null || texto.trim().isEmpty()) {
-                // Intentar obtener desde atributo value si el texto está vacío
-                texto = elemento.getAttribute("value");
-            }
-            
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Texto obtenido del elemento: " + texto));
-            
-            return texto != null ? texto : "";
-            
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error obteniendo texto del elemento: " + e.getMessage()));
+            logger.warn("Error al obtener título de página", e);
             return "";
         }
     }
     
-    @Override
-    public boolean estaElementoHabilitado(WebElement elemento) {
+    /**
+     * Obtiene la URL actual.
+     */
+    public String obtenerUrlActual() {
         try {
-            boolean habilitado = elemento.isEnabled();
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Elemento habilitado: " + habilitado));
-            return habilitado;
+            String url = driver.getCurrentUrl();
+            logger.debug("URL actual: {}", url);
+            return url;
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error verificando si elemento está habilitado: " + e.getMessage()));
+            logger.warn("Error al obtener URL actual", e);
+            return "";
+        }
+    }
+    
+    // ===== MÉTODOS DE VERIFICACIÓN =====
+    
+    /**
+     * Verifica si un elemento está visible usando localizador.
+     */
+    protected boolean esElementoVisible(By localizador) {
+        try {
+            espera.esperarElementoVisible(localizador, TIEMPO_ESPERA_CORTO);
+            return true;
+        } catch (TimeoutException e) {
+            logger.debug("Elemento no visible: {}", localizador);
+            return false;
+        } catch (Exception e) {
+            logger.warn("Error al verificar visibilidad del elemento: {}", localizador, e);
             return false;
         }
     }
     
-    @Override
-    public boolean estaElementoSeleccionado(WebElement elemento) {
+    /**
+     * Verifica si un elemento está presente en el DOM.
+     */
+    protected boolean esElementoPresente(By localizador) {
         try {
-            boolean seleccionado = elemento.isSelected();
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Elemento seleccionado: " + seleccionado));
-            return seleccionado;
+            driver.findElement(localizador);
+            return true;
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error verificando si elemento está seleccionado: " + e.getMessage()));
+            logger.debug("Elemento no presente: {}", localizador);
             return false;
         }
     }
     
-    @Override
-    public String capturarPantalla(String nombreArchivo) {
+    /**
+     * Verifica si un WebElement está visible.
+     */
+    protected boolean esElementoVisible(WebElement elemento) {
         try {
-            return gestorCaptura.capturarPantalla(driver, nombreArchivo);
+            return elemento != null && elemento.isDisplayed();
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error capturando pantalla: " + e.getMessage()));
-            return null;
+            logger.debug("WebElement no visible", e);
+            return false;
         }
     }
     
-    @Override
-    public void scrollHastaElemento(WebElement elemento) {
-        try {
-            manejadorScroll.scrollHastaElemento(elemento);
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error haciendo scroll hacia elemento: " + e.getMessage()));
+    // ===== MÉTODOS DE INTERACCIÓN =====
+    
+    /**
+     * Hace clic en un elemento con manejo robusto.
+     */
+    protected void hacerClicRobusto(WebElement elemento) {
+        for (int intento = 1; intento <= MAX_REINTENTOS; intento++) {
+            try {
+                // Scroll al elemento si es necesario
+                scrollAlElemento(elemento);
+                
+                // Esperar que sea clickeable
+                espera.esperarElementoClickeable(elemento);
+                
+                // Hacer clic
+                elemento.click();
+                
+                logger.debug("Click exitoso en intento {}", intento);
+                return;
+                
+            } catch (Exception e) {
+                logger.warn("Error en click, intento {}: {}", intento, e.getMessage());
+                
+                if (intento == MAX_REINTENTOS) {
+                    // Último intento con JavaScript
+                    try {
+                        hacerClicConJavaScript(elemento);
+                        logger.debug("Click con JavaScript exitoso");
+                        return;
+                    } catch (Exception jsException) {
+                        logger.error("Falló click después de {} intentos", MAX_REINTENTOS, jsException);
+                        throw new RuntimeException("No se pudo hacer clic en el elemento después de " + MAX_REINTENTOS + " intentos", jsException);
+                    }
+                }
+                
+                // Esperar antes del siguiente intento
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrumpido durante reintentos de click", ie);
+                }
+            }
         }
     }
     
-    @Override
-    public void esperarCargaCompleta() {
+    /**
+     * Hace clic usando JavaScript como alternativa.
+     */
+    protected void hacerClicConJavaScript(WebElement elemento) {
         try {
-            espera.esperarCargaCompleta();
-            espera.esperarJQueryCompleto();
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", elemento);
+            logger.debug("Click con JavaScript ejecutado");
         } catch (Exception e) {
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Error esperando carga completa: " + e.getMessage()));
+            logger.error("Error al hacer click con JavaScript", e);
+            throw new RuntimeException("Error al hacer click con JavaScript", e);
         }
     }
     
-    // === MÉTODOS AUXILIARES PROTEGIDOS ===
-    
     /**
-     * Obtiene el gestor de capturas para uso en clases derivadas
-     * 
-     * @return instancia del gestor de capturas
+     * Limpia un campo de texto e ingresa nuevo texto.
      */
-    protected GestorCapturaPantalla obtenerGestorCaptura() {
-        return gestorCaptura;
+    protected void limpiarEIngresarTexto(WebElement elemento, String texto) {
+        try {
+            // Scroll al elemento
+            scrollAlElemento(elemento);
+            
+            // Esperar que sea visible
+            espera.esperarElementoVisible(elemento);
+            
+            // Limpiar campo
+            elemento.clear();
+            
+            // Limpiar con Ctrl+A y Delete como respaldo
+            elemento.sendKeys(Keys.CONTROL + "a");
+            elemento.sendKeys(Keys.DELETE);
+            
+            // Ingresar nuevo texto
+            if (texto != null && !texto.isEmpty()) {
+                elemento.sendKeys(texto);
+            }
+            
+            logger.debug("Texto ingresado exitosamente: {}", texto != null ? texto.substring(0, Math.min(texto.length(), 20)) + "..." : "");
+            
+        } catch (Exception e) {
+            logger.error("Error al ingresar texto: {}", e.getMessage());
+            throw new RuntimeException("Error al ingresar texto", e);
+        }
     }
     
     /**
-     * Obtiene el manejador de scroll para uso en clases derivadas
-     * 
-     * @return instancia del manejador de scroll
+     * Obtiene el texto de un elemento de forma robusta.
      */
-    protected ManejadorScrollPagina obtenerManejadorScroll() {
-        return manejadorScroll;
+    protected String obtenerTextoElemento(WebElement elemento) {
+        try {
+            espera.esperarElementoVisible(elemento);
+            String texto = elemento.getText().trim();
+            
+            // Si getText() está vacío, intentar con getAttribute
+            if (texto.isEmpty()) {
+                texto = elemento.getAttribute("textContent");
+                if (texto != null) {
+                    texto = texto.trim();
+                }
+            }
+            
+            logger.debug("Texto obtenido: {}", texto);
+            return texto != null ? texto : "";
+            
+        } catch (Exception e) {
+            logger.warn("Error al obtener texto del elemento", e);
+            return "";
+        }
     }
     
     /**
-     * Obtiene el gestor de esperas para uso en clases derivadas
-     * 
-     * @return instancia del gestor de esperas
+     * Obtiene el valor de un atributo de forma robusta.
      */
-    protected EsperaExplicita obtenerEspera() {
-        return espera;
+    protected String obtenerAtributoElemento(WebElement elemento, String atributo) {
+        try {
+            espera.esperarElementoVisible(elemento);
+            String valor = elemento.getAttribute(atributo);
+            logger.debug("Atributo '{}' obtenido: {}", atributo, valor);
+            return valor != null ? valor.trim() : "";
+        } catch (Exception e) {
+            logger.warn("Error al obtener atributo '{}' del elemento", atributo, e);
+            return "";
+        }
+    }
+    
+    // ===== MÉTODOS DE SCROLL =====
+    
+    /**
+     * Hace scroll hasta un elemento específico.
+     */
+    protected void scrollAlElemento(WebElement elemento) {
+        try {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", elemento);
+            
+            // Esperar que el scroll se complete
+            Thread.sleep(500);
+            
+            logger.debug("Scroll al elemento completado");
+        } catch (Exception e) {
+            logger.warn("Error al hacer scroll al elemento", e);
+        }
     }
     
     /**
-     * Pausa la ejecución por un tiempo específico
-     * 
-     * @param milisegundos tiempo de pausa
+     * Hace scroll hasta el top de la página.
      */
-    protected void pausar(long milisegundos) {
+    protected void scrollAlInicio() {
+        try {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollTo(0, 0);");
+            Thread.sleep(500);
+            logger.debug("Scroll al inicio completado");
+        } catch (Exception e) {
+            logger.warn("Error al hacer scroll al inicio", e);
+        }
+    }
+    
+    /**
+     * Hace scroll hasta el final de la página.
+     */
+    protected void scrollAlFinal() {
+        try {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            Thread.sleep(500);
+            logger.debug("Scroll al final completado");
+        } catch (Exception e) {
+            logger.warn("Error al hacer scroll al final", e);
+        }
+    }
+    
+    // ===== MÉTODOS DE ESPERA =====
+    
+    /**
+     * Espera explícita personalizada.
+     */
+    protected void esperarTiempo(long milisegundos) {
         try {
             Thread.sleep(milisegundos);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Pausa interrumpida: " + e.getMessage()));
+            logger.warn("Espera interrumpida", e);
         }
     }
     
     /**
-     * Ejecuta JavaScript en el navegador
-     * 
-     * @param script script de JavaScript a ejecutar
-     * @param argumentos argumentos para el script
-     * @return resultado de la ejecución
+     * Espera hasta que un elemento sea clickeable.
+     */
+    protected void esperarElementoClickeable(By localizador) {
+        try {
+            espera.esperarElementoClickeable(localizador);
+        } catch (Exception e) {
+            logger.error("Timeout esperando elemento clickeable: {}", localizador);
+            throw new RuntimeException("Elemento no clickeable: " + localizador, e);
+        }
+    }
+    
+    /**
+     * Espera hasta que un elemento sea visible.
+     */
+    protected void esperarElementoVisible(By localizador) {
+        try {
+            espera.esperarElementoVisible(localizador);
+        } catch (Exception e) {
+            logger.error("Timeout esperando elemento visible: {}", localizador);
+            throw new RuntimeException("Elemento no visible: " + localizador, e);
+        }
+    }
+    
+    // ===== MÉTODOS DE JAVASCRIPT =====
+    
+    /**
+     * Ejecuta JavaScript personalizado.
      */
     protected Object ejecutarJavaScript(String script, Object... argumentos) {
         try {
             JavascriptExecutor js = (JavascriptExecutor) driver;
-            return js.executeScript(script, argumentos);
+            Object resultado = js.executeScript(script, argumentos);
+            logger.debug("JavaScript ejecutado exitosamente");
+            return resultado;
         } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error ejecutando JavaScript: " + e.getMessage()));
-            return null;
+            logger.error("Error al ejecutar JavaScript: {}", script, e);
+            throw new RuntimeException("Error al ejecutar JavaScript", e);
         }
     }
     
     /**
-     * Verifica si un elemento es visible (está en pantalla y no oculto)
-     * 
-     * @param elemento elemento a verificar
-     * @return true si el elemento es visible
+     * Verifica si la página está completamente cargada.
      */
-    protected boolean esElementoVisible(WebElement elemento) {
+    protected boolean esPaginaCargada() {
         try {
-            return elemento.isDisplayed();
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            String readyState = js.executeScript("return document.readyState").toString();
+            return "complete".equals(readyState);
         } catch (Exception e) {
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Elemento no visible: " + e.getMessage()));
+            logger.warn("Error al verificar estado de carga de página", e);
             return false;
         }
     }
     
     /**
-     * Método template para verificar si la página está cargada.
-     * Las clases derivadas deben implementar esPaginaVisible()
-     * 
-     * @return true si la página específica está visible
+     * Resalta un elemento para debugging visual.
+     */
+    protected void resaltarElemento(WebElement elemento) {
+        try {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].style.border='3px solid red'", elemento);
+            Thread.sleep(1000);
+            js.executeScript("arguments[0].style.border=''", elemento);
+        } catch (Exception e) {
+            logger.debug("Error al resaltar elemento", e);
+        }
+    }
+    
+    // ===== MÉTODOS ABSTRACTOS =====
+    
+    /**
+     * Método abstracto que debe implementar cada página concreta.
+     * Verifica si la página específica está visible y cargada.
      */
     public abstract boolean esPaginaVisible();
+    
+    // ===== MÉTODOS DE UTILIDAD =====
+    
+    /**
+     * Obtiene información de depuración de la página actual.
+     */
+    protected String obtenerInfoDepuracion() {
+        try {
+            return String.format("URL: %s | Título: %s | ReadyState: %s", 
+                obtenerUrlActual(), 
+                obtenerTituloPagina(),
+                esPaginaCargada() ? "complete" : "loading");
+        } catch (Exception e) {
+            return "Error al obtener información de depuración: " + e.getMessage();
+        }
+    }
+    
+    /**
+     * Valida que el driver esté disponible y la página cargada.
+     */
+    protected void validarEstadoPagina() {
+        if (driver == null) {
+            throw new IllegalStateException("WebDriver no está inicializado");
+        }
+        
+        if (!esPaginaCargada()) {
+            logger.warn("La página puede no estar completamente cargada");
+        }
+    }
 }

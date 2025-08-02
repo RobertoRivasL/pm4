@@ -1,39 +1,34 @@
 package com.automatizacion.proyecto.enums;
 
 /**
- * Enumeración de tipos de navegadores soportados
- * @author Roberto Rivas Lopez
+ * Enumeración para los tipos de navegadores soportados
+ * Cumple con requerimiento ABP: Soporte multi-navegador
  */
 public enum TipoNavegador {
-    CHROME("Chrome", "chrome"),
-    FIREFOX("Firefox", "geckodriver"),
-    EDGE("Edge", "msedgedriver");
+    CHROME("chrome"),
+    FIREFOX("firefox"),
+    EDGE("edge");
     
-    private final String nombreCompleto;
-    private final String nombreDriver;
+    private final String nombre;
     
-    TipoNavegador(String nombreCompleto, String nombreDriver) {
-        this.nombreCompleto = nombreCompleto;
-        this.nombreDriver = nombreDriver;
+    TipoNavegador(String nombre) {
+        this.nombre = nombre;
     }
     
-    public String obtenerNombreCompleto() {
-        return nombreCompleto;
+    public String getNombre() {
+        return nombre;
     }
     
-    public String obtenerNombreDriver() {
-        return nombreDriver;
-    }
-    
-    public static TipoNavegador desdeString(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return CHROME;
-        }
+    public static TipoNavegador desdeString(String navegador) {
+        if (navegador == null) return CHROME;
         
-        try {
-            return TipoNavegador.valueOf(nombre.toUpperCase().trim());
-        } catch (IllegalArgumentException e) {
-            return CHROME;
+        switch (navegador.toUpperCase()) {
+            case "FIREFOX":
+                return FIREFOX;
+            case "EDGE":
+                return EDGE;
+            default:
+                return CHROME;
         }
     }
 }

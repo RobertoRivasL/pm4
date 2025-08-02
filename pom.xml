@@ -1,166 +1,236 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
-
-    <!-- Información del Proyecto -->
+    
+    <!-- ===== INFORMACIÓN DEL PROYECTO ===== -->
     <groupId>com.automatizacion.proyecto</groupId>
-    <artifactId>suite-automatizacion</artifactId>
+    <artifactId>suite-automatizacion-funcional</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-
+    
     <name>Suite de Automatización Funcional</name>
     <description>
-        Proyecto de automatización de pruebas para validación de registro e inicio de sesión.
+        Proyecto de automatización de pruebas funcionales para validación
+        de registro e inicio de sesión utilizando Selenium WebDriver.
         Desarrollado por Roberto Rivas Lopez para el curso de Automatización de Pruebas.
     </description>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License v3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <id>robertorivas</id>
-            <name>Roberto Rivas</name>
-            <email>roberto.rivas.l@mail.pucv.cl</email>
-            <roles>
-                <role>author</role>
-                <role>maintainer</role>
-            </roles>
-            <organization>Pontificia Universidad Católica de Valparaíso</organization>
-            <organizationUrl>https://www.pucv.cl</organizationUrl>
-        </developer>
-    </developers>
-
-
-    <!-- Propiedades del Proyecto -->
+    
+    <!-- ===== PROPIEDADES DEL PROYECTO ===== -->
     <properties>
-        <!-- Configuración Java -->
+        <!-- Versiones de Java y encoding -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <!-- Versiones de Dependencias -->
+        
+        <!-- Versiones de dependencias principales -->
         <selenium.version>4.15.0</selenium.version>
-        <testng.version>7.8.0</testng.version>
         <webdrivermanager.version>5.6.2</webdrivermanager.version>
+        <testng.version>7.8.0</testng.version>
         <allure.version>2.24.0</allure.version>
-        <apache.poi.version>5.2.4</apache.poi.version>
-        <jackson.version>2.15.2</jackson.version>
         <slf4j.version>2.0.9</slf4j.version>
         <logback.version>1.4.11</logback.version>
-        <opencsv.version>5.8</opencsv.version>
-        <faker.version>1.0.2</faker.version>
-
-        <!-- Configuración de Plugins -->
+        <apache.poi.version>5.2.4</apache.poi.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <jackson.version>2.15.2</jackson.version>
+        
+        <!-- Versiones de plugins -->
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-        <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
-        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
-        <aspectj.version>1.9.20</aspectj.version>
+        <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>3.2.2</maven.failsafe.plugin.version>
+        <allure.maven.plugin.version>2.12.0</allure.maven.plugin.version>
+        
+        <!-- Configuraciones de ejecución -->
+        <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>false</skip.integration.tests>
+        <parallel.tests>methods</parallel.tests>
+        <thread.count>3</thread.count>
     </properties>
-
-    <!-- Dependencias del Proyecto -->
+    
+    <!-- ===== DEPENDENCIAS ===== -->
     <dependencies>
-
-        <!-- Selenium WebDriver -->
+        
+        <!-- ===== SELENIUM WEBDRIVER ===== -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
-
-        <!-- WebDriverManager para gestión automática de drivers -->
+        
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-support</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        
+        <!-- ===== WEBDRIVER MANAGER ===== -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>${webdrivermanager.version}</version>
         </dependency>
-
-        <!-- TestNG para ejecución de pruebas -->
+        
+        <!-- ===== TESTNG ===== -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
         </dependency>
-
-        <!-- Apache POI para lectura de Excel -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${apache.poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${apache.poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <version>${apache.poi.version}</version>
-        </dependency>
-
-        <!-- OpenCSV para manejo de archivos CSV -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>${opencsv.version}</version>
-        </dependency>
-
-        <!-- Java Faker para datos de prueba -->
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>${faker.version}</version>
-        </dependency>
-
-        <!-- Allure para reportes -->
+        
+        <!-- ===== ALLURE REPORTING ===== -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>${allure.version}</version>
         </dependency>
-
-        <!-- Jackson para manejo de JSON -->
+        
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-java-commons</artifactId>
+            <version>${allure.version}</version>
         </dependency>
-
-        <!-- Logging -->
+        
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-attachments</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+        
+        <!-- ===== LOGGING ===== -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-
-        <!-- AssertJ para assertions más legibles -->
+        
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        
+        <!-- ===== APACHE POI (EXCEL/CSV) ===== -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        
+        <!-- ===== APACHE COMMONS ===== -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.13.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+        
+        <!-- ===== JACKSON (JSON) ===== -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        
+        <!-- ===== FAKER (DATOS DE PRUEBA) ===== -->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        
+        <!-- ===== VALIDACIÓN Y UTILITARIOS ===== -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.24.2</version>
-            <scope>test</scope>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        
+        <!-- ===== DEPENDENCIAS DE RUNTIME ===== -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.20.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        
     </dependencies>
-
-    <!-- Configuración de Build -->
+    
+    <!-- ===== CONFIGURACIÓN DE BUILD ===== -->
     <build>
+        <directory>${project.basedir}/target</directory>
+        <outputDirectory>${project.build.directory}/classes</outputDirectory>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+        
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        
         <plugins>
-
-            <!-- Plugin de compilación -->
+            
+            <!-- ===== MAVEN COMPILER PLUGIN ===== -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -171,157 +241,206 @@
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
-
-            <!-- Plugin de recursos con configuración para archivos binarios -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven.resources.plugin.version}</version>
-                <configuration>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>xls</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>jpeg</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
-                </configuration>
-            </plugin>
-
-            <!-- Plugin de Surefire para ejecución de pruebas -->
+            
+            <!-- ===== MAVEN SUREFIRE PLUGIN (UNIT TESTS) ===== -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
+                    <skipTests>${skip.unit.tests}</skipTests>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
-                    <systemPropertyVariables>
-                        <allure.results.directory>target/allure-results</allure.results.directory>
-                    </systemPropertyVariables>
+                    <parallel>${parallel.tests}</parallel>
+                    <threadCount>${thread.count}</threadCount>
+                    <useUnlimitedThreads>false</useUnlimitedThreads>
                     <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/1.9.20.1/aspectjweaver-1.9.20.1.jar"
+                        -Xmx2048m
+                        -XX:+UseG1GC
+                        -Dfile.encoding=UTF-8
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <allure.link.pattern>https://github.com/roberto-rivas/suite-automatizacion/issues/{}</allure.link.pattern>
+                    </systemPropertyVariables>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>io.qameta.allure.testng.AllureTestNg</value>
+                        </property>
+                    </properties>
+                </configuration>
+            </plugin>
+            
+            <!-- ===== MAVEN FAILSAFE PLUGIN (INTEGRATION TESTS) ===== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.failsafe.plugin.version}</version>
+                <configuration>
+                    <skipITs>${skip.integration.tests}</skipITs>
+                    <includes>
+                        <include>**/*IT.java</include>
+                        <include>**/*IntegrationTest.java</include>
+                    </includes>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/1.9.20.1/aspectjweaver-1.9.20.1.jar"
+                        -Xmx2048m
                     </argLine>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjweaver</artifactId>
-                        <version>${aspectj.version}</version>
-                    </dependency>
-                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-
-            <!-- Plugin de Allure para reportes -->
+            
+            <!-- ===== ALLURE MAVEN PLUGIN ===== -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.12.0</version>
+                <version>${allure.maven.plugin.version}</version>
                 <configuration>
-                    <resultsDirectory>target/allure-results</resultsDirectory>
-                    <reportDirectory>target/allure-report</reportDirectory>
+                    <reportVersion>2.24.0</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
                 </configuration>
             </plugin>
-
+            
+            <!-- ===== MAVEN RESOURCES PLUGIN ===== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            
+            <!-- ===== MAVEN CLEAN PLUGIN ===== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>capturas</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>logs</directory>
+                            <includes>
+                                <include>**/*.log</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            
         </plugins>
-
-        <!-- Configuración de recursos -->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.xlsx</exclude>
-                    <exclude>**/*.xls</exclude>
-                    <exclude>**/*.pdf</exclude>
-                    <exclude>**/*.png</exclude>
-                    <exclude>**/*.jpg</exclude>
-                    <exclude>**/*.jpeg</exclude>
-                    <exclude>**/*.gif</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*.xlsx</include>
-                    <include>**/*.xls</include>
-                    <include>**/*.pdf</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.jpeg</include>
-                    <include>**/*.gif</include>
-                </includes>
-            </testResource>
-        </testResources>
-
     </build>
-
-    <!-- Perfiles para diferentes entornos -->
+    
+    <!-- ===== PERFILES ===== -->
     <profiles>
-
+        
+        <!-- ===== PERFIL DE DESARROLLO ===== -->
         <profile>
-            <id>local</id>
+            <id>dev</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <entorno>local</entorno>
-                <navegador.headless>false</navegador.headless>
+                <skip.integration.tests>true</skip.integration.tests>
+                <parallel.tests>none</parallel.tests>
+                <thread.count>1</thread.count>
             </properties>
         </profile>
-
+        
+        <!-- ===== PERFIL DE TESTING ===== -->
         <profile>
-            <id>ci</id>
+            <id>test</id>
             <properties>
-                <entorno>ci</entorno>
-                <navegador.headless>true</navegador.headless>
+                <skip.unit.tests>false</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+                <parallel.tests>methods</parallel.tests>
+                <thread.count>3</thread.count>
             </properties>
         </profile>
-
+        
+        <!-- ===== PERFIL DE PRODUCCIÓN ===== -->
         <profile>
-            <id>smoke</id>
+            <id>prod</id>
+            <properties>
+                <skip.unit.tests>false</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+                <parallel.tests>classes</parallel.tests>
+                <thread.count>5</thread.count>
+            </properties>
+        </profile>
+        
+        <!-- ===== PERFIL DE REPORTE ===== -->
+        <profile>
+            <id>report</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <groups>smoke</groups>
-                        </configuration>
+                        <groupId>io.qameta.allure</groupId>
+                        <artifactId>allure-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <id>allure-report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
-        <profile>
-            <id>regression</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <groups>regression</groups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
+        
     </profiles>
-
+    
+    <!-- ===== REPOSITORIOS ===== -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    
 </project>

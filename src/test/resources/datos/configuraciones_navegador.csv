@@ -1,0 +1,11 @@
+navegador,headless,maximizado,ancho,alto,descripcion
+CHROME,false,true,1920,1080,Chrome normal maximizado
+CHROME,true,false,1920,1080,Chrome headless tamaño fijo
+FIREFOX,false,true,1920,1080,Firefox normal maximizado
+FIREFOX,true,false,1366,768,Firefox headless resolución menor
+EDGE,false,true,1920,1080,Edge normal maximizado
+EDGE,true,false,1920,1080,Edge headless tamaño fijo
+CHROME,false,false,1366,768,Chrome ventana pequeña
+CHROME,false,false,1440,900,Chrome resolución media
+FIREFOX,false,false,1280,720,Firefox resolución HD
+CHROME,true,false,1024,768,Chrome headless resolución antigua
