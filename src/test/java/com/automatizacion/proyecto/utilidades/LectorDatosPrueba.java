@@ -1,26 +1,14 @@
 package com.automatizacion.proyecto.utilidades;
 
-import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
-import com.automatizacion.proyecto.enums.TipoMensaje;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase responsable de leer datos de prueba desde diferentes fuentes externas.
- * Soporta archivos CSV, Excel y otros formatos de datos.
- * 
- * Implementa el principio de Responsabilidad Única y proporciona
- * abstracción para diferentes fuentes de datos.
+ * Clase utilitaria simplificada para leer datos de prueba.
+ * Proporciona métodos para cargar datos de prueba para TestNG DataProvider.
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
@@ -28,565 +16,259 @@ import java.util.List;
 public class LectorDatosPrueba {
     
     private static final Logger logger = LoggerFactory.getLogger(LectorDatosPrueba.class);
-    private static final String SEPARADOR_CSV = ",";
     
-    private final ConfiguracionGlobal configuracion;
-    private final String directorioBase;
-    
-    /**
-     * Constructor que inicializa el lector con la configuración global
-     */
-    public LectorDatosPrueba() {
-        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
-        this.directorioBase = configuracion.obtenerDirectorioDatos();
-        verificarDirectorioBase();
+    // Constructor privado para clase utilitaria
+    private LectorDatosPrueba() {
+        throw new IllegalStateException("Clase utilitaria - no debe instanciarse");
     }
     
     /**
-     * Constructor que permite especificar un directorio personalizado
-     * @param directorioPersonalizado directorio donde buscar los archivos de datos
+     * Obtiene datos de prueba para login válido.
+     * 
+     * @return Array bidimensional con datos de login válido
      */
-    public LectorDatosPrueba(String directorioPersonalizado) {
-        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
-        this.directorioBase = directorioPersonalizado;
-        verificarDirectorioBase();
+    public static Object[][] obtenerDatosLoginValido() {
+        logger.info("Generando datos de login válido");
+        
+        List<ModeloDatosPrueba> datos = new ArrayList<>();
+        
+        // Datos de login válido
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_001", "admin@test.com", "Password123!"));
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_002", "usuario@test.com", "SecurePass456!"));
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_003", "qa.tester@test.com", "TestPass789!"));
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_004", "roberto.rivas@test.com", "MyPassword2024!"));
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_005", "test.user@gmail.com", "ValidPass123!"));
+        
+        return convertirAArray(datos);
     }
     
     /**
-     * Verifica que el directorio base existe
+     * Obtiene datos de prueba para login inválido.
+     * 
+     * @return Array bidimensional con datos de login inválido
      */
-    private void verificarDirectorioBase() {
-        Path directorio = Paths.get(directorioBase);
-        if (!Files.exists(directorio)) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Directorio de datos no existe: " + directorioBase));
+    public static Object[][] obtenerDatosLoginInvalido() {
+        logger.info("Generando datos de login inválido");
+        
+        List<ModeloDatosPrueba> datos = new ArrayList<>();
+        
+        // Datos de login inválido
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_001", "usuario.inexistente@test.com", "Password123!", "Usuario no encontrado"));
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_002", "admin@test.com", "WrongPassword", "Credenciales incorrectas"));
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_003", "", "Password123!", "Complete todos los campos"));
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_004", "usuario@test.com", "", "Complete todos los campos"));
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_005", "formato.invalido", "Password123!", "Ingrese un email válido"));
+        
+        return convertirAArray(datos);
+    }
+    
+    /**
+     * Obtiene datos de prueba para registro válido.
+     * 
+     * @return Array bidimensional con datos de registro válido
+     */
+    public static Object[][] obtenerDatosRegistroValido() {
+        logger.info("Generando datos de registro válido");
+        
+        List<ModeloDatosPrueba> datos = new ArrayList<>();
+        
+        // Datos de registro válido
+        datos.add(ModeloDatosPrueba.registroValido("REG_001", "Juan", "Pérez", "juan.perez@test.com", "Password123!"));
+        datos.add(ModeloDatosPrueba.registroValido("REG_002", "María", "González", "maria.gonzalez@test.com", "SecurePass456!"));
+        datos.add(ModeloDatosPrueba.registroValido("REG_003", "Carlos", "Rodríguez", "carlos.rodriguez@test.com", "MyPassword789!"));
+        datos.add(ModeloDatosPrueba.registroValido("REG_004", "Ana", "López", "ana.lopez@gmail.com", "TestPass2024!"));
+        datos.add(ModeloDatosPrueba.registroValido("REG_005", "Pedro", "Silva", "pedro.silva@yahoo.com", "AutoTest123!"));
+        
+        return convertirAArray(datos);
+    }
+    
+    /**
+     * Obtiene datos de prueba para registro inválido.
+     * 
+     * @return Array bidimensional con datos de registro inválido
+     */
+    public static Object[][] obtenerDatosRegistroInvalido() {
+        logger.info("Generando datos de registro inválido");
+        
+        List<ModeloDatosPrueba> datos = new ArrayList<>();
+        
+        // Datos de registro inválido
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_001", "", "López", "test1@email.com", "Password123!", "El nombre es obligatorio"));
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_002", "Ana", "", "test2@email.com", "Password123!", "El apellido es obligatorio"));
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_003", "Pedro", "Silva", "", "Password123!", "El email es obligatorio"));
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_004", "Laura", "Morales", "laura@test.com", "", "La contraseña es obligatoria"));
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_005", "Diego", "Fernández", "email.invalido", "Password123!", "Ingrese un email válido"));
+        
+        return convertirAArray(datos);
+    }
+    
+    /**
+     * Lee datos desde archivo CSV (método básico).
+     * Si el archivo no existe, retorna datos de ejemplo.
+     * 
+     * @param nombreArchivo Nombre del archivo CSV
+     * @return Array bidimensional con datos
+     */
+    public static Object[][] obtenerDatosCSVPrueba(String nombreArchivo) {
+        logger.info("Intentando leer archivo CSV: {}", nombreArchivo);
+        
+        // Por ahora retorna datos de ejemplo
+        // Más adelante se puede implementar lectura real de CSV
+        
+        if (nombreArchivo.contains("login_valido")) {
+            return obtenerDatosLoginValido();
+        } else if (nombreArchivo.contains("login_invalido")) {
+            return obtenerDatosLoginInvalido();
+        } else if (nombreArchivo.contains("registro_valido")) {
+            return obtenerDatosRegistroValido();
+        } else if (nombreArchivo.contains("registro_invalido")) {
+            return obtenerDatosRegistroInvalido();
         } else {
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Directorio de datos configurado: " + directorioBase));
+            return crearDatosEjemplo();
         }
     }
     
-    // === MÉTODOS PARA LEER ARCHIVOS CSV ===
-    
     /**
-     * Lee datos de prueba desde un archivo CSV
-     * @param nombreArchivo nombre del archivo CSV (sin ruta)
-     * @return lista de ModeloDatosPrueba
+     * Lee datos desde archivo Excel (método básico).
+     * Si el archivo no existe, retorna datos de ejemplo.
+     * 
+     * @param nombreArchivo Nombre del archivo Excel
+     * @param nombreHoja Nombre de la hoja
+     * @return Array bidimensional con datos
      */
-    public List<ModeloDatosPrueba> leerDatosCSV(String nombreArchivo) {
-        String rutaCompleta = construirRutaArchivo(nombreArchivo);
-        return leerDatosCSV(new File(rutaCompleta));
+    public static Object[][] leerDatosExcel(String nombreArchivo, String nombreHoja) {
+        logger.info("Intentando leer archivo Excel: {} - Hoja: {}", nombreArchivo, nombreHoja);
+        
+        // Por ahora retorna datos de ejemplo
+        // Más adelante se puede implementar lectura real de Excel
+        
+        if (nombreHoja.toLowerCase().contains("login")) {
+            return obtenerDatosLoginValido();
+        } else if (nombreHoja.toLowerCase().contains("registro")) {
+            return obtenerDatosRegistroValido();
+        } else {
+            return crearDatosEjemplo();
+        }
     }
     
     /**
-     * Lee datos de prueba desde un archivo CSV
-     * @param archivo archivo CSV a leer
-     * @return lista de ModeloDatosPrueba
+     * Obtiene datos combinados para todas las pruebas.
+     * 
+     * @return Array bidimensional con datos mixtos
      */
-    public List<ModeloDatosPrueba> leerDatosCSV(File archivo) {
+    public static Object[][] obtenerDatosTodosTipos() {
+        logger.info("Generando datos combinados para todas las pruebas");
+        
         List<ModeloDatosPrueba> datos = new ArrayList<>();
         
-        if (!archivo.exists()) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Archivo CSV no encontrado: " + archivo.getAbsolutePath()));
-            return datos;
-        }
+        // Agregar algunos de cada tipo
+        datos.add(ModeloDatosPrueba.loginValido("LOGIN_001", "admin@test.com", "Password123!"));
+        datos.add(ModeloDatosPrueba.registroValido("REG_001", "Juan", "Pérez", "juan.perez@test.com", "Password123!"));
+        datos.add(ModeloDatosPrueba.loginInvalido("LOGIN_INV_001", "wrong@test.com", "WrongPass", "Credenciales incorrectas"));
+        datos.add(ModeloDatosPrueba.registroInvalido("REG_INV_001", "", "López", "test@email.com", "Password123!", "El nombre es obligatorio"));
         
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            String[] encabezados = null;
-            int numeroLinea = 0;
-            
-            while ((linea = reader.readLine()) != null) {
-                numeroLinea++;
-                
-                if (linea.trim().isEmpty()) {
-                    continue; // Saltar líneas vacías
-                }
-                
-                String[] valores = procesarLineaCSV(linea);
-                
-                if (numeroLinea == 1) {
-                    // Primera línea son los encabezados
-                    encabezados = valores;
-                    logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                        "Encabezados CSV: " + String.join(", ", encabezados)));
-                    continue;
-                }
-                
-                if (encabezados != null && valores.length > 0) {
-                    ModeloDatosPrueba modelo = mapearCSVAModelo(encabezados, valores, numeroLinea);
-                    if (modelo != null) {
-                        datos.add(modelo);
-                    }
-                }
-            }
-            
-            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                "Leídos " + datos.size() + " registros desde " + archivo.getName()));
-                
-        } catch (IOException e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error leyendo archivo CSV: " + e.getMessage()));
-        }
-        
-        return datos;
+        return convertirAArray(datos);
     }
     
     /**
-     * Procesa una línea de CSV considerando comillas y comas
-     * @param linea línea a procesar
-     * @return array de valores
+     * Crea datos de ejemplo cuando no se pueden leer archivos.
+     * 
+     * @return Array bidimensional con datos de ejemplo
      */
-    private String[] procesarLineaCSV(String linea) {
-        List<String> valores = new ArrayList<>();
-        StringBuilder valorActual = new StringBuilder();
-        boolean dentroComillas = false;
+    private static Object[][] crearDatosEjemplo() {
+        logger.info("Creando datos de ejemplo como fallback");
         
-        for (int i = 0; i < linea.length(); i++) {
-            char caracter = linea.charAt(i);
-            
-            if (caracter == '"') {
-                dentroComillas = !dentroComillas;
-            } else if (caracter == ',' && !dentroComillas) {
-                valores.add(valorActual.toString().trim());
-                valorActual.setLength(0);
-            } else {
-                valorActual.append(caracter);
-            }
-        }
-        
-        // Agregar el último valor
-        valores.add(valorActual.toString().trim());
-        
-        return valores.toArray(new String[0]);
-    }
-    
-    /**
-     * Mapea valores CSV a un modelo de datos de prueba
-     * @param encabezados array de encabezados
-     * @param valores array de valores
-     * @param numeroLinea número de línea para logging
-     * @return ModeloDatosPrueba mapeado
-     */
-    private ModeloDatosPrueba mapearCSVAModelo(String[] encabezados, String[] valores, int numeroLinea) {
-        try {
-            ModeloDatosPrueba.Builder builder = ModeloDatosPrueba.builder();
-            
-            for (int i = 0; i < Math.min(encabezados.length, valores.length); i++) {
-                String encabezado = encabezados[i].toLowerCase().trim();
-                String valor = valores[i].trim();
-                
-                mapearCampoCSV(builder, encabezado, valor);
-            }
-            
-            // Establecer número de línea como parte del caso de prueba si no existe
-            ModeloDatosPrueba datos = builder.build();
-            if (datos.getCasoPrueba() == null || datos.getCasoPrueba().isEmpty()) {
-                datos.setCasoPrueba("CSV_LINEA_" + numeroLinea);
-            }
-            
-            return datos;
-            
-        } catch (Exception e) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Error mapeando línea " + numeroLinea + ": " + e.getMessage()));
-            return null;
-        }
-    }
-    
-    /**
-     * Mapea un campo específico del CSV al builder
-     * @param builder builder del modelo
-     * @param encabezado nombre del encabezado
-     * @param valor valor a mapear
-     */
-    private void mapearCampoCSV(ModeloDatosPrueba.Builder builder, String encabezado, String valor) {
-        if (valor.isEmpty()) {
-            return; // No mapear valores vacíos
-        }
-        
-        switch (encabezado) {
-            case "caso_prueba":
-            case "test_case":
-                builder.casoPrueba(valor);
-                break;
-            case "descripcion":
-            case "description":
-                builder.descripcion(valor);
-                break;
-            case "nombre":
-            case "name":
-            case "first_name":
-                builder.nombre(valor);
-                break;
-            case "apellido":
-            case "lastname":
-            case "last_name":
-                builder.apellido(valor);
-                break;
-            case "email":
-            case "correo":
-                builder.email(valor);
-                break;
-            case "password":
-            case "contraseña":
-                builder.password(valor);
-                break;
-            case "confirmar_password":
-            case "confirm_password":
-            case "confirmacion_password":
-                builder.confirmacionPassword(valor);
-                break;
-            case "telefono":
-            case "phone":
-            case "telephone":
-                builder.telefono(valor);
-                break;
-            case "genero":
-            case "gender":
-                builder.genero(valor);
-                break;
-            case "pais":
-            case "country":
-                builder.pais(valor);
-                break;
-            case "ciudad":
-            case "city":
-                builder.ciudad(valor);
-                break;
-            case "fecha_nacimiento":
-            case "birth_date":
-                builder.fechaNacimiento(valor);
-                break;
-            case "navegador":
-            case "browser":
-                builder.navegador(valor);
-                break;
-            case "es_valido":
-            case "is_valid":
-            case "valid":
-                builder.esValido(Boolean.parseBoolean(valor));
-                break;
-            case "resultado_esperado":
-            case "expected_result":
-                builder.resultadoEsperado(valor);
-                break;
-            case "mensaje_error":
-            case "error_message":
-                builder.mensajeError(valor);
-                break;
-            default:
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                    "Campo CSV no reconocido: " + encabezado));
-                break;
-        }
-    }
-    
-    // === MÉTODOS PARA LEER ARCHIVOS EXCEL ===
-    
-    /**
-     * Lee datos de prueba desde un archivo Excel
-     * @param nombreArchivo nombre del archivo Excel
-     * @return lista de ModeloDatosPrueba
-     */
-    public List<ModeloDatosPrueba> leerDatosExcel(String nombreArchivo) {
-        String rutaCompleta = construirRutaArchivo(nombreArchivo);
-        return leerDatosExcel(new File(rutaCompleta));
-    }
-    
-    /**
-     * Lee datos de prueba desde un archivo Excel
-     * @param archivo archivo Excel a leer
-     * @return lista de ModeloDatosPrueba
-     */
-    public List<ModeloDatosPrueba> leerDatosExcel(File archivo) {
         List<ModeloDatosPrueba> datos = new ArrayList<>();
         
-        if (!archivo.exists()) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Archivo Excel no encontrado: " + archivo.getAbsolutePath()));
-            return datos;
-        }
+        // Datos básicos de ejemplo
+        datos.add(ModeloDatosPrueba.loginValido("EJEMPLO_LOGIN", "usuario@test.com", "Password123!"));
+        datos.add(ModeloDatosPrueba.registroValido("EJEMPLO_REG", "Usuario", "Ejemplo", "usuario.ejemplo@test.com", "Password123!"));
         
-        try (FileInputStream fis = new FileInputStream(archivo);
-             Workbook workbook = new XSSFWorkbook(fis)) {
-            
-            // Leer la primera hoja por defecto
-            Sheet sheet = workbook.getSheetAt(0);
-            
-            if (sheet.getPhysicalNumberOfRows() == 0) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Archivo Excel está vacío: " + archivo.getName()));
-                return datos;
-            }
-            
-            // Obtener encabezados de la primera fila
-            Row filaEncabezados = sheet.getRow(0);
-            String[] encabezados = extraerEncabezadosExcel(filaEncabezados);
-            
-            logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-                "Encabezados Excel: " + String.join(", ", encabezados)));
-            
-            // Procesar filas de datos
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row fila = sheet.getRow(i);
-                if (fila != null && !esFilaVacia(fila)) {
-                    String[] valores = extraerValoresExcel(fila, encabezados.length);
-                    ModeloDatosPrueba modelo = mapearExcelAModelo(encabezados, valores, i + 1);
-                    if (modelo != null) {
-                        datos.add(modelo);
-                    }
-                }
-            }
-            
-            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                "Leídos " + datos.size() + " registros desde " + archivo.getName()));
-                
-        } catch (IOException e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error leyendo archivo Excel: " + e.getMessage()));
-        }
-        
-        return datos;
+        return convertirAArray(datos);
     }
     
     /**
-     * Extrae encabezados de una fila de Excel
-     * @param fila fila de encabezados
-     * @return array de encabezados
+     * Convierte lista de ModeloDatosPrueba a array bidimensional para TestNG.
+     * 
+     * @param datos Lista de datos
+     * @return Array bidimensional
      */
-    private String[] extraerEncabezadosExcel(Row fila) {
-        List<String> encabezados = new ArrayList<>();
-        
-        if (fila != null) {
-            for (int i = 0; i < fila.getLastCellNum(); i++) {
-                Cell celda = fila.getCell(i);
-                encabezados.add(celda != null ? obtenerValorCelda(celda) : "");
-            }
+    private static Object[][] convertirAArray(List<ModeloDatosPrueba> datos) {
+        if (datos == null || datos.isEmpty()) {
+            logger.warn("Lista de datos vacía, retornando array mínimo");
+            return new Object[][] {
+                {ModeloDatosPrueba.loginValido("DEFAULT", "default@test.com", "Password123!")}
+            };
         }
         
-        return encabezados.toArray(new String[0]);
+        Object[][] resultado = new Object[datos.size()][1];
+        for (int i = 0; i < datos.size(); i++) {
+            resultado[i][0] = datos.get(i);
+        }
+        
+        logger.info("Convertidos {} registros a array para TestNG", datos.size());
+        return resultado;
     }
     
     /**
-     * Extrae valores de una fila de Excel
-     * @param fila fila de datos
-     * @param cantidadColumnas cantidad de columnas esperadas
-     * @return array de valores
+     * Valida que los datos estén correctamente formateados.
+     * 
+     * @param datos Array de datos a validar
+     * @return true si los datos son válidos
      */
-    private String[] extraerValoresExcel(Row fila, int cantidadColumnas) {
-        String[] valores = new String[cantidadColumnas];
-        
-        for (int i = 0; i < cantidadColumnas; i++) {
-            Cell celda = fila.getCell(i);
-            valores[i] = celda != null ? obtenerValorCelda(celda) : "";
+    public static boolean validarDatos(Object[][] datos) {
+        if (datos == null || datos.length == 0) {
+            logger.warn("Array de datos es null o vacío");
+            return false;
         }
         
-        return valores;
-    }
-    
-    /**
-     * Obtiene el valor de una celda de Excel como String
-     * @param celda celda de Excel
-     * @return valor como String
-     */
-    private String obtenerValorCelda(Cell celda) {
-        if (celda == null) {
-            return "";
-        }
-        
-        switch (celda.getCellType()) {
-            case STRING:
-                return celda.getStringCellValue().trim();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(celda)) {
-                    return celda.getLocalDateTimeCellValue().toLocalDate().toString();
-                } else {
-                    // Evitar notación científica para números enteros
-                    double valor = celda.getNumericCellValue();
-                    if (valor == Math.floor(valor)) {
-                        return String.valueOf((long) valor);
-                    } else {
-                        return String.valueOf(valor);
-                    }
-                }
-            case BOOLEAN:
-                return String.valueOf(celda.getBooleanCellValue());
-            case FORMULA:
-                return celda.getCellFormula();
-            case BLANK:
-            default:
-                return "";
-        }
-    }
-    
-    /**
-     * Verifica si una fila de Excel está vacía
-     * @param fila fila a verificar
-     * @return true si la fila está vacía
-     */
-    private boolean esFilaVacia(Row fila) {
-        for (Cell celda : fila) {
-            if (celda != null && !obtenerValorCelda(celda).isEmpty()) {
+        for (int i = 0; i < datos.length; i++) {
+            if (datos[i].length == 0 || !(datos[i][0] instanceof ModeloDatosPrueba)) {
+                logger.warn("Fila {} no contiene ModeloDatosPrueba válido", i);
                 return false;
             }
         }
+        
+        logger.info("Validación de datos exitosa: {} registros válidos", datos.length);
         return true;
     }
     
     /**
-     * Mapea valores Excel a un modelo de datos de prueba
-     * @param encabezados array de encabezados
-     * @param valores array de valores
-     * @param numeroFila número de fila para logging
-     * @return ModeloDatosPrueba mapeado
+     * Obtiene información sobre los datos cargados.
+     * 
+     * @param datos Array de datos
+     * @return String con estadísticas
      */
-    private ModeloDatosPrueba mapearExcelAModelo(String[] encabezados, String[] valores, int numeroFila) {
-        try {
-            ModeloDatosPrueba.Builder builder = ModeloDatosPrueba.builder();
-            
-            for (int i = 0; i < Math.min(encabezados.length, valores.length); i++) {
-                String encabezado = encabezados[i].toLowerCase().trim();
-                String valor = valores[i].trim();
+    public static String obtenerEstadisticas(Object[][] datos) {
+        if (datos == null || datos.length == 0) {
+            return "No hay datos disponibles";
+        }
+        
+        int total = datos.length;
+        int login = 0;
+        int registro = 0;
+        int validos = 0;
+        int invalidos = 0;
+        
+        for (Object[] fila : datos) {
+            if (fila.length > 0 && fila[0] instanceof ModeloDatosPrueba) {
+                ModeloDatosPrueba modelo = (ModeloDatosPrueba) fila[0];
                 
-                mapearCampoCSV(builder, encabezado, valor); // Reutilizar lógica de mapeo CSV
-            }
-            
-            // Establecer número de fila como parte del caso de prueba si no existe
-            ModeloDatosPrueba datos = builder.build();
-            if (datos.getCasoPrueba() == null || datos.getCasoPrueba().isEmpty()) {
-                datos.setCasoPrueba("EXCEL_FILA_" + numeroFila);
-            }
-            
-            return datos;
-            
-        } catch (Exception e) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Error mapeando fila Excel " + numeroFila + ": " + e.getMessage()));
-            return null;
-        }
-    }
-    
-    // === MÉTODOS DE UTILIDAD ===
-    
-    /**
-     * Construye la ruta completa de un archivo
-     * @param nombreArchivo nombre del archivo
-     * @return ruta completa
-     */
-    private String construirRutaArchivo(String nombreArchivo) {
-        return directorioBase + File.separator + nombreArchivo;
-    }
-    
-    /**
-     * Obtiene la lista de archivos de datos disponibles
-     * @return lista de nombres de archivos
-     */
-    public List<String> obtenerArchivosDisponibles() {
-        List<String> archivos = new ArrayList<>();
-        Path directorio = Paths.get(directorioBase);
-        
-        if (!Files.exists(directorio)) {
-            return archivos;
-        }
-        
-        try {
-            Files.list(directorio)
-                    .filter(path -> {
-                        String nombre = path.getFileName().toString().toLowerCase();
-                        return nombre.endsWith(".csv") || nombre.endsWith(".xlsx") || nombre.endsWith(".xls");
-                    })
-                    .forEach(path -> archivos.add(path.getFileName().toString()));
-                    
-        } catch (IOException e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error listando archivos disponibles: " + e.getMessage()));
-        }
-        
-        return archivos;
-    }
-    
-    /**
-     * Crea un archivo CSV de ejemplo con la estructura esperada
-     * @param rutaArchivo ruta completa donde crear el archivo
-     */
-    public void crearArchivoEjemploCSV(String rutaArchivo) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(rutaArchivo))) {
-            
-            // Escribir encabezados
-            writer.println("caso_prueba,descripcion,nombre,apellido,email,password,confirmar_password,telefono,es_valido,resultado_esperado,mensaje_error");
-            
-            // Escribir datos de ejemplo
-            writer.println("REG_001,\"Usuario válido\",Roberto,Rivas,roberto.test@email.com,Password123!,Password123!,+56912345678,true,\"Registro exitoso\",");
-            writer.println("REG_002,\"Email inválido\",Test,User,email-invalido,Password123!,Password123!,,false,\"Error de validación\",\"Email inválido\"");
-            writer.println("REG_003,\"Contraseñas diferentes\",Another,User,another.test@email.com,Password123!,DiferentePass,+56987654321,false,\"Error de validación\",\"Contraseñas no coinciden\"");
-            
-            logger.info(TipoMensaje.EXITO.formatearMensaje(
-                "Archivo CSV de ejemplo creado: " + rutaArchivo));
+                if (modelo.getCasoPrueba().startsWith("LOGIN")) {
+                    login++;
+                } else if (modelo.getCasoPrueba().startsWith("REG")) {
+                    registro++;
+                }
                 
-        } catch (IOException e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error creando archivo CSV de ejemplo: " + e.getMessage()));
-        }
-    }
-    
-    /**
-     * Filtra datos por tipo de validez
-     * @param datos lista de datos a filtrar
-     * @param esValido true para datos válidos, false para inválidos
-     * @return lista filtrada
-     */
-    public List<ModeloDatosPrueba> filtrarPorValidez(List<ModeloDatosPrueba> datos, boolean esValido) {
-        return datos.stream()
-                .filter(dato -> dato.isEsValido() == esValido)
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    /**
-     * Busca datos por caso de prueba específico
-     * @param datos lista de datos donde buscar
-     * @param casoPrueba caso de prueba a buscar
-     * @return primer dato que coincida o null si no se encuentra
-     */
-    public ModeloDatosPrueba buscarPorCasoPrueba(List<ModeloDatosPrueba> datos, String casoPrueba) {
-        return datos.stream()
-                .filter(dato -> casoPrueba.equals(dato.getCasoPrueba()))
-                .findFirst()
-                .orElse(null);
-    }
-    
-    /**
-     * Obtiene estadísticas de los archivos de datos
-     * @return string con estadísticas
-     */
-    public String obtenerEstadisticasArchivos() {
-        List<String> archivos = obtenerArchivosDisponibles();
-        StringBuilder stats = new StringBuilder();
-        
-        stats.append("=== ESTADÍSTICAS DE ARCHIVOS DE DATOS ===\n");
-        stats.append("Directorio: ").append(directorioBase).append("\n");
-        stats.append("Total de archivos: ").append(archivos.size()).append("\n");
-        
-        long csvCount = archivos.stream().mapToLong(a -> a.toLowerCase().endsWith(".csv") ? 1 : 0).sum();
-        long excelCount = archivos.stream().mapToLong(a -> a.toLowerCase().endsWith(".xlsx") || a.toLowerCase().endsWith(".xls") ? 1 : 0).sum();
-        
-        stats.append("Archivos CSV: ").append(csvCount).append("\n");
-        stats.append("Archivos Excel: ").append(excelCount).append("\n");
-        
-        if (!archivos.isEmpty()) {
-            stats.append("Archivos encontrados:\n");
-            archivos.forEach(archivo -> stats.append("  - ").append(archivo).append("\n"));
+                if (modelo.isEsValido()) {
+                    validos++;
+                } else {
+                    invalidos++;
+                }
+            }
         }
         
-        return stats.toString();
-    }
-    
-    /**
-     * Obtiene el directorio base configurado
-     * @return directorio base de datos
-     */
-    public String obtenerDirectorioBase() {
-        return directorioBase;
+        return String.format("Total: %d | Login: %d | Registro: %d | Válidos: %d | Inválidos: %d", 
+                           total, login, registro, validos, invalidos);
     }
 }

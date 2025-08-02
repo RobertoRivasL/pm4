@@ -8,6 +8,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.PageFactory;
 import com.automatizacion.proyecto.utilidades.EsperaExplicita;
+import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +27,15 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public abstract class PaginaBase {
-    
-    private static final Logger logger = LoggerFactory.getLogger(PaginaBase.class);
-    
-    protected final WebDriver driver;
-    protected final EsperaExplicita espera;
-    protected static final int TIEMPO_ESPERA_ELEMENTOS = 15;
-    protected static final int MAX_REINTENTOS = 3;
-    protected static final int TIEMPO_ESPERA_CORTO = 5;
+    protected WebDriver driver;
+    protected EsperaExplicita espera;
+    protected GestorCapturaPantalla gestorCaptura;
+
+    public PaginaBase(WebDriver driver, EsperaExplicita espera, GestorCapturaPantalla gestorCaptura) {
+        this.driver = driver;
+        this.espera = espera;
+        this.gestorCaptura = gestorCaptura;
+    }
     
     /**
      * Constructor base que inicializa el driver y las esperas.

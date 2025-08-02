@@ -3,6 +3,7 @@ package com.automatizacion.proyecto.paginas;
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
 import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.paginas.interfaces.IPaginaRegistro;
+import com.automatizacion.proyecto.utilidades.EsperaExplicita;
 import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Página de registro implementando el patrón Page Object Model.
- * Encapsula todos los elementos y acciones relacionadas con el registro de usuarios.
+ * Encapsula todos los elementos y acciones relacionadas con el registro de
+ * usuarios.
  * 
  * Implementa la interfaz IPaginaRegistro siguiendo el principio de
  * Inversión de Dependencias del SOLID.
@@ -23,86 +25,87 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  */
 public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(PaginaRegistro.class);
-    
+
     // ===== LOCALIZADORES DE ELEMENTOS =====
-    
+
     @FindBy(id = "nombre")
     private WebElement campoNombre;
-    
-    @FindBy(id = "apellido") 
+
+    @FindBy(id = "apellido")
     private WebElement campoApellido;
-    
+
     @FindBy(id = "email")
     private WebElement campoEmail;
-    
+
     @FindBy(id = "password")
     private WebElement campoPassword;
-    
+
     @FindBy(id = "confirmarPassword")
     private WebElement campoConfirmarPassword;
-    
+
     @FindBy(id = "telefono")
     private WebElement campoTelefono;
-    
+
     @FindBy(id = "fechaNacimiento")
     private WebElement campoFechaNacimiento;
-    
+
     @FindBy(id = "genero")
     private WebElement selectGenero;
-    
+
     @FindBy(id = "terminosCondiciones")
     private WebElement checkboxTerminos;
-    
+
     @FindBy(id = "newsletter")
     private WebElement checkboxNewsletter;
-    
+
     @FindBy(id = "btnRegistrar")
     private WebElement botonRegistrar;
-    
+
     @FindBy(id = "btnLimpiar")
     private WebElement botonLimpiar;
-    
+
     @FindBy(xpath = "//div[@class='mensaje-error']")
     private WebElement mensajeError;
-    
+
     @FindBy(xpath = "//div[@class='mensaje-exito']")
     private WebElement mensajeExito;
-    
+
     @FindBy(xpath = "//span[@class='error-campo']")
     private WebElement errorCampo;
-    
+
     // Localizadores como constantes para mejor mantenimiento
     private static final By FORMULARIO_REGISTRO = By.id("formularioRegistro");
     private static final By SPINNER_CARGA = By.className("spinner-loading");
     private static final By MODAL_CONFIRMACION = By.id("modalConfirmacion");
-    
+
     /**
      * Constructor que inicializa la página de registro.
      * 
      * @param driver WebDriver para interactuar con la página
      */
-    public PaginaRegistro(WebDriver driver) {
-        super(driver);
-        logger.info("Inicializando página de registro");
-    }
-    
+    public PaginaRegistro(WebDriver driver, EsperaExplicita espera, GestorCapturaPantalla gestorCaptura) {
+    super(driver, espera, gestorCaptura);
+    logger.info("Inicializando página de registro");
+}
+
     /**
-     * Implementación del método de la interfaz para verificar si la página está visible.
+     * Implementación del método de la interfaz para verificar si la página está
+     * visible.
      */
     @Override
     public boolean esPaginaVisible() {
         try {
-            return esElementoVisible(FORMULARIO_REGISTRO) && 
-                   campoNombre.isDisplayed() && 
-                   campoEmail.isDisplayed();
+            return esElementoVisible(FORMULARIO_REGISTRO) &&
+                    campoNombre.isDisplayed() &&
+                    campoEmail.isDisplayed();
         } catch (Exception e) {
             logger.warn("Error al verificar visibilidad de página de registro: {}", e.getMessage());
             return false;
         }
     }
-    
+
     /**
      * Ingresa el nombre en el campo correspondiente.
      */
@@ -117,7 +120,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar el nombre", e);
         }
     }
-    
+
     /**
      * Ingresa el apellido en el campo correspondiente.
      */
@@ -132,7 +135,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar el apellido", e);
         }
     }
-    
+
     /**
      * Ingresa el email en el campo correspondiente.
      */
@@ -147,7 +150,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar el email", e);
         }
     }
-    
+
     /**
      * Ingresa la contraseña en el campo correspondiente.
      */
@@ -162,7 +165,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar el password", e);
         }
     }
-    
+
     /**
      * Ingresa la confirmación de contraseña.
      */
@@ -177,7 +180,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar la confirmación de password", e);
         }
     }
-    
+
     /**
      * Ingresa el teléfono en el campo correspondiente.
      */
@@ -194,7 +197,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo ingresar el teléfono", e);
         }
     }
-    
+
     /**
      * Selecciona el género del dropdown.
      */
@@ -212,7 +215,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudo seleccionar el género", e);
         }
     }
-    
+
     /**
      * Acepta los términos y condiciones.
      */
@@ -229,7 +232,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             throw new RuntimeException("No se pudieron aceptar los términos", e);
         }
     }
-    
+
     /**
      * Hace clic en el botón de registrar.
      */
@@ -238,17 +241,17 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
         try {
             espera.esperarElementoClickeable(By.id("btnRegistrar"));
             hacerClicRobusto(botonRegistrar);
-            
+
             // Esperar a que la página procese el registro
             espera.esperarInvisibilidadDelElemento(SPINNER_CARGA);
             logger.info("Click en botón registrar ejecutado");
-            
+
         } catch (Exception e) {
             logger.error("Error al hacer click en registrar: {}", e.getMessage());
             throw new RuntimeException("No se pudo hacer click en registrar", e);
         }
     }
-    
+
     /**
      * Registra un usuario utilizando el modelo de datos de prueba.
      */
@@ -256,39 +259,39 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
     public boolean registrarUsuario(ModeloDatosPrueba datos) {
         try {
             logger.info("Iniciando registro de usuario: {}", datos.getEmail());
-            
+
             // Verificar que la página esté visible
             if (!esPaginaVisible()) {
                 throw new RuntimeException("La página de registro no está visible");
             }
-            
+
             // Llenar formulario con los datos
             llenarFormulario(datos);
-            
-            // Capturar pantalla antes del submit
-            GestorCapturaPantalla.capturarPantalla(driver, "antes_registro_" + datos.getCasoPrueba());
-            
+
+            // Capturar pantalla antes del submit (USO CORRECTO)
+            gestorCaptura.capturarPantalla(driver, "antes_registro_" + datos.getCasoPrueba());
+
             // Hacer click en registrar
             clickBotonRegistrar();
-            
+
             // Verificar resultado
             boolean registroExitoso = verificarRegistroExitoso();
-            
-            // Capturar pantalla después del resultado
-            GestorCapturaPantalla.capturarPantalla(driver, 
-                "despues_registro_" + datos.getCasoPrueba() + 
-                (registroExitoso ? "_exitoso" : "_fallido"));
-            
+
+            // Capturar pantalla después del resultado (USO CORRECTO)
+            gestorCaptura.capturarPantalla(driver,
+                    "despues_registro_" + datos.getCasoPrueba() +
+                            (registroExitoso ? "_exitoso" : "_fallido"));
+
             logger.info("Registro completado. Exitoso: {}", registroExitoso);
             return registroExitoso;
-            
+
         } catch (Exception e) {
             logger.error("Error durante el registro: {}", e.getMessage());
-            GestorCapturaPantalla.capturarPantalla(driver, "error_registro_" + datos.getCasoPrueba());
+            gestorCaptura.capturarPantalla(driver, "error_registro_" + datos.getCasoPrueba());
             return false;
         }
     }
-    
+
     /**
      * Obtiene el mensaje de error si existe.
      */
@@ -307,7 +310,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             return "";
         }
     }
-    
+
     /**
      * Obtiene el mensaje de éxito si existe.
      */
@@ -323,7 +326,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             return "";
         }
     }
-    
+
     /**
      * Verifica si hay errores de validación en la página.
      */
@@ -331,14 +334,14 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
     public boolean hayErroresValidacion() {
         try {
             return esElementoVisible(By.xpath("//div[@class='mensaje-error']")) ||
-                   esElementoVisible(By.xpath("//span[@class='error-campo']")) ||
-                   esElementoVisible(By.xpath("//*[contains(@class,'error')]"));
+                    esElementoVisible(By.xpath("//span[@class='error-campo']")) ||
+                    esElementoVisible(By.xpath("//*[contains(@class,'error')]"));
         } catch (Exception e) {
             logger.warn("Error al verificar errores de validación: {}", e.getMessage());
             return false;
         }
     }
-    
+
     /**
      * Limpia el formulario haciendo click en el botón limpiar.
      */
@@ -353,27 +356,34 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             logger.warn("Error al limpiar formulario: {}", e.getMessage());
         }
     }
-    
+
     // ===== MÉTODOS PRIVADOS DE APOYO =====
-    
+
     /**
      * Llena el formulario con los datos del modelo.
      */
     private void llenarFormulario(ModeloDatosPrueba datos) {
-        if (datos.getNombre() != null) ingresarNombre(datos.getNombre());
-        if (datos.getApellido() != null) ingresarApellido(datos.getApellido());
-        if (datos.getEmail() != null) ingresarEmail(datos.getEmail());
-        if (datos.getPassword() != null) ingresarPassword(datos.getPassword());
-        if (datos.getConfirmarPassword() != null) ingresarConfirmarPassword(datos.getConfirmarPassword());
-        if (datos.getTelefono() != null) ingresarTelefono(datos.getTelefono());
-        if (datos.getGenero() != null) seleccionarGenero(datos.getGenero());
-        
+        if (datos.getNombre() != null)
+            ingresarNombre(datos.getNombre());
+        if (datos.getApellido() != null)
+            ingresarApellido(datos.getApellido());
+        if (datos.getEmail() != null)
+            ingresarEmail(datos.getEmail());
+        if (datos.getPassword() != null)
+            ingresarPassword(datos.getPassword());
+        if (datos.getConfirmarPassword() != null)
+            ingresarConfirmarPassword(datos.getConfirmarPassword());
+        if (datos.getTelefono() != null)
+            ingresarTelefono(datos.getTelefono());
+        if (datos.getGenero() != null)
+            seleccionarGenero(datos.getGenero());
+
         // Aceptar términos si es requerido
         if (datos.isAceptarTerminos()) {
             aceptarTerminos();
         }
     }
-    
+
     /**
      * Verifica si el registro fue exitoso.
      */
@@ -383,21 +393,21 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             if (esElementoVisible(By.xpath("//div[@class='mensaje-exito']"))) {
                 return true;
             }
-            
+
             // Verificar si redirige a página de éxito o login
             String urlActual = obtenerUrlActual();
             if (urlActual.contains("registro-exitoso") || urlActual.contains("login")) {
                 return true;
             }
-            
+
             // Verificar si aparece modal de confirmación
             if (esElementoVisible(MODAL_CONFIRMACION)) {
                 return true;
             }
-            
+
             // Si hay errores, el registro falló
             return !hayErroresValidacion();
-            
+
         } catch (Exception e) {
             logger.warn("Error al verificar registro exitoso: {}", e.getMessage());
             return false;

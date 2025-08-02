@@ -1,26 +1,21 @@
 package com.automatizacion.proyecto.utilidades;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.util.List;
 
 /**
  * Clase utilitaria para manejar esperas explícitas en Selenium.
- * Centraliza todas las estrategias de espera y proporciona métodos robustos.
- * 
- * Principios aplicados:
- * - SRP: Responsabilidad única de manejar esperas
- * - DRY: Evita repetición de código de esperas
- * - Encapsulación: Manejo interno de WebDriverWait
+ * Implementa el principio de Single Responsibility.
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
@@ -28,356 +23,414 @@ import java.util.List;
 public class EsperaExplicita {
     
     private static final Logger logger = LoggerFactory.getLogger(EsperaExplicita.class);
+    private static final int TIEMPO_ESPERA_DEFECTO = 10;
+    private static final int TIEMPO_PAUSA_CORTA = 500;
+    private static final int TIEMPO_PAUSA_MEDIA = 1000;
+    private static final int TIEMPO_PAUSA_LARGA = 2000;
     
+    private final WebDriverWait espera;
     private final WebDriver driver;
-    private final WebDriverWait wait;
-    private final int timeoutSegundos;
-    
-    // Constantes de timeouts
-    private static final int TIMEOUT_CORTO = 5;
-    private static final int TIMEOUT_MEDIO = 10;
-    private static final int TIMEOUT_LARGO = 30;
     
     /**
-     * Constructor que inicializa las esperas con timeout personalizado.
-     */
-    public EsperaExplicita(WebDriver driver, int timeoutSegundos) {
-        this.driver = driver;
-        this.timeoutSegundos = timeoutSegundos;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSegundos));
-        logger.debug("EsperaExplicita inicializada con timeout: {} segundos", timeoutSegundos);
-    }
-    
-    /**
-     * Constructor con timeout por defecto.
+     * Constructor que inicializa la espera con tiempo por defecto
+     * @param driver instancia del WebDriver
      */
     public EsperaExplicita(WebDriver driver) {
-        this(driver, TIMEOUT_MEDIO);
+        this(driver, TIEMPO_ESPERA_DEFECTO);
     }
     
-    // ===== ESPERAS DE ELEMENTOS =====
+    /**
+     * Constructor que permite especificar el tiempo de espera
+     * @param driver instancia del WebDriver
+     * @param tiempoEsperaSegundos tiempo de espera en segundos
+     */
+    public EsperaExplicita(WebDriver driver, int tiempoEsperaSegundos) {
+        this.driver = driver;
+        this.espera = new WebDriverWait(driver, Duration.ofSeconds(tiempoEsperaSegundos));
+        logger.debug("EsperaExplicita inicializada con {} segundos", tiempoEsperaSegundos);
+    }
     
     /**
-     * Espera hasta que un elemento sea visible.
+     * Espera hasta que un elemento sea visible
+     * @param localizador By del elemento
+     * @return WebElement visible
      */
     public WebElement esperarElementoVisible(By localizador) {
+        logger.debug("Esperando que el elemento sea visible: {}", localizador);
         try {
-            logger.debug("Esperando elemento visible: {}", localizador);
-            WebElement elemento = wait.until(ExpectedConditions.visibilityOfElementLocated(localizador));
+            WebElement elemento = espera.until(ExpectedConditions.visibilityOfElementLocated(localizador));
             logger.debug("Elemento visible encontrado: {}", localizador);
             return elemento;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando elemento visible: {}", localizador);
-            throw new RuntimeException("Elemento no visible después de " + timeoutSegundos + " segundos: " + localizador, e);
+        } catch (Exception e) {
+            logger.error("Error esperando elemento visible {}: {}", localizador, e.getMessage());
+            throw new RuntimeException("No se pudo encontrar el elemento visible: " + localizador, e);
         }
     }
     
     /**
-     * Espera hasta que un elemento sea visible con timeout personalizado.
-     */
-    public WebElement esperarElementoVisible(By localizador, int timeoutPersonalizado) {
-        try {
-            logger.debug("Esperando elemento visible con timeout {}: {}", timeoutPersonalizado, localizador);
-            WebDriverWait waitPersonalizado = new WebDriverWait(driver, Duration.ofSeconds(timeoutPersonalizado));
-            WebElement elemento = waitPersonalizado.until(ExpectedConditions.visibilityOfElementLocated(localizador));
-            logger.debug("Elemento visible encontrado: {}", localizador);
-            return elemento;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando elemento visible: {}", localizador);
-            throw new TimeoutException("Elemento no visible después de " + timeoutPersonalizado + " segundos: " + localizador, e);
-        }
-    }
-    
-    /**
-     * Espera hasta que un WebElement específico sea visible.
-     */
-    public WebElement esperarElementoVisible(WebElement elemento) {
-        try {
-            logger.debug("Esperando WebElement visible");
-            WebElement elementoVisible = wait.until(ExpectedConditions.visibilityOf(elemento));
-            logger.debug("WebElement visible");
-            return elementoVisible;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando WebElement visible");
-            throw new RuntimeException("WebElement no visible después de " + timeoutSegundos + " segundos", e);
-        }
-    }
-    
-    /**
-     * Espera hasta que un elemento sea clickeable.
+     * Espera hasta que un elemento sea clickeable
+     * @param localizador By del elemento
+     * @return WebElement clickeable
      */
     public WebElement esperarElementoClickeable(By localizador) {
+        logger.debug("Esperando que el elemento sea clickeable: {}", localizador);
         try {
-            logger.debug("Esperando elemento clickeable: {}", localizador);
-            WebElement elemento = wait.until(ExpectedConditions.elementToBeClickable(localizador));
+            WebElement elemento = espera.until(ExpectedConditions.elementToBeClickable(localizador));
             logger.debug("Elemento clickeable encontrado: {}", localizador);
             return elemento;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando elemento clickeable: {}", localizador);
-            throw new RuntimeException("Elemento no clickeable después de " + timeoutSegundos + " segundos: " + localizador, e);
+        } catch (Exception e) {
+            logger.error("Error esperando elemento clickeable {}: {}", localizador, e.getMessage());
+            throw new RuntimeException("No se pudo encontrar el elemento clickeable: " + localizador, e);
         }
     }
     
     /**
-     * Espera hasta que un WebElement específico sea clickeable.
-     */
-    public WebElement esperarElementoClickeable(WebElement elemento) {
-        try {
-            logger.debug("Esperando WebElement clickeable");
-            WebElement elementoClickeable = wait.until(ExpectedConditions.elementToBeClickable(elemento));
-            logger.debug("WebElement clickeable");
-            return elementoClickeable;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando WebElement clickeable");
-            throw new RuntimeException("WebElement no clickeable después de " + timeoutSegundos + " segundos", e);
-        }
-    }
-    
-    /**
-     * Espera hasta que un elemento esté presente en el DOM.
+     * Espera hasta que un elemento esté presente en el DOM
+     * @param localizador By del elemento
+     * @return WebElement presente
      */
     public WebElement esperarElementoPresente(By localizador) {
+        logger.debug("Esperando que el elemento esté presente: {}", localizador);
         try {
-            logger.debug("Esperando elemento presente: {}", localizador);
-            WebElement elemento = wait.until(ExpectedConditions.presenceOfElementLocated(localizador));
+            WebElement elemento = espera.until(ExpectedConditions.presenceOfElementLocated(localizador));
             logger.debug("Elemento presente encontrado: {}", localizador);
             return elemento;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando elemento presente: {}", localizador);
-            throw new RuntimeException("Elemento no presente después de " + timeoutSegundos + " segundos: " + localizador, e);
+        } catch (Exception e) {
+            logger.error("Error esperando elemento presente {}: {}", localizador, e.getMessage());
+            throw new RuntimeException("No se pudo encontrar el elemento presente: " + localizador, e);
         }
     }
     
     /**
-     * Espera hasta que múltiples elementos sean visibles.
-     */
-    public List<WebElement> esperarElementosVisibles(By localizador) {
-        try {
-            logger.debug("Esperando elementos visibles: {}", localizador);
-            List<WebElement> elementos = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(localizador));
-            logger.debug("Elementos visibles encontrados: {} elementos", elementos.size());
-            return elementos;
-        } catch (TimeoutException e) {
-            logger.error("Timeout esperando elementos visibles: {}", localizador);
-            throw new RuntimeException("Elementos no visibles después de " + timeoutSegundos + " segundos: " + localizador, e);
-        }
-    }
-    
-    // ===== ESPERAS DE INVISIBILIDAD =====
-    
-    /**
-     * Espera hasta que un elemento sea invisible.
-     */
-    public boolean esperarInvisibilidadDelElemento(By localizador) {
-        try {
-            logger.debug("Esperando invisibilidad del elemento: {}", localizador);
-            boolean invisible = wait.until(ExpectedConditions.invisibilityOfElementLocated(localizador));
-            logger.debug("Elemento invisible: {}", localizador);
-            return invisible;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando invisibilidad del elemento: {}", localizador);
-            return false;
-        }
-    }
-    
-    /**
-     * Espera hasta que un WebElement específico sea invisible.
-     */
-    public boolean esperarInvisibilidadDelElemento(WebElement elemento) {
-        try {
-            logger.debug("Esperando invisibilidad del WebElement");
-            boolean invisible = wait.until(ExpectedConditions.invisibilityOf(elemento));
-            logger.debug("WebElement invisible");
-            return invisible;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando invisibilidad del WebElement");
-            return false;
-        }
-    }
-    
-    // ===== ESPERAS DE TEXTO =====
-    
-    /**
-     * Espera hasta que un elemento contenga texto específico.
+     * Espera hasta que un texto específico esté presente en un elemento
+     * @param localizador By del elemento
+     * @param texto texto a esperar
+     * @return true si el texto está presente
      */
     public boolean esperarTextoEnElemento(By localizador, String texto) {
+        logger.debug("Esperando texto '{}' en elemento: {}", texto, localizador);
         try {
-            logger.debug("Esperando texto '{}' en elemento: {}", texto, localizador);
-            boolean textoPresente = wait.until(ExpectedConditions.textToBePresentInElementLocated(localizador, texto));
-            logger.debug("Texto encontrado en elemento: {}", localizador);
-            return textoPresente;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando texto '{}' en elemento: {}", texto, localizador);
+            boolean resultado = espera.until(ExpectedConditions.textToBePresentInElementLocated(localizador, texto));
+            logger.debug("Texto '{}' encontrado en elemento: {}", texto, localizador);
+            return resultado;
+        } catch (Exception e) {
+            logger.error("Error esperando texto '{}' en elemento {}: {}", texto, localizador, e.getMessage());
             return false;
         }
     }
     
     /**
-     * Espera hasta que un elemento contenga texto no vacío.
+     * Espera hasta que un elemento no sea visible
+     * @param localizador By del elemento
+     * @return true si el elemento no es visible
      */
-    public boolean esperarTextoNoVacioEnElemento(By localizador) {
+    public boolean esperarElementoNoVisible(By localizador) {
+        logger.debug("Esperando que el elemento no sea visible: {}", localizador);
         try {
-            logger.debug("Esperando texto no vacío en elemento: {}", localizador);
-            boolean textoPresente = wait.until(new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    try {
-                        WebElement elemento = driver.findElement(localizador);
-                        String texto = elemento.getText().trim();
-                        return !texto.isEmpty();
-                    } catch (Exception e) {
-                        return false;
-                    }
-                }
-            });
-            logger.debug("Texto no vacío encontrado en elemento: {}", localizador);
-            return textoPresente;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando texto no vacío en elemento: {}", localizador);
+            boolean resultado = espera.until(ExpectedConditions.invisibilityOfElementLocated(localizador));
+            logger.debug("Elemento no visible: {}", localizador);
+            return resultado;
+        } catch (Exception e) {
+            logger.error("Error esperando elemento no visible {}: {}", localizador, e.getMessage());
             return false;
         }
     }
     
-    // ===== ESPERAS DE ATRIBUTOS =====
-    
     /**
-     * Espera hasta que un atributo de un elemento contenga un valor específico.
+     * Espera hasta que todos los elementos de una lista sean visibles
+     * @param localizador By de los elementos
+     * @return List de WebElements visibles
      */
-    public boolean esperarAtributoContiene(By localizador, String atributo, String valor) {
+    public List<WebElement> esperarElementosVisibles(By localizador) {
+        logger.debug("Esperando que los elementos sean visibles: {}", localizador);
         try {
-            logger.debug("Esperando atributo '{}' contenga '{}' en elemento: {}", atributo, valor, localizador);
-            boolean atributoPresente = wait.until(ExpectedConditions.attributeContains(localizador, atributo, valor));
-            logger.debug("Atributo con valor encontrado en elemento: {}", localizador);
-            return atributoPresente;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando atributo '{}' con valor '{}' en elemento: {}", atributo, valor, localizador);
+            List<WebElement> elementos = espera.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(localizador));
+            logger.debug("Elementos visibles encontrados ({}): {}", elementos.size(), localizador);
+            return elementos;
+        } catch (Exception e) {
+            logger.error("Error esperando elementos visibles {}: {}", localizador, e.getMessage());
+            throw new RuntimeException("No se pudieron encontrar los elementos visibles: " + localizador, e);
+        }
+    }
+    
+    /**
+     * Espera hasta que la URL contenga un texto específico
+     * @param fragmentoUrl fragmento de URL a esperar
+     * @return true si la URL contiene el fragmento
+     */
+    public boolean esperarUrlContiene(String fragmentoUrl) {
+        logger.debug("Esperando que la URL contenga: {}", fragmentoUrl);
+        try {
+            boolean resultado = espera.until(ExpectedConditions.urlContains(fragmentoUrl));
+            logger.debug("URL contiene el fragmento: {}", fragmentoUrl);
+            return resultado;
+        } catch (Exception e) {
+            logger.error("Error esperando URL con fragmento '{}': {}", fragmentoUrl, e.getMessage());
             return false;
         }
     }
     
-    // ===== ESPERAS DE PÁGINA =====
+    /**
+     * Espera hasta que el título de la página contenga un texto específico
+     * @param tituloEsperado título esperado
+     * @return true si el título contiene el texto
+     */
+    public boolean esperarTituloContiene(String tituloEsperado) {
+        logger.debug("Esperando que el título contenga: {}", tituloEsperado);
+        try {
+            boolean resultado = espera.until(ExpectedConditions.titleContains(tituloEsperado));
+            logger.debug("Título contiene: {}", tituloEsperado);
+            return resultado;
+        } catch (Exception e) {
+            logger.error("Error esperando título '{}': {}", tituloEsperado, e.getMessage());
+            return false;
+        }
+    }
     
     /**
-     * Espera hasta que la página esté completamente cargada.
+     * Espera a que la página se cargue completamente
+     * Incluye validación de document.readyState y jQuery si está disponible
      */
     public void esperarCargaCompleta() {
+        logger.debug("Esperando carga completa de la página");
+        
         try {
-            logger.debug("Esperando carga completa de página");
-            wait.until(new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    JavascriptExecutor js = (JavascriptExecutor) driver;
-                    String readyState = js.executeScript("return document.readyState").toString();
-                    boolean jqueryInactivo = true;
-                    
-                    // Verificar jQuery si está disponible
-                    try {
-                        Long jqueryActive = (Long) js.executeScript("return jQuery.active");
-                        jqueryInactivo = (jqueryActive == 0);
-                    } catch (Exception e) {
-                        // jQuery no disponible, continuar
-                    }
-                    
-                    return "complete".equals(readyState) && jqueryInactivo;
-                }
+            // Esperar que document.readyState sea 'complete'
+            espera.until(webDriver -> {
+                JavascriptExecutor js = (JavascriptExecutor) webDriver;
+                String readyState = (String) js.executeScript("return document.readyState");
+                logger.debug("Document readyState: {}", readyState);
+                return "complete".equals(readyState);
             });
-            logger.debug("Página completamente cargada");
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando carga completa de página");
+            
+            // Esperar a que jQuery termine si está disponible
+            esperarJQuery();
+            
+            // Pausa adicional para asegurar estabilidad
+            pausaCorta();
+            
+            logger.debug("Carga completa de página finalizada");
+            
+        } catch (Exception e) {
+            logger.warn("Error esperando carga completa: {}", e.getMessage());
         }
     }
     
     /**
-     * Espera hasta que el título de la página contenga texto específico.
+     * Sube la página para evitar propaganda y elementos flotantes
+     * Utiliza JavaScript para hacer scroll hacia arriba
      */
-    public boolean esperarTituloContiene(String textoTitulo) {
+    public void subirPaginaParaEvitarPropaganda() {
+        logger.debug("Subiendo página para evitar propaganda");
+        
         try {
-            logger.debug("Esperando título contenga: {}", textoTitulo);
-            boolean tituloPresente = wait.until(ExpectedConditions.titleContains(textoTitulo));
-            logger.debug("Título con texto encontrado");
-            return tituloPresente;
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            
+            // Scroll hacia arriba de la página
+            js.executeScript("window.scrollTo(0, 0);");
+            
+            // Pausa corta para que el scroll surta efecto
+            pausaCorta();
+            
+            // Si hay elementos de propaganda visibles, intentar cerrarlos
+            cerrarElementosFlotantes();
+            
+            logger.debug("Página posicionada en la parte superior");
+            
+        } catch (Exception e) {
+            logger.warn("Error subiendo página: {}", e.getMessage());
+        }
+    }
+    
+    /**
+     * Espera y obtiene un mensaje flash/temporal de la página
+     * @param localizadorMensaje localizador del mensaje
+     * @return texto del mensaje o cadena vacía si no se encuentra
+     */
+    public String esperarMensajeFlash(By localizadorMensaje) {
+        logger.debug("Esperando mensaje flash: {}", localizadorMensaje);
+        
+        try {
+            // Esperar que el mensaje aparezca
+            WebElement mensaje = esperarElementoVisible(localizadorMensaje);
+            String textoMensaje = mensaje.getText().trim();
+            
+            logger.debug("Mensaje flash encontrado: '{}'", textoMensaje);
+            return textoMensaje;
+            
+        } catch (Exception e) {
+            logger.debug("No se encontró mensaje flash: {}", e.getMessage());
+            return "";
+        }
+    }
+    
+    /**
+     * Espera un elemento con reintentos automáticos
+     * @param localizador localizador del elemento
+     * @param maxReintentos número máximo de reintentos
+     * @return WebElement encontrado
+     */
+    public WebElement esperarElementoConReintentos(By localizador, int maxReintentos) {
+        logger.debug("Esperando elemento con reintentos (max: {}): {}", maxReintentos, localizador);
+        
+        for (int intento = 1; intento <= maxReintentos; intento++) {
+            try {
+                WebElement elemento = esperarElementoVisible(localizador);
+                logger.debug("Elemento encontrado en intento {}: {}", intento, localizador);
+                return elemento;
+                
+            } catch (Exception e) {
+                logger.debug("Intento {} fallido para elemento {}: {}", intento, localizador, e.getMessage());
+                
+                if (intento < maxReintentos) {
+                    pausaMedia();
+                    // Refresh de la página si es el último intento antes del final
+                    if (intento == maxReintentos - 1) {
+                        logger.debug("Último intento - refrescando página");
+                        driver.navigate().refresh();
+                        esperarCargaCompleta();
+                    }
+                } else {
+                    throw new RuntimeException("Elemento no encontrado después de " + maxReintentos + " intentos: " + localizador, e);
+                }
+            }
+        }
+        
+        throw new RuntimeException("No se pudo encontrar el elemento: " + localizador);
+    }
+    
+    /**
+     * Espera a que jQuery termine de ejecutarse (si está disponible)
+     */
+    private void esperarJQuery() {
+        try {
+            espera.until(webDriver -> {
+                JavascriptExecutor js = (JavascriptExecutor) webDriver;
+                // Verificar si jQuery está disponible
+                Boolean jqueryDefined = (Boolean) js.executeScript("return typeof jQuery !== 'undefined'");
+                
+                if (jqueryDefined) {
+                    // Esperar a que jQuery.active sea 0 (no hay peticiones AJAX pendientes)
+                    Long jqueryActive = (Long) js.executeScript("return jQuery.active");
+                    logger.debug("jQuery activo: {}", jqueryActive);
+                    return jqueryActive == 0;
+                }
+                
+                return true; // Si jQuery no está disponible, considerar como completo
+            });
+        } catch (Exception e) {
+            logger.debug("Error verificando jQuery: {}", e.getMessage());
+        }
+    }
+    
+    /**
+     * Intenta cerrar elementos flotantes comunes (modales, propaganda, etc.)
+     */
+    private void cerrarElementosFlotantes() {
+        // Selectores comunes para cerrar elementos flotantes
+        String[] selectoresCierre = {
+            "button[aria-label='Close']",
+            "button[aria-label='close']",
+            ".close",
+            ".modal-close",
+            "[class*='close']",
+            "[data-dismiss='modal']"
+        };
+        
+        for (String selector : selectoresCierre) {
+            try {
+                List<WebElement> elementos = driver.findElements(By.cssSelector(selector));
+                for (WebElement elemento : elementos) {
+                    if (elemento.isDisplayed() && elemento.isEnabled()) {
+                        elemento.click();
+                        pausaCorta();
+                        logger.debug("Elemento flotante cerrado: {}", selector);
+                    }
+                }
+            } catch (Exception e) {
+                // Ignorar errores al cerrar elementos flotantes
+                logger.debug("No se pudo cerrar elemento flotante {}: {}", selector, e.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Pausa corta para sincronización
+     */
+    private void pausaCorta() {
+        try {
+            Thread.sleep(TIEMPO_PAUSA_CORTA);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Pausa corta interrumpida");
+        }
+    }
+    
+    /**
+     * Pausa media para sincronización
+     */
+    private void pausaMedia() {
+        try {
+            Thread.sleep(TIEMPO_PAUSA_MEDIA);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Pausa media interrumpida");
+        }
+    }
+    
+    /**
+     * Pausa larga para sincronización
+     */
+    private void pausaLarga() {
+        try {
+            Thread.sleep(TIEMPO_PAUSA_LARGA);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Pausa larga interrumpida");
+        }
+    }
+    
+    /**
+     * Espera personalizada con condición lambda
+     * @param condicion condición a evaluar
+     * @param tiempoEspera tiempo máximo de espera en segundos
+     * @return true si la condición se cumple, false si timeout
+     */
+    public boolean esperarCondicion(java.util.function.Function<WebDriver, Boolean> condicion, int tiempoEspera) {
+        try {
+            WebDriverWait esperaPersonalizada = new WebDriverWait(driver, Duration.ofSeconds(tiempoEspera));
+            return esperaPersonalizada.until(condicion);
         } catch (TimeoutException e) {
-            logger.warn("Timeout esperando título con texto: {}", textoTitulo);
+            logger.debug("Timeout esperando condición personalizada");
             return false;
         }
     }
     
     /**
-     * Espera hasta que la URL contenga texto específico.
+     * Verifica si un elemento existe sin lanzar excepción
+     * @param localizador localizador del elemento
+     * @return true si el elemento existe, false en caso contrario
      */
-    public boolean esperarUrlContiene(String textoUrl) {
+    public boolean existeElemento(By localizador) {
         try {
-            logger.debug("Esperando URL contenga: {}", textoUrl);
-            boolean urlPresente = wait.until(ExpectedConditions.urlContains(textoUrl));
-            logger.debug("URL con texto encontrado");
-            return urlPresente;
-        } catch (TimeoutException e) {
-            logger.warn("Timeout esperando URL con texto: {}", textoUrl);
+            driver.findElement(localizador);
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
     
-    // ===== ESPERAS PERSONALIZADAS =====
-    
     /**
-     * Espera personalizada con condición lambda.
+     * Espera hasta que desaparezca un elemento de loading/spinner
+     * @param localizadorLoading localizador del elemento de loading
      */
-    public <T> T esperarCondicionPersonalizada(ExpectedCondition<T> condicion) {
+    public void esperarFinalizacionLoading(By localizadorLoading) {
+        logger.debug("Esperando finalización de loading: {}", localizadorLoading);
         try {
-            logger.debug("Esperando condición personalizada");
-            T resultado = wait.until(condicion);
-            logger.debug("Condición personalizada cumplida");
-            return resultado;
-        } catch (TimeoutException e) {
-            logger.error("Timeout en condición personalizada");
-            throw new RuntimeException("Condición personalizada no cumplida después de " + timeoutSegundos + " segundos", e);
+            esperarElementoNoVisible(localizadorLoading);
+            logger.debug("Loading finalizado");
+        } catch (Exception e) {
+            logger.debug("No se encontró elemento de loading o ya finalizó");
         }
-    }
-    
-    /**
-     * Espera con polling personalizado.
-     */
-    public <T> T esperarConPolling(ExpectedCondition<T> condicion, int timeoutSegundos, int pollingMilisegundos) {
-        try {
-            logger.debug("Esperando con polling personalizado: timeout={}s, polling={}ms", timeoutSegundos, pollingMilisegundos);
-            WebDriverWait waitPersonalizado = new WebDriverWait(driver, Duration.ofSeconds(timeoutSegundos));
-            waitPersonalizado.pollingEvery(Duration.ofMilliseconds(pollingMilisegundos));
-            T resultado = waitPersonalizado.until(condicion);
-            logger.debug("Condición con polling cumplida");
-            return resultado;
-        } catch (TimeoutException e) {
-            logger.error("Timeout en espera con polling personalizado");
-            throw new RuntimeException("Condición con polling no cumplida después de " + timeoutSegundos + " segundos", e);
-        }
-    }
-    
-    // ===== MÉTODOS DE UTILIDAD =====
-    
-    /**
-     * Obtiene el timeout configurado.
-     */
-    public int getTimeoutSegundos() {
-        return timeoutSegundos;
-    }
-    
-    /**
-     * Crea una nueva instancia con timeout diferente para casos específicos.
-     */
-    public EsperaExplicita conTimeout(int nuevoTimeout) {
-        return new EsperaExplicita(driver, nuevoTimeout);
-    }
-    
-    /**
-     * Método de utilidad para esperas cortas.
-     */
-    public EsperaExplicita esperaCorta() {
-        return new EsperaExplicita(driver, TIMEOUT_CORTO);
-    }
-    
-    /**
-     * Método de utilidad para esperas largas.
-     */
-    public EsperaExplicita esperaLarga() {
-        return new EsperaExplicita(driver, TIMEOUT_LARGO);
     }
 }

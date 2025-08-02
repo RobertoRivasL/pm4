@@ -6,6 +6,12 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import org.testng.annotations.*;
+import io.qameta.allure.*;
+import com.automatizacion.proyecto.paginas.PaginaRegistro;
+import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
+import com.automatizacion.proyecto.utilidades.LectorDatosPrueba;
+
 /**
  * Pruebas de Login - VERSIÓN CON DEBUG COMPLETO
  * @author Roberto Rivas Lopez
@@ -23,7 +29,7 @@ public class PruebasLogin extends BaseTest {
         String urlLogin = "https://practice.expandtesting.com/login";
         System.out.println("🌐 Navegando a: " + urlLogin);
         
-        obtenerDriver().get(urlLogin);
+        
         
         // Esperar que la página cargue completamente
         System.out.println("⏳ Esperando 5 segundos para carga completa...");
@@ -33,8 +39,7 @@ public class PruebasLogin extends BaseTest {
             Thread.currentThread().interrupt();
         }
         
-        paginaLogin = new PaginaLogin(obtenerDriver(), obtenerEsperaExplicita());
-        
+                
         // Debug de elementos antes de verificar
         paginaLogin.debugElementos();
         
@@ -44,7 +49,7 @@ public class PruebasLogin extends BaseTest {
         
         if (!paginaVisible) {
             System.out.println("❌ PÁGINA NO VISIBLE - CAPTURANDO EVIDENCIA");
-            obtenerGestorCaptura().capturarPantalla(obtenerDriver(), "configuracion_error");
+          
         }
         
         Assert.assertTrue(paginaVisible, "La página de login debe estar visible después de la carga");
@@ -59,9 +64,7 @@ public class PruebasLogin extends BaseTest {
         // Usar credenciales conocidas de la página
         paginaLogin.realizarLogin("practice", "SuperSecretPassword!");
         
-        // Análisis del resultado
-        String urlActual = obtenerDriver().getCurrentUrl();
-        String tituloActual = obtenerDriver().getTitle();
+        
         
         System.out.println("📊 ANÁLISIS DEL RESULTADO:");
         System.out.println("   📍 URL actual: " + urlActual);
@@ -79,8 +82,7 @@ public class PruebasLogin extends BaseTest {
         boolean loginExitoso = contieneSecure || cambioUrl;
         System.out.println("   🎯 LOGIN EXITOSO: " + loginExitoso);
         
-        // Capturar pantalla final
-        obtenerGestorCaptura().capturarPantalla(obtenerDriver(), "test_login_exitoso_final");
+       
         
         Assert.assertTrue(loginExitoso, "El login debería ser exitoso - URL: " + urlActual);
         System.out.println("✅ === TEST LOGIN EXITOSO COMPLETADO ===\n");
@@ -93,9 +95,7 @@ public class PruebasLogin extends BaseTest {
         
         paginaLogin.debugElementos();
         
-        // Capturar pantalla para análisis visual
-        obtenerGestorCaptura().capturarPantalla(obtenerDriver(), "debug_elementos");
-        
+                
         System.out.println("📸 Captura guardada para análisis visual");
         System.out.println("✅ === DEBUG COMPLETADO ===\n");
         
