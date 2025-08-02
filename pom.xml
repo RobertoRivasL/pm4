@@ -1,22 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Información del Proyecto -->
     <groupId>com.automatizacion.proyecto</groupId>
     <artifactId>suite-automatizacion</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Suite de Automatización Funcional</name>
-    <description>Proyecto de automatización de pruebas para registro e inicio de sesión</description>
+    <description>
+        Proyecto de automatización de pruebas para validación de registro e inicio de sesión.
+        Desarrollado por Roberto Rivas Lopez para el curso de Automatización de Pruebas.
+    </description>
 
+    <licenses>
+        <license>
+            <name>GNU General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>robertorivas</id>
+            <name>Roberto Rivas</name>
+            <email>roberto.rivas.l@mail.pucv.cl</email>
+            <roles>
+                <role>author</role>
+                <role>maintainer</role>
+            </roles>
+            <organization>Pontificia Universidad Católica de Valparaíso</organization>
+            <organizationUrl>https://www.pucv.cl</organizationUrl>
+        </developer>
+    </developers>
+
+
+    <!-- Propiedades del Proyecto -->
     <properties>
+        <!-- Configuración Java -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Versiones de Dependencias -->
         <selenium.version>4.15.0</selenium.version>
         <testng.version>7.8.0</testng.version>
         <webdrivermanager.version>5.6.2</webdrivermanager.version>
@@ -25,9 +55,19 @@
         <jackson.version>2.15.2</jackson.version>
         <slf4j.version>2.0.9</slf4j.version>
         <logback.version>1.4.11</logback.version>
+        <opencsv.version>5.8</opencsv.version>
+        <faker.version>1.0.2</faker.version>
+
+        <!-- Configuración de Plugins -->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
+        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+        <aspectj.version>1.9.20</aspectj.version>
     </properties>
 
+    <!-- Dependencias del Proyecto -->
     <dependencies>
+
         <!-- Selenium WebDriver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -66,6 +106,20 @@
             <version>${apache.poi.version}</version>
         </dependency>
 
+        <!-- OpenCSV para manejo de archivos CSV -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+
+        <!-- Java Faker para datos de prueba -->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>${faker.version}</version>
+        </dependency>
+
         <!-- Allure para reportes -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
@@ -91,19 +145,33 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
+        <!-- AssertJ para assertions más legibles -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
+    <!-- Configuración de Build -->
     <build>
         <plugins>
+
             <!-- Plugin de compilación -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>21</source>
                     <target>21</target>
                     <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
@@ -111,7 +179,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>${maven.resources.plugin.version}</version>
                 <configuration>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
@@ -129,7 +197,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${maven.surefire.plugin.version}</version>
                 <configuration>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
@@ -137,7 +205,17 @@
                     <systemPropertyVariables>
                         <allure.results.directory>target/allure-results</allure.results.directory>
                     </systemPropertyVariables>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <!-- Plugin de Allure para reportes -->
@@ -150,11 +228,19 @@
                     <reportDirectory>target/allure-report</reportDirectory>
                 </configuration>
             </plugin>
+
         </plugins>
 
         <!-- Configuración de recursos -->
         <resources>
             <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
@@ -166,8 +252,8 @@
                     <exclude>**/*.jpeg</exclude>
                     <exclude>**/*.gif</exclude>
                 </excludes>
-            </resource>
-            <resource>
+            </testResource>
+            <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>false</filtering>
                 <includes>
@@ -179,7 +265,63 @@
                     <include>**/*.jpeg</include>
                     <include>**/*.gif</include>
                 </includes>
-            </resource>
-        </resources>
+            </testResource>
+        </testResources>
+
     </build>
+
+    <!-- Perfiles para diferentes entornos -->
+    <profiles>
+
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <entorno>local</entorno>
+                <navegador.headless>false</navegador.headless>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>ci</id>
+            <properties>
+                <entorno>ci</entorno>
+                <navegador.headless>true</navegador.headless>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>smoke</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>smoke</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>regression</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>regression</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
 </project>
