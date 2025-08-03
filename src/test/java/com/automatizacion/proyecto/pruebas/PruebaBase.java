@@ -1,201 +1,217 @@
 package com.automatizacion.proyecto.pruebas;
 
-import org.testng.annotations.*;
-import org.openqa.selenium.WebDriver;
-import com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
 import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
-import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal.TipoNavegador;
-import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
-import com.automatizacion.proyecto.utilidades.EsperaExplicita;
+import com.automatizacion.proyecto.enums.TipoNavegador;
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.qameta.allure.Step;
-import org.testng.Assert;
-import io.qameta.allure.*;
-import com.automatizacion.proyecto.paginas.PaginaRegistro;
-import com.automatizacion.proyecto.paginas.PaginaLogin;
-import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
-import com.automatizacion.proyecto.utilidades.LectorDatosPrueba;
 
+/**
+ * Clase base abstracta para todas las pruebas del proyecto.
+ * Proporciona funcionalidades comunes y configuraciones base.
+ * 
+ * Implementa principios de herencia y reutilización de código
+ * siguiendo las mejores prácticas de automatización.
+ * 
+ * @author Roberto Rivas Lopez
+ * @version 1.0
+ */
 public abstract class PruebaBase {
     
-    protected WebDriver driver;
-    protected ConfiguracionGlobal config;
-    protected EsperaExplicita espera;
     private static final Logger logger = LoggerFactory.getLogger(PruebaBase.class);
     
-    protected String urlBase;
-    protected String urlLogin;
-    protected String urlRegistro;
-    protected TipoNavegador tipoNavegador;
+    protected ConfiguracionGlobal configuracion;
     
-    @BeforeMethod(alwaysRun = true)
-    @Step("Configurar entorno de prueba")
-    public void configurarPrueba() {
-        try {
-            logger.info("=== INICIANDO CONFIGURACIÓN DE PRUEBA ===");
-            
-            config = ConfiguracionGlobal.getInstance();
-            
-            urlBase = config.getUrlBase();
-            urlLogin = config.getUrlLogin();
-            urlRegistro = config.getUrlRegistro();
-            tipoNavegador = config.getTipoNavegador();
-            
-            logger.info("URLs configuradas - Base: {}, Login: {}, Registro: {}", urlBase, urlLogin, urlRegistro);
-            
-            driver = ConfiguracionNavegador.crearDriver(tipoNavegador);
-            espera = new EsperaExplicita(driver);
-            
-            logger.info("Driver creado exitosamente para: {}", tipoNavegador);
-            logger.info("=== CONFIGURACIÓN DE PRUEBA COMPLETADA ===");
-            
-        } catch (Exception e) {
-            logger.error("Error en configuración de prueba: {}", e.getMessage(), e);
-            throw new RuntimeException("Fallo en configuración de prueba", e);
-        }
+    /**
+     * Constructor que inicializa la configuración global
+     */
+    public PruebaBase() {
+        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
+        logger.debug(TipoMensaje.DEBUG.formatearMensaje("PruebaBase inicializada"));
     }
     
-    @AfterMethod(alwaysRun = true)
-    @Step("Limpiar entorno de prueba")
-    public void limpiarPrueba() {
-        try {
-            if (driver != null) {
-                logger.info("Cerrando driver...");
-                ConfiguracionNavegador.cerrarDriver(driver);
-                driver = null;
-                logger.info("Driver cerrado exitosamente");
-            }
-        } catch (Exception e) {
-            logger.error("Error al cerrar driver: {}", e.getMessage(), e);
-        }
+    /**
+     * Obtiene la configuración global
+     * @return instancia de ConfiguracionGlobal
+     */
+    protected ConfiguracionGlobal obtenerConfiguracion() {
+        return configuracion;
     }
     
-    @BeforeClass(alwaysRun = true)
-    public void configurarClase() {
-        logger.info("=== INICIANDO CLASE DE PRUEBA: {} ===", this.getClass().getSimpleName());
+    /**
+     * Obtiene el tipo de navegador configurado
+     * @return TipoNavegador configurado
+     */
+    protected TipoNavegador obtenerTipoNavegadorConfigurado() {
+        String navegadorStr = configuracion.obtenerTipoNavegador();
+        return TipoNavegador.desdeString(navegadorStr);
     }
     
-    @AfterClass(alwaysRun = true)
-    public void limpiarClase() {
-        logger.info("=== FINALIZANDO CLASE DE PRUEBA: {} ===", this.getClass().getSimpleName());
+    /**
+     * Verifica si el modo headless está habilitado
+     * @return true si está en modo headless
+     */
+    protected boolean esModoHeadless() {
+        return configuracion.esNavegadorHeadless();
     }
     
-    @Step("Capturar pantalla: {nombreArchivo}")
-    protected void capturarPantalla(String nombreArchivo) {
-        try {
-            if (driver != null) {
-                GestorCapturaPantalla.capturarPantalla(driver, nombreArchivo);
-                logger.debug("Captura realizada: {}", nombreArchivo);
-            } else {
-                logger.warn("No se puede capturar pantalla: driver es null");
-            }
-        } catch (Exception e) {
-            logger.error("Error al capturar pantalla '{}': {}", nombreArchivo, e.getMessage());
-        }
+    /**
+     * Obtiene la URL base configurada
+     * @return URL base
+     */
+    protected String obtenerUrlBase() {
+        return configuracion.obtenerUrlBase();
     }
     
-    protected void capturarPantalla() {
-        capturarPantalla("test_screenshot");
+    /**
+     * Obtiene el timeout implícito configurado
+     * @return timeout en segundos
+     */
+    protected int obtenerTimeoutImplicito() {
+        return configuracion.obtenerTimeoutImplicito();
     }
     
-    @Step("Paso de prueba: {mensaje}")
-    protected void logPasoPrueba(String mensaje) {
-        logger.info("🔄 PASO: {}", mensaje);
+    /**
+     * Obtiene el timeout explícito configurado
+     * @return timeout en segundos
+     */
+    protected int obtenerTimeoutExplicito() {
+        return configuracion.obtenerTimeoutExplicito();
     }
     
-    @Step("Validación: {mensaje}")
+    /**
+     * Obtiene el directorio de capturas configurado
+     * @return directorio de capturas
+     */
+    protected String obtenerDirectorioCapturas() {
+        return configuracion.obtenerDirectorioCapturas();
+    }
+    
+    /**
+     * Obtiene el directorio de reportes configurado
+     * @return directorio de reportes
+     */
+    protected String obtenerDirectorioReportes() {
+        return configuracion.obtenerDirectorioReportes();
+    }
+    
+    /**
+     * Obtiene el directorio de datos configurado
+     * @return directorio de datos
+     */
+    protected String obtenerDirectorioDatos() {
+        return configuracion.obtenerDirectorioDatos();
+    }
+    
+    /**
+     * Registra un mensaje informativo
+     * @param mensaje mensaje a registrar
+     */
+    protected void logInfo(String mensaje) {
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de debug
+     * @param mensaje mensaje a registrar
+     */
+    protected void logDebug(String mensaje) {
+        logger.debug(TipoMensaje.DEBUG.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de error
+     * @param mensaje mensaje a registrar
+     */
+    protected void logError(String mensaje) {
+        logger.error(TipoMensaje.ERROR.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de advertencia
+     * @param mensaje mensaje a registrar
+     */
+    protected void logWarning(String mensaje) {
+        logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de éxito
+     * @param mensaje mensaje a registrar
+     */
+    protected void logExito(String mensaje) {
+        logger.info(TipoMensaje.EXITO.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de configuración
+     * @param mensaje mensaje a registrar
+     */
+    protected void logConfiguracion(String mensaje) {
+        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un mensaje de validación
+     * @param mensaje mensaje a registrar
+     */
     protected void logValidacion(String mensaje) {
-        logger.info("✅ VALIDACIÓN: {}", mensaje);
+        logger.info(TipoMensaje.VALIDACION.formatearMensaje(mensaje));
     }
     
-    protected void logError(String mensaje, Exception e) {
-        logger.error("❌ ERROR: {} - {}", mensaje, e.getMessage(), e);
+    /**
+     * Registra un paso de prueba
+     * @param mensaje mensaje del paso
+     */
+    protected void logPasoPrueba(String mensaje) {
+        logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(mensaje));
     }
     
-    @Step("Navegar a página de login")
-    protected void navegarALogin() {
-        try {
-            logPasoPrueba("Navegando a página de login");
-            driver.get(urlLogin);
-            Thread.sleep(2000);
-            logValidacion("Navegación a login completada");
-        } catch (Exception e) {
-            logError("Error al navegar a login", e);
-            capturarPantalla("error_navegacion_login");
-            throw new RuntimeException("No se pudo navegar a login", e);
-        }
-    }
+    /**
+     * Método abstracto que debe ser implementado por las clases hijas
+     * para definir la configuración específica de cada tipo de prueba
+     */
+    protected abstract void configuracionEspecifica();
     
-    @Step("Navegar a página de registro")
-    protected void navegarARegistro() {
-        try {
-            logPasoPrueba("Navegando a página de registro");
-            driver.get(urlRegistro);
-            Thread.sleep(2000);
-            logValidacion("Navegación a registro completada");
-        } catch (Exception e) {
-            logError("Error al navegar a registro", e);
-            capturarPantalla("error_navegacion_registro");
-            throw new RuntimeException("No se pudo navegar a registro", e);
-        }
-    }
-    
-    @Step("Navegar a página principal")
-    protected void navegarAHome() {
-        try {
-            logPasoPrueba("Navegando a página principal");
-            driver.get(urlBase);
-            Thread.sleep(2000);
-            logValidacion("Navegación a home completada");
-        } catch (Exception e) {
-            logError("Error al navegar a home", e);
-            capturarPantalla("error_navegacion_home");
-            throw new RuntimeException("No se pudo navegar a home", e);
-        }
-    }
-    
-    protected void esperar(long milisegundos) {
+    /**
+     * Método de utilidad para pausas cortas en las pruebas
+     * @param milisegundos tiempo a esperar
+     */
+    protected void esperarTiempo(int milisegundos) {
         try {
             Thread.sleep(milisegundos);
         } catch (InterruptedException e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Interrupción durante espera"));
             Thread.currentThread().interrupt();
-            logger.warn("Espera interrumpida: {}", e.getMessage());
         }
     }
     
-    protected String obtenerInfoNavegador() {
-        if (driver != null) {
-            return String.format("Navegador: %s | URL: %s | Título: %s", 
-                tipoNavegador, 
-                driver.getCurrentUrl(), 
-                driver.getTitle());
+    /**
+     * Valida que la configuración esté correctamente cargada
+     * @throws RuntimeException si la configuración no es válida
+     */
+    protected void validarConfiguracion() {
+        if (configuracion == null) {
+            throw new RuntimeException("La configuración global no está inicializada");
         }
-        return "Driver no disponible";
-    }
-    
-    protected boolean esDriverDisponible() {
-        try {
-            return driver != null && driver.getCurrentUrl() != null;
-        } catch (Exception e) {
-            logger.warn("Driver no disponible: {}", e.getMessage());
-            return false;
-        }
-    }
-    
-    protected void iniciarPrueba(String nombrePrueba, String descripcion) {
-        logger.info("🚀 INICIANDO PRUEBA: {}", nombrePrueba);
-        logger.info("📝 DESCRIPCIÓN: {}", descripcion);
-        logger.info("🌐 NAVEGADOR: {}", tipoNavegador);
-        logger.info("📍 URL BASE: {}", urlBase);
-    }
-    
-    protected void finalizarPrueba(String nombrePrueba, boolean exitosa) {
-        String estado = exitosa ? "✅ EXITOSA" : "❌ FALLIDA";
-        logger.info("🏁 FINALIZANDO PRUEBA: {} - {}", nombrePrueba, estado);
         
-        if (!exitosa) {
-            capturarPantalla("prueba_fallida_" + nombrePrueba.replaceAll("\\s+", "_"));
+        String urlBase = obtenerUrlBase();
+        if (urlBase == null || urlBase.trim().isEmpty()) {
+            throw new RuntimeException("La URL base no está configurada");
         }
+        
+        logValidacion("Configuración validada correctamente");
+    }
+    
+    /**
+     * Información del navegador configurado
+     * @return información detallada del navegador
+     */
+    protected String obtenerInformacionNavegador() {
+        TipoNavegador tipo = obtenerTipoNavegadorConfigurado();
+        return String.format("Navegador: %s | Headless: %s | Soportado: %s",
+                           tipo.obtenerNombreCompleto(),
+                           esModoHeadless() ? "Sí" : "No",
+                           tipo.esSoportadoEnSistemaActual() ? "Sí" : "No");
     }
 }

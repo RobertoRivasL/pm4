@@ -1,8 +1,6 @@
 package com.automatizacion.proyecto.configuracion;
 
-import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.enums.TipoNavegador;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -12,13 +10,11 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Clase responsable de la configuración y creación de instancias de WebDriver.
@@ -28,7 +24,6 @@ import java.util.Map;
  * - SRP: Solo se encarga de la configuración de navegadores
  * - OCP: Fácil extensión para nuevos navegadores
  * - DIP: Devuelve la abstracción WebDriver
- * - Factory Pattern: Centraliza la creación de drivers
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
@@ -36,261 +31,245 @@ import java.util.Map;
 public class ConfiguracionNavegador {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfiguracionNavegador.class);
-    private static final ConfiguracionGlobal configuracion = ConfiguracionGlobal.obtenerInstancia();
-    
-    // Configuraciones por defecto
-    private static final int TIEMPO_ESPERA_IMPLICITA_DEFECTO = 10;
-    private static final int TIEMPO_CARGA_PAGINA_DEFECTO = 30;
-    private static final String USER_AGENT_DEFECTO = "Mozilla/5.0 (Test Automation)";
+    private static final int TIEMPO_ESPERA_IMPLICITA = 10;
+    private static final int TIEMPO_CARGA_PAGINA = 30;
     
     /**
-     * Crea una instancia de WebDriver basada en la configuración global
-     * @return instancia configurada de WebDriver
-     */
-    public static WebDriver crearNavegador() {
-        TipoNavegador tipo = configuracion.obtenerTipoNavegador();
-        boolean headless = configuracion.esNavegadorHeadless();
-        return crearNavegador(tipo, headless);
-    }
-    
-    /**
-     * Crea una instancia de WebDriver basada en el tipo especificado
-     * @param tipoNavegador el tipo de navegador a crear
-     * @param modoSinCabeza si el navegador debe ejecutarse en modo headless
-     * @return instancia configurada de WebDriver
-     * @throws IllegalArgumentException si el tipo de navegador no es soportado
+     * Crea una instancia de WebDriver basada en el tipo especificado.
+     * 
+     * @param tipoNavegador El tipo de navegador a crear
+     * @param modoSinCabeza Si el navegador debe ejecutarse en modo headless
+     * @return Instancia configurada de WebDriver
+     * @throws IllegalArgumentException Si el tipo de navegador no es soportado
      */
     public static WebDriver crearNavegador(TipoNavegador tipoNavegador, boolean modoSinCabeza) {
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-            "Creando navegador: " + tipoNavegador + " (Headless: " + modoSinCabeza + ")"));
-        
-        // Verificar que el navegador sea soportado en el SO actual
-        if (!tipoNavegador.esSoportadoEnSO()) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Navegador " + tipoNavegador + " no soportado en este SO. Usando Chrome como alternativa."));
-            tipoNavegador = TipoNavegador.CHROME;
-        }
+        logger.info("Creando navegador tipo: {} (Headless: {})", 
+                   tipoNavegador.obtenerNombreCompleto(), modoSinCabeza);
         
         WebDriver driver;
         
-        try {
-            switch (tipoNavegador) {
-                case CHROME:
-                    driver = configurarChrome(modoSinCabeza);
-                    break;
-                case FIREFOX:
-                    driver = configurarFirefox(modoSinCabeza);
-                    break;
-                case EDGE:
-                    driver = configurarEdge(modoSinCabeza);
-                    break;
-                case SAFARI:
-                    driver = configurarSafari(modoSinCabeza);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Tipo de navegador no soportado: " + tipoNavegador);
-            }
-            
-            configurarTiemposEspera(driver);
-            maximizarVentana(driver, modoSinCabeza);
-            
-            logger.info(TipoMensaje.EXITO.formatearMensaje(
-                "Navegador " + tipoNavegador + " creado exitosamente"));
-            
-            return driver;
-            
-        } catch (Exception e) {
-            logger.error(TipoMensaje.ERROR.formatearMensaje(
-                "Error al crear navegador " + tipoNavegador + ": " + e.getMessage()));
-            throw new RuntimeException("No se pudo crear el navegador " + tipoNavegador, e);
+        switch (tipoNavegador) {
+            case CHROME:
+                driver = configurarChrome(modoSinCabeza);
+                break;
+            case FIREFOX:
+                driver = configurarFirefox(modoSinCabeza);
+                break;
+            case EDGE:
+                driver = configurarEdge(modoSinCabeza);
+                break;
+            case SAFARI:
+                driver = configurarSafari(modoSinCabeza);
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de navegador no soportado: " + tipoNavegador);
         }
+        
+        configurarTiemposEspera(driver);
+        driver.manage().window().maximize();
+        
+        logger.info("Navegador {} configurado exitosamente", tipoNavegador.obtenerNombreCompleto());
+        return driver;
     }
     
     /**
-     * Configura Chrome con las opciones especificadas
+     * Método de conveniencia que mantiene compatibilidad con código existente
+     * @param tipoNavegador tipo de navegador
+     * @param modoSinCabeza modo headless
+     * @return WebDriver configurado
      */
-    private static WebDriver configurarChrome(boolean headless) {
+    public static WebDriver crearDriver(TipoNavegador tipoNavegador, boolean modoSinCabeza) {
+        return crearNavegador(tipoNavegador, modoSinCabeza);
+    }
+    
+    /**
+     * Crea un navegador con configuración por defecto (Chrome)
+     * @return WebDriver configurado
+     */
+    public static WebDriver crearNavegadorPorDefecto() {
+        return crearNavegador(TipoNavegador.CHROME, false);
+    }
+    
+    /**
+     * Configura Chrome con las opciones especificadas.
+     * @param modoSinCabeza si debe ejecutarse en modo headless
+     * @return WebDriver de Chrome configurado
+     */
+    private static WebDriver configurarChrome(boolean modoSinCabeza) {
+        logger.debug("Configurando Chrome con WebDriverManager");
         WebDriverManager.chromedriver().setup();
         
         ChromeOptions opciones = new ChromeOptions();
         
-        // Opciones básicas
+        // Opciones básicas para evitar detección de automatización
+        opciones.addArguments("--disable-blink-features=AutomationControlled");
+        opciones.addArguments("--disable-extensions");
         opciones.addArguments("--no-sandbox");
         opciones.addArguments("--disable-dev-shm-usage");
         opciones.addArguments("--disable-gpu");
+        opciones.addArguments("--remote-allow-origins=*");
         opciones.addArguments("--disable-web-security");
         opciones.addArguments("--allow-running-insecure-content");
-        opciones.addArguments("--disable-extensions");
-        opciones.addArguments("--disable-plugins");
-        opciones.addArguments("--disable-images");
-        opciones.addArguments("--disable-javascript");
         
-        // Configuración de headless
-        if (headless) {
-            opciones.addArguments("--headless=new");
-            opciones.addArguments("--window-size=1920,1080");
+        // Configuración para manejo de propaganda y notificaciones
+        opciones.addArguments("--disable-popup-blocking");
+        opciones.addArguments("--disable-notifications");
+        opciones.addArguments("--disable-infobars");
+        
+        // User Agent personalizado
+        opciones.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        
+        // Configuración experimental para evitar detección
+        opciones.setExperimentalOption("useAutomationExtension", false);
+        opciones.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+        
+        if (modoSinCabeza) {
+            String[] argumentosHeadless = TipoNavegador.CHROME.obtenerArgumentosHeadless();
+            opciones.addArguments(argumentosHeadless);
         }
         
-        // Preferencias adicionales
-        Map<String, Object> preferencias = new HashMap<>();
-        preferencias.put("profile.default_content_setting_values.notifications", 2);
-        preferencias.put("profile.default_content_settings.popups", 0);
-        preferencias.put("profile.managed_default_content_settings.images", 2);
-        opciones.setExperimentalOption("prefs", preferencias);
-        
-        // User agent personalizado
-        opciones.addArguments("--user-agent=" + USER_AGENT_DEFECTO);
-        
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Opciones Chrome configuradas"));
-        
+        logger.debug("Chrome configurado exitosamente");
         return new ChromeDriver(opciones);
     }
     
     /**
-     * Configura Firefox con las opciones especificadas
+     * Configura Firefox con las opciones especificadas.
+     * @param modoSinCabeza si debe ejecutarse en modo headless
+     * @return WebDriver de Firefox configurado
      */
-    private static WebDriver configurarFirefox(boolean headless) {
+    private static WebDriver configurarFirefox(boolean modoSinCabeza) {
+        logger.debug("Configurando Firefox con WebDriverManager");
         WebDriverManager.firefoxdriver().setup();
         
         FirefoxOptions opciones = new FirefoxOptions();
         
-        // Configuración de headless
-        if (headless) {
-            opciones.addArguments("--headless");
-            opciones.addArguments("--width=1920");
-            opciones.addArguments("--height=1080");
-        }
-        
-        // Preferencias de Firefox
+        // Configuraciones básicas para evitar notificaciones
         opciones.addPreference("dom.webnotifications.enabled", false);
         opciones.addPreference("dom.push.enabled", false);
-        opciones.addPreference("media.volume_scale", "0.0");
-        opciones.addPreference("permissions.default.image", 2);
-        opciones.addPreference("javascript.enabled", false);
+        opciones.addPreference("dom.popup_allowed_events", "");
+        opciones.addPreference("browser.download.folderList", 2);
+        opciones.addPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf");
         
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Opciones Firefox configuradas"));
+        // User Agent personalizado
+        opciones.addPreference("general.useragent.override", 
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0");
         
+        if (modoSinCabeza) {
+            String[] argumentosHeadless = TipoNavegador.FIREFOX.obtenerArgumentosHeadless();
+            opciones.addArguments(argumentosHeadless);
+        }
+        
+        logger.debug("Firefox configurado exitosamente");
         return new FirefoxDriver(opciones);
     }
     
     /**
-     * Configura Edge con las opciones especificadas
+     * Configura Edge con las opciones especificadas.
+     * @param modoSinCabeza si debe ejecutarse en modo headless
+     * @return WebDriver de Edge configurado
      */
-    private static WebDriver configurarEdge(boolean headless) {
+    private static WebDriver configurarEdge(boolean modoSinCabeza) {
+        logger.debug("Configurando Edge con WebDriverManager");
         WebDriverManager.edgedriver().setup();
         
         EdgeOptions opciones = new EdgeOptions();
         
-        // Opciones básicas (similares a Chrome)
+        // Opciones similares a Chrome (Edge está basado en Chromium)
+        opciones.addArguments("--disable-blink-features=AutomationControlled");
+        opciones.addArguments("--disable-extensions");
         opciones.addArguments("--no-sandbox");
         opciones.addArguments("--disable-dev-shm-usage");
-        opciones.addArguments("--disable-gpu");
-        opciones.addArguments("--disable-web-security");
-        opciones.addArguments("--disable-extensions");
+        opciones.addArguments("--remote-allow-origins=*");
+        opciones.addArguments("--disable-popup-blocking");
+        opciones.addArguments("--disable-notifications");
         
-        // Configuración de headless
-        if (headless) {
-            opciones.addArguments("--headless=new");
-            opciones.addArguments("--window-size=1920,1080");
+        if (modoSinCabeza) {
+            String[] argumentosHeadless = TipoNavegador.EDGE.obtenerArgumentosHeadless();
+            opciones.addArguments(argumentosHeadless);
         }
         
-        // Preferencias
-        Map<String, Object> preferencias = new HashMap<>();
-        preferencias.put("profile.default_content_setting_values.notifications", 2);
-        opciones.setExperimentalOption("prefs", preferencias);
-        
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Opciones Edge configuradas"));
-        
+        logger.debug("Edge configurado exitosamente");
         return new EdgeDriver(opciones);
     }
     
     /**
-     * Configura Safari con las opciones especificadas
+     * Configura Safari con las opciones especificadas.
+     * Nota: Safari solo funciona en macOS
+     * @param modoSinCabeza si debe ejecutarse en modo headless (no soportado en Safari)
+     * @return WebDriver de Safari configurado
      */
-    private static WebDriver configurarSafari(boolean headless) {
-        // Safari no soporta modo headless de forma nativa
-        if (headless) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "Safari no soporta modo headless. Ejecutándose en modo normal."));
+    private static WebDriver configurarSafari(boolean modoSinCabeza) {
+        logger.debug("Configurando Safari");
+        
+        if (modoSinCabeza) {
+            logger.warn("Safari no soporta modo headless, ejecutando en modo normal");
         }
         
         SafariOptions opciones = new SafariOptions();
-        opciones.setAutomaticInspection(false);
-        opciones.setAutomaticProfiling(false);
+        // Safari tiene opciones limitadas comparado con otros navegadores
         
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Opciones Safari configuradas"));
-        
+        logger.debug("Safari configurado exitosamente");
         return new SafariDriver(opciones);
     }
     
     /**
-     * Configura los tiempos de espera del driver
+     * Configura los tiempos de espera para el driver.
+     * @param driver instancia del WebDriver a configurar
      */
     private static void configurarTiemposEspera(WebDriver driver) {
-        int tiempoImplicito = configuracion.obtenerTimeoutImplicito();
-        int tiempoCarga = configuracion.obtenerPropiedad("timeout.carga.pagina", 
-            String.valueOf(TIEMPO_CARGA_PAGINA_DEFECTO)).equals("") ? 
-            TIEMPO_CARGA_PAGINA_DEFECTO : 
-            Integer.parseInt(configuracion.obtenerPropiedad("timeout.carga.pagina", 
-                String.valueOf(TIEMPO_CARGA_PAGINA_DEFECTO)));
+        logger.debug("Configurando timeouts: implícito={}s, carga={}s", 
+                    TIEMPO_ESPERA_IMPLICITA, TIEMPO_CARGA_PAGINA);
         
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(tiempoImplicito));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(tiempoCarga));
-        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(tiempoCarga));
-        
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
-            "Timeouts configurados - Implícito: " + tiempoImplicito + "s, Carga: " + tiempoCarga + "s"));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(TIEMPO_ESPERA_IMPLICITA));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(TIEMPO_CARGA_PAGINA));
+        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(TIEMPO_CARGA_PAGINA));
     }
     
     /**
-     * Maximiza la ventana del navegador
+     * Obtiene el tipo de navegador desde una cadena de texto.
+     * @param navegador nombre del navegador
+     * @return TipoNavegador correspondiente
      */
-    private static void maximizarVentana(WebDriver driver, boolean headless) {
+    public static TipoNavegador obtenerTipoNavegador(String navegador) {
+        if (navegador == null || navegador.trim().isEmpty()) {
+            logger.debug("Navegador no especificado, usando Chrome por defecto");
+            return TipoNavegador.CHROME;
+        }
+        
         try {
-            if (!headless) {
-                driver.manage().window().maximize();
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje("Ventana maximizada"));
-            } else {
-                // En modo headless, establecer tamaño específico
-                driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje("Ventana configurada para modo headless: 1920x1080"));
-            }
+            TipoNavegador tipo = TipoNavegador.desdeString(navegador);
+            logger.debug("Navegador '{}' convertido a: {}", navegador, tipo);
+            return tipo;
         } catch (Exception e) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "No se pudo configurar el tamaño de ventana: " + e.getMessage()));
+            logger.warn("Navegador '{}' no reconocido, usando Chrome por defecto: {}", 
+                       navegador, e.getMessage());
+            return TipoNavegador.CHROME;
         }
     }
     
     /**
-     * Cierra el driver de forma segura
-     * @param driver driver a cerrar
+     * Verifica si un tipo de navegador está soportado en el sistema actual
+     * @param tipo tipo de navegador a verificar
+     * @return true si está soportado
      */
-    public static void cerrarNavegador(WebDriver driver) {
-        if (driver != null) {
-            try {
-                driver.quit();
-                logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Navegador cerrado correctamente"));
-            } catch (Exception e) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Error al cerrar navegador: " + e.getMessage()));
-            }
-        }
+    public static boolean esNavegadorSoportado(TipoNavegador tipo) {
+        return tipo.esSoportadoEnSistemaActual();
     }
     
     /**
-     * Obtiene información del navegador actual
-     * @param driver driver del cual obtener información
+     * Obtiene todos los navegadores soportados en el sistema actual
+     * @return array de navegadores soportados
+     */
+    public static TipoNavegador[] obtenerNavegadoresSoportados() {
+        return TipoNavegador.obtenerNavegadoresSoportados();
+    }
+    
+    /**
+     * Obtiene información detallada del navegador configurado
+     * @param tipo tipo de navegador
      * @return información del navegador
      */
-    public static String obtenerInformacionNavegador(WebDriver driver) {
-        try {
-            String userAgent = (String) ((org.openqa.selenium.JavascriptExecutor) driver)
-                .executeScript("return navigator.userAgent;");
-            return userAgent;
-        } catch (Exception e) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "No se pudo obtener información del navegador: " + e.getMessage()));
-            return "Información no disponible";
-        }
+    public static String obtenerInformacionNavegador(TipoNavegador tipo) {
+        return tipo.toStringDetallado();
     }
 }

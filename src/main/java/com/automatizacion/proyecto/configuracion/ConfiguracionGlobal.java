@@ -1,25 +1,17 @@
 package com.automatizacion.proyecto.configuracion;
 
-import com.automatizacion.proyecto.enums.TipoMensaje;
-import com.automatizacion.proyecto.enums.TipoNavegador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
- * Clase responsable de la gestión de configuración global del proyecto.
- * Implementa el patrón Singleton para garantizar una única instancia.
+ * Clase singleton responsable de la configuración global de la aplicación.
+ * Gestiona la carga y acceso a propiedades de configuración desde archivos.
  * 
- * Principios aplicados:
- * - SRP: Solo maneja configuración
- * - Singleton: Una sola instancia de configuración
- * - DIP: Abstrae la fuente de configuración
+ * Implementa el patrón Singleton y sigue el principio de Responsabilidad Única.
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
@@ -27,249 +19,184 @@ import java.util.Properties;
 public class ConfiguracionGlobal {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfiguracionGlobal.class);
+    private static final String ARCHIVO_CONFIG = "config.properties";
+    
     private static ConfiguracionGlobal instancia;
-    private static final Object lock = new Object();
-    
-    // Archivos de configuración
-    private static final String ARCHIVO_CONFIGURACION = "config.properties";
-    private static final String RUTA_CONFIGURACION_RECURSOS = "/config.properties";
-    
-    // Propiedades del sistema
     private final Properties propiedades;
     
-    // Configuraciones por defecto
-    private static final String URL_BASE_DEFECTO = "https://demo.opencart.com";
-    private static final TipoNavegador NAVEGADOR_DEFECTO = TipoNavegador.CHROME;
-    private static final boolean HEADLESS_DEFECTO = false;
-    private static final int TIMEOUT_DEFECTO = 15;
-    private static final String DIRECTORIO_CAPTURAS_DEFECTO = "capturas";
-    private static final String DIRECTORIO_REPORTES_DEFECTO = "reportes";
-    private static final String DIRECTORIO_LOGS_DEFECTO = "logs";
-    
-    /**
-     * Constructor privado para implementar Singleton
-     */
     private ConfiguracionGlobal() {
-        this.propiedades = new Properties();
-        cargarConfiguracion();
+        propiedades = new Properties();
+        cargarPropiedades();
     }
     
     /**
-     * Obtiene la instancia única de ConfiguracionGlobal (Singleton)
-     * @return instancia de ConfiguracionGlobal
+     * Obtiene la instancia única de la configuración global
+     * @return instancia singleton de ConfiguracionGlobal
      */
-    public static ConfiguracionGlobal obtenerInstancia() {
+    public static synchronized ConfiguracionGlobal obtenerInstancia() {
         if (instancia == null) {
-            synchronized (lock) {
-                if (instancia == null) {
-                    instancia = new ConfiguracionGlobal();
-                }
-            }
+            instancia = new ConfiguracionGlobal();
         }
         return instancia;
     }
     
     /**
-     * Carga la configuración desde diferentes fuentes
+     * Carga las propiedades desde el archivo de configuración
      */
-    private void cargarConfiguracion() {
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-            "Iniciando carga de configuración"));
-        
-        // 1. Cargar propiedades del sistema
-        propiedades.putAll(System.getProperties());
-        
-        // 2. Cargar desde archivo de recursos
-        cargarDesdeRecursos();
-        
-        // 3. Cargar desde archivo externo
-        cargarDesdeArchivoExterno();
-        
-        // 4. Cargar variables de entorno
-        cargarVariablesEntorno();
-        
-        // 5. Aplicar configuraciones por defecto
-        aplicarConfiguracionesPorDefecto();
-        
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-            "Configuración cargada exitosamente"));
-        
-        logConfiguracionActual();
-    }
-    
-    /**
-     * Carga configuración desde recursos internos
-     */
-    private void cargarDesdeRecursos() {
-        try (InputStream input = getClass().getResourceAsStream(RUTA_CONFIGURACION_RECURSOS)) {
-            if (input != null) {
-                propiedades.load(input);
-                logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                    "Configuración cargada desde recursos"));
+    private void cargarPropiedades() {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ARCHIVO_CONFIG)) {
+            if (inputStream == null) {
+                logger.warn("No se pudo encontrar el archivo de configuración: {}", ARCHIVO_CONFIG);
+                cargarConfiguracionPorDefecto();
+                return;
             }
+            
+            propiedades.load(inputStream);
+            logger.info("Configuración cargada exitosamente desde: {}", ARCHIVO_CONFIG);
+            
         } catch (IOException e) {
-            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                "No se pudo cargar configuración desde recursos: " + e.getMessage()));
+            logger.error("Error al cargar el archivo de configuración: {}", e.getMessage());
+            cargarConfiguracionPorDefecto();
         }
     }
     
     /**
-     * Carga configuración desde archivo externo
+     * Carga configuración por defecto en caso de error
      */
-    private void cargarDesdeArchivoExterno() {
-        Path archivoConfig = Paths.get(ARCHIVO_CONFIGURACION);
-        if (Files.exists(archivoConfig)) {
-            try (InputStream input = Files.newInputStream(archivoConfig)) {
-                propiedades.load(input);
-                logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                    "Configuración cargada desde archivo externo: " + archivoConfig));
-            } catch (IOException e) {
-                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
-                    "Error al cargar archivo externo: " + e.getMessage()));
-            }
-        }
-    }
-    
-    /**
-     * Carga variables de entorno relevantes
-     */
-    private void cargarVariablesEntorno() {
-        // Variables de entorno que pueden sobrescribir configuración
-        String[] variablesRelevantes = {
-            "SELENIUM_URL_BASE",
-            "SELENIUM_NAVEGADOR",
-            "SELENIUM_HEADLESS",
-            "SELENIUM_TIMEOUT"
-        };
+    private void cargarConfiguracionPorDefecto() {
+        propiedades.setProperty("url.base", "https://example.com");
+        propiedades.setProperty("navegador.tipo", "CHROME");
+        propiedades.setProperty("navegador.headless", "false");
+        propiedades.setProperty("timeout.implicito", "10");
+        propiedades.setProperty("timeout.explicito", "15");
+        propiedades.setProperty("timeout.carga.pagina", "30");
+        propiedades.setProperty("capturas.directorio", "capturas");
+        propiedades.setProperty("reportes.directorio", "reportes");
+        propiedades.setProperty("datos.directorio", "src/test/resources/datos");
         
-        for (String variable : variablesRelevantes) {
-            String valor = System.getenv(variable);
-            if (valor != null && !valor.trim().isEmpty()) {
-                String clave = variable.toLowerCase().replace("selenium_", "");
-                propiedades.setProperty(clave, valor);
-                logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                    "Variable de entorno aplicada: " + variable + " = " + valor));
-            }
+        logger.info("Configuración por defecto cargada");
+    }
+    
+    /**
+     * Obtiene una propiedad como cadena de texto
+     * @param clave clave de la propiedad
+     * @return valor de la propiedad o cadena vacía si no existe
+     */
+    public String obtenerPropiedad(String clave) {
+        String valor = propiedades.getProperty(clave);
+        if (valor == null) {
+            logger.debug("Propiedad no encontrada: {}. Usando valor vacío", clave);
+            return "";
+        }
+        return valor.trim();
+    }
+    
+    /**
+     * Obtiene una propiedad como cadena de texto con valor por defecto
+     * @param clave clave de la propiedad
+     * @param valorPorDefecto valor por defecto si la clave no existe
+     * @return valor de la propiedad o valor por defecto
+     */
+    public String obtenerPropiedad(String clave, String valorPorDefecto) {
+        String valor = propiedades.getProperty(clave);
+        if (valor == null || valor.trim().isEmpty()) {
+            logger.debug("Propiedad '{}' no encontrada o vacía. Usando valor por defecto: {}", 
+                       clave, valorPorDefecto);
+            return valorPorDefecto;
+        }
+        return valor.trim();
+    }
+    
+    /**
+     * Obtiene una propiedad como entero
+     * @param clave clave de la propiedad
+     * @param valorPorDefecto valor por defecto si la clave no existe o no es un entero válido
+     * @return valor entero de la propiedad o valor por defecto
+     */
+    public int obtenerPropiedadEntero(String clave, int valorPorDefecto) {
+        String valor = obtenerPropiedad(clave);
+        if (valor.isEmpty()) {
+            return valorPorDefecto;
+        }
+        
+        try {
+            return Integer.parseInt(valor);
+        } catch (NumberFormatException e) {
+            logger.warn("La propiedad '{}' con valor '{}' no es un entero válido. " +
+                       "Usando valor por defecto: {}", 
+                       clave, valor, valorPorDefecto);
+            return valorPorDefecto;
         }
     }
     
     /**
-     * Aplica configuraciones por defecto para propiedades faltantes
+     * Obtiene una propiedad como booleano
+     * @param clave clave de la propiedad
+     * @param valorPorDefecto valor por defecto si la clave no existe
+     * @return valor booleano de la propiedad o valor por defecto
      */
-    private void aplicarConfiguracionesPorDefecto() {
-        aplicarPorDefecto("url.base", URL_BASE_DEFECTO);
-        aplicarPorDefecto("navegador.tipo", NAVEGADOR_DEFECTO.n());
-        aplicarPorDefecto("navegador.headless", String.valueOf(HEADLESS_DEFECTO));
-        aplicarPorDefecto("timeout.explicito", String.valueOf(TIMEOUT_DEFECTO));
-        aplicarPorDefecto("timeout.implicito", String.valueOf(TIMEOUT_DEFECTO));
-        aplicarPorDefecto("directorio.capturas", DIRECTORIO_CAPTURAS_DEFECTO);
-        aplicarPorDefecto("directorio.reportes", DIRECTORIO_REPORTES_DEFECTO);
-        aplicarPorDefecto("directorio.logs", DIRECTORIO_LOGS_DEFECTO);
-    }
-    
-    /**
-     * Aplica valor por defecto si la propiedad no existe
-     */
-    private void aplicarPorDefecto(String clave, String valorDefecto) {
-        if (!propiedades.containsKey(clave)) {
-            propiedades.setProperty(clave, valorDefecto);
+    public boolean obtenerPropiedadBooleana(String clave, boolean valorPorDefecto) {
+        String valor = obtenerPropiedad(clave);
+        if (valor.isEmpty()) {
+            return valorPorDefecto;
         }
+        return Boolean.parseBoolean(valor);
     }
     
-    /**
-     * Registra en log la configuración actual
-     */
-    private void logConfiguracionActual() {
-        logger.info(TipoMensaje.CONFIGURACION.crearSeparador("CONFIGURACIÓN ACTUAL"));
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("URL Base: " + obtenerUrlBase()));
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Navegador: " + obtenerTipoNavegador()));
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Modo Headless: " + esNavegadorHeadless()));
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Timeout Explícito: " + obtenerTimeoutExplicito() + "s"));
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Directorio Capturas: " + obtenerDirectorioCapturas()));
-    }
-    
-    // === MÉTODOS PÚBLICOS PARA OBTENER CONFIGURACIONES ===
+    // Métodos de conveniencia para propiedades comunes
     
     public String obtenerUrlBase() {
-        return propiedades.getProperty("url.base", URL_BASE_DEFECTO);
+        return obtenerPropiedad("url.base");
     }
     
-    public TipoNavegador obtenerTipoNavegador() {
-        String navegador = propiedades.getProperty("navegador.tipo", NAVEGADOR_DEFECTO.n());
-        return TipoNavegador.desdeString(navegador);
+    public String obtenerTipoNavegador() {
+        return obtenerPropiedad("navegador.tipo", "CHROME");
     }
     
     public boolean esNavegadorHeadless() {
-        return Boolean.parseBoolean(propiedades.getProperty("navegador.headless", String.valueOf(HEADLESS_DEFECTO)));
-    }
-    
-    public int obtenerTimeoutExplicito() {
-        return Integer.parseInt(propiedades.getProperty("timeout.explicito", String.valueOf(TIMEOUT_DEFECTO)));
+        return obtenerPropiedadBooleana("navegador.headless", false);
     }
     
     public int obtenerTimeoutImplicito() {
-        return Integer.parseInt(propiedades.getProperty("timeout.implicito", String.valueOf(TIMEOUT_DEFECTO)));
+        return obtenerPropiedadEntero("timeout.implicito", 10);
+    }
+    
+    public int obtenerTimeoutExplicito() {
+        return obtenerPropiedadEntero("timeout.explicito", 15);
+    }
+    
+    public int obtenerTimeoutCargaPagina() {
+        return obtenerPropiedadEntero("timeout.carga.pagina", 30);
     }
     
     public String obtenerDirectorioCapturas() {
-        return propiedades.getProperty("directorio.capturas", DIRECTORIO_CAPTURAS_DEFECTO);
+        return obtenerPropiedad("capturas.directorio", "capturas");
     }
     
     public String obtenerDirectorioReportes() {
-        return propiedades.getProperty("directorio.reportes", DIRECTORIO_REPORTES_DEFECTO);
+        return obtenerPropiedad("reportes.directorio", "reportes");
     }
     
-    public String obtenerDirectorioLogs() {
-        return propiedades.getProperty("directorio.logs", DIRECTORIO_LOGS_DEFECTO);
-    }
-    
-    /**
-     * Obtiene una propiedad específica con valor por defecto
-     * @param clave clave de la propiedad
-     * @param valorDefecto valor por defecto si no existe
-     * @return valor de la propiedad
-     */
-    public String obtenerPropiedad(String clave, String valorDefecto) {
-        return propiedades.getProperty(clave, valorDefecto);
+    public String obtenerDirectorioDatos() {
+        return obtenerPropiedad("datos.directorio", "src/test/resources/datos");
     }
     
     /**
-     * Establece una propiedad dinámicamente
+     * Establece una propiedad en tiempo de ejecución
      * @param clave clave de la propiedad
-     * @param valor valor a establecer
+     * @param valor valor de la propiedad
      */
     public void establecerPropiedad(String clave, String valor) {
         propiedades.setProperty(clave, valor);
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-            "Propiedad establecida: " + clave + " = " + valor));
+        logger.debug("Propiedad establecida: {} = {}", clave, valor);
     }
     
     /**
      * Verifica si una propiedad existe
-     * @param clave clave a verificar
-     * @return true si la propiedad existe
+     * @param clave clave de la propiedad
+     * @return true si la propiedad existe, false en caso contrario
      */
     public boolean existePropiedad(String clave) {
         return propiedades.containsKey(clave);
-    }
-    
-    /**
-     * Obtiene todas las propiedades (copia defensiva)
-     * @return copia de las propiedades
-     */
-    public Properties obtenerTodasLasPropiedades() {
-        Properties copia = new Properties();
-        copia.putAll(propiedades);
-        return copia;
-    }
-    
-    /**
-     * Reinicia la configuración (útil para pruebas)
-     */
-    public static void reiniciarInstancia() {
-        synchronized (lock) {
-            instancia = null;
-        }
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Instancia de configuración reiniciada"));
     }
 }
