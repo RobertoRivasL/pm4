@@ -16,7 +16,8 @@ public enum TipoMensaje {
     DEBUG("[DEBUG]"),
     PRUEBA("[PRUEBA]"),
     ADVERTENCIA("[WARN]"),
-    EXITO("[SUCCESS]");
+    EXITO("[SUCCESS]"),
+    NAVEGACION("[NAV]");
     
     private final String prefijo;
     
@@ -42,5 +43,15 @@ public enum TipoMensaje {
     public String formatearMensaje(String template, Object... argumentos) {
         String mensajeFormateado = String.format(template, argumentos);
         return formatearMensaje(mensajeFormateado);
+    }
+    
+    /**
+     * Formatea un mensaje de error con excepción
+     * @param mensaje mensaje base
+     * @param excepcion excepción ocurrida
+     * @return mensaje formateado con detalles de la excepción
+     */
+    public String formatearMensajeError(String mensaje, Exception excepcion) {
+        return formatearMensaje(mensaje + " - Causa: " + excepcion.getMessage());
     }
 }

@@ -3,6 +3,8 @@ package com.automatizacion.proyecto.paginas;
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
 import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.paginas.interfaces.IPaginaLogin;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -533,4 +535,106 @@ public class PaginaLogin extends PaginaBase implements IPaginaLogin {
             return false;
         }
     }
+
+    // Agregar estos métodos a PaginaLogin.java
+
+@Override
+public boolean esLoginExitoso() {
+    try {
+        // Buscar indicadores de login exitoso
+        // Ejemplo: presencia de dashboard, ausencia de formulario login, etc.
+        
+        // Opción 1: Verificar URL de dashboard
+        String urlActual = driver.getCurrentUrl();
+        if (urlActual.contains("/dashboard") || urlActual.contains("/home")) {
+            return true;
+        }
+        
+        // Opción 2: Verificar elemento específico de usuario logueado
+        try {
+            WebElement elementoUsuario = esperaExplicita.esperarElementoVisible(
+                By.xpath("//span[contains(@class, 'username')] | //div[contains(@class, 'user-menu')]"),
+                5
+            );
+            return elementoUsuario.isDisplayed();
+        } catch (Exception e) {
+            // No encontró elemento de usuario
+        }
+        
+        // Opción 3: Verificar que no existe el formulario de login
+        try {
+            List<WebElement> formulariosLogin = driver.findElements(By.id("loginForm"));
+            return formulariosLogin.isEmpty();
+        } catch (Exception e) {
+            // Error al buscar formulario
+        }
+        
+        return false;
+        
+    } catch (Exception e) {
+        logger.error(TipoMensaje.ERROR.formatearMensajeError(
+            "Error al verificar login exitoso", e));
+        return false;
+    }
+}
+
+@Override
+public boolean hayMensajesError() {
+    try {
+        List<WebElement> mensajesError = driver.findElements(
+            By.xpath("//div[contains(@class, 'error')] | //div[contains(@class, 'alert-danger')] | //span[contains(@class, 'error-message')]")
+        );
+        return !mensajesError.isEmpty() && mensajesError.stream().anyMatch(WebElement::isDisplayed);
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+@Override
+public String obtenerMensajeError() {
+    try {
+        WebElement mensajeError = driver.findElement(
+            By.xpath("//div[contains(@class, 'error')] | //div[contains(@class, 'alert-danger')] | //span[contains(@class, 'error-message')]")
+        );
+        return mensajeError.getText();
+    } catch (Exception e) {
+        return "";
+    }
+}
+
+@Override
+public void limpiarFormulario() {
+    try {
+        if (campoEmail.isDisplayed()) campoEmail.clear();
+        if (campoPassword.isDisplayed()) campoPassword.clear();
+        
+        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Formulario de login limpiado"));
+    } catch (Exception e) {
+        logger.error(TipoMensaje.ERROR.formatearMensajeError(
+            "Error al limpiar formulario de login", e));
+    }
+}
+
+@Override
+public void irARegistro() {
+    try {
+        // Buscar enlace a registro
+        WebElement enlaceRegistro = driver.findElement(
+            By.xpath("//a[contains(text(), 'Registro')] | //a[contains(text(), 'Registrarse')] | //a[contains(@href, 'register')]")
+        );
+        enlaceRegistro.click();
+        
+        logger.info(TipoMensaje.NAVEGACION.formatearMensaje("Navegando a página de registro"));
+    } catch (Exception e) {
+        logger.error(TipoMensaje.ERROR.formatearMensajeError(
+            "Error al navegar a registro", e));
+    }
+}
+
+// CORREGIR visibilidad del método esElementoVisible
+@Override
+protected boolean esElementoVisible(WebElement elemento) {
+    return super.esElementoVisible(elemento);
+}
+
 }

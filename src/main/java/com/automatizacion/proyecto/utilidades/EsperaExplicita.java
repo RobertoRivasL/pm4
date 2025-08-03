@@ -9,6 +9,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.automatizacion.proyecto.enums.TipoMensaje;
+
 import java.time.Duration;
 import java.util.List;
 
@@ -231,4 +233,22 @@ public class EsperaExplicita {
             Thread.currentThread().interrupt();
         }
     }
+
+    // Agregar este método a la clase EsperaExplicita existente
+
+/**
+ * Pausa la ejecución por un número específico de segundos
+ * @param segundos número de segundos a pausar
+ */
+public void pausar(int segundos) {
+    try {
+        Thread.sleep(segundos * 1000L);
+        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
+            "Pausa ejecutada por " + segundos + " segundos"));
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
+            "Pausa interrumpida: " + e.getMessage()));
+    }
+}
 }

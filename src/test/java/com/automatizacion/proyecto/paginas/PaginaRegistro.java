@@ -3,6 +3,8 @@ package com.automatizacion.proyecto.paginas;
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
 import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.paginas.interfaces.IPaginaRegistro;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -408,4 +410,67 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
             return false;
         }
     }
+
+@Override
+public boolean hayMensajesError() {
+    try {
+        List<WebElement> mensajesError = driver.findElements(
+            By.xpath("//div[contains(@class, 'error')] | //div[contains(@class, 'alert-danger')] | //span[contains(@class, 'error-message')]")
+        );
+        return !mensajesError.isEmpty() && mensajesError.stream().anyMatch(WebElement::isDisplayed);
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+@Override
+public String obtenerMensajeError() {
+    try {
+        WebElement mensajeError = driver.findElement(
+            By.xpath("//div[contains(@class, 'error')] | //div[contains(@class, 'alert-danger')] | //span[contains(@class, 'error-message')]")
+        );
+        return mensajeError.getText();
+    } catch (Exception e) {
+        return "";
+    }
+}
+
+@Override
+public void limpiarFormulario() {
+    try {
+        if (campoNombre.isDisplayed()) campoNombre.clear();
+        if (campoApellido.isDisplayed()) campoApellido.clear();
+        if (campoEmail.isDisplayed()) campoEmail.clear();
+        if (campoPassword.isDisplayed()) campoPassword.clear();
+        if (campoConfirmarPassword.isDisplayed()) campoConfirmarPassword.clear();
+        
+        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Formulario de registro limpiado"));
+    } catch (Exception e) {
+        logger.error(TipoMensaje.ERROR.formatearMensajeError(
+            "Error al limpiar formulario de registro", e));
+    }
+}
+
+@Override
+public void irALogin() {
+    try {
+        // Buscar enlace a login
+        WebElement enlaceLogin = driver.findElement(
+            By.xpath("//a[contains(text(), 'Login')] | //a[contains(text(), 'Iniciar')] | //a[contains(@href, 'login')]")
+        );
+        enlaceLogin.click();
+        
+        logger.info(TipoMensaje.NAVEGACION.formatearMensaje("Navegando a página de login"));
+    } catch (Exception e) {
+        logger.error(TipoMensaje.ERROR.formatearMensajeError(
+            "Error al navegar a login", e));
+    }
+}
+
+// CORREGIR visibilidad del método esElementoVisible
+@Override
+protected boolean esElementoVisible(WebElement elemento) {
+    return super.esElementoVisible(elemento);
+}
+
 }
