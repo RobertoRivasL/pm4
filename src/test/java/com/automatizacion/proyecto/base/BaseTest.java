@@ -1,307 +1,359 @@
 package com.automatizacion.proyecto.base;
 
-import org.testng.annotations.*;
-import org.openqa.selenium.WebDriver;
-import com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
 import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
+import com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.enums.TipoNavegador;
 import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
 import com.automatizacion.proyecto.utilidades.EsperaExplicita;
+import com.automatizacion.proyecto.utilidades.ManejadorScrollPagina;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.qameta.allure.Step;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
+import io.qameta.allure.Allure;
+
+import java.lang.reflect.Method;
 
 /**
- * Clase base corregida para todas las pruebas de automatización.
- * Corrige todos los errores de nombres de métodos y configuración.
+ * Clase base para todas las pruebas automatizadas.
+ * Proporciona configuración común, setup y teardown para las pruebas.
+ * 
+ * Implementa el patrón Template Method y sigue los principios SOLID
+ * proporcionando una base sólida para todas las pruebas.
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
  */
 public abstract class BaseTest {
     
-    protected WebDriver driver;
-    protected ConfiguracionGlobal config;
-    protected EsperaExplicita espera;
     private static final Logger logger = LoggerFactory.getLogger(BaseTest.class);
     
-    // Variables para manejo de configuración
-    protected String urlBase;
-    protected String urlLogin;
-    protected String urlRegistro;
-    protected TipoNavegador tipoNavegador;
+    // ThreadLocal para manejar ejecución paralela de forma segura
+    private static final ThreadLocal<WebDriver> driverLocal = new ThreadLocal<>();
+    private static final ThreadLocal<GestorCapturaPantalla> gestorCapturaLocal = new ThreadLocal<>();
+    private static final ThreadLocal<EsperaExplicita> esperaExplicitaLocal = new ThreadLocal<>();
+    private static final ThreadLocal<ManejadorScrollPagina> manejadorScrollLocal = new ThreadLocal<>();
+    
+    protected ConfiguracionGlobal configuracion;
     
     /**
-     * Configuración que se ejecuta antes de cada método de prueba.
-     * CORREGIDO: Todos los nombres de métodos actualizados.
+     * Configuración que se ejecuta una vez antes de todas las pruebas de la suite
+     */
+    @BeforeSuite(alwaysRun = true)
+    public void configuracionSuite() {
+        logger.info(TipoMensaje.CONFIGURACION.crearSeparador("INICIANDO SUITE DE AUTOMATIZACIÓN FUNCIONAL"));
+        
+        configuracion = ConfiguracionGlobal.obtenerInstancia();
+        
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("URL Base: " + configuracion.obtenerUrlBase()));
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Navegador: " + configuracion.obtenerTipoNavegador()));
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Directorio capturas: " + configuracion.obtenerDirectorioCapturas()));
+        
+        // Inicializar directorios necesarios
+        inicializarDirectorios();
+    }
+    
+    /**
+     * Configuración que se ejecuta antes de cada clase de prueba
+     */
+    @BeforeClass(alwaysRun = true)
+    public void configuracionClase() {
+        String nombreClase = this.getClass().getSimpleName();
+        logger.info(TipoMensaje.PRUEBA.formatearMensaje("Iniciando clase de prueba: " + nombreClase));
+    }
+    
+    /**
+     * Configuración que se ejecuta antes de cada método de prueba
+     * @param method método de prueba que se va a ejecutar
      */
     @BeforeMethod(alwaysRun = true)
-    @Step("Configurar entorno de prueba")
-    public void configurarPrueba() {
+    public void configuracionMetodo(Method method) {
+        String nombrePrueba = method.getName();
+        logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje("=== INICIANDO PRUEBA: " + nombrePrueba + " ==="));
+        
         try {
-            logger.info("=== INICIANDO CONFIGURACIÓN DE PRUEBA ===");
+            // Crear driver
+            WebDriver driver = ConfiguracionNavegador.crearNavegador();
+            driverLocal.set(driver);
             
-            // ✅ CORRECCIÓN 1: getInstance() en lugar de obtenerInstancia()
-            config = ConfiguracionGlobal.getInstance();
+            // Inicializar utilidades
+            inicializarUtilidades(driver);
             
-            // ✅ CORRECCIÓN 2: Usar métodos getter correctos
-            urlBase = config.getUrlBase();
-            urlLogin = config.getUrlLogin();
-            urlRegistro = config.getUrlRegistro();
-            tipoNavegador = config.getTipoNavegador();
+            // Navegar a URL base
+            driver.get(configuracion.obtenerUrlBase());
             
-            logger.info("URLs configuradas - Base: {}, Login: {}, Registro: {}", urlBase, urlLogin, urlRegistro);
-            
-            // ✅ CORRECCIÓN 3: ConfiguracionNavegador.crearDriver() con clase completa
-            driver = ConfiguracionNavegador.crearDriver(tipoNavegador);
-            
-            // ✅ CORRECCIÓN 4: Inicializar EsperaExplicita con timeout correcto
-            espera = new EsperaExplicita(driver, config.getTimeoutExplicito());
-            
-            logger.info("Driver creado exitosamente para: {}", tipoNavegador);
-            logger.info("EsperaExplicita configurada con timeout: {} segundos", config.getTimeoutExplicito());
-            logger.info("=== CONFIGURACIÓN DE PRUEBA COMPLETADA ===");
+            logger.info(TipoMensaje.EXITO.formatearMensaje("Prueba " + nombrePrueba + " iniciada correctamente"));
             
         } catch (Exception e) {
-            logger.error("Error en configuración de prueba: {}", e.getMessage(), e);
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error en configuración de prueba: " + e.getMessage()));
             throw new RuntimeException("Fallo en configuración de prueba", e);
         }
     }
     
     /**
-     * Limpieza que se ejecuta después de cada método de prueba.
+     * Configuración que se ejecuta después de cada método de prueba
+     * @param result resultado de la prueba
      */
     @AfterMethod(alwaysRun = true)
-    @Step("Limpiar entorno de prueba")
-    public void limpiarPrueba() {
+    public void limpiezaMetodo(ITestResult result) {
+        String nombrePrueba = result.getMethod().getMethodName();
+        
         try {
-            if (driver != null) {
-                logger.info("Cerrando driver...");
-                ConfiguracionNavegador.cerrarDriver(driver);
-                driver = null;
-                logger.info("Driver cerrado exitosamente");
-            }
+            // Procesar resultado de la prueba
+            procesarResultadoPrueba(result);
+            
+            // Limpiar recursos
+            limpiarRecursos();
+            
+            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("=== FINALIZANDO PRUEBA: " + nombrePrueba + " ==="));
+            
         } catch (Exception e) {
-            logger.error("Error al cerrar driver: {}", e.getMessage(), e);
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error en limpieza de prueba: " + e.getMessage()));
         }
     }
     
     /**
-     * Configuración que se ejecuta una vez al inicio de la clase.
-     */
-    @BeforeClass(alwaysRun = true)
-    public void configurarClase() {
-        logger.info("=== INICIANDO CLASE DE PRUEBA: {} ===", this.getClass().getSimpleName());
-    }
-    
-    /**
-     * Limpieza que se ejecuta una vez al final de la clase.
+     * Configuración que se ejecuta después de cada clase de prueba
      */
     @AfterClass(alwaysRun = true)
-    public void limpiarClase() {
-        logger.info("=== FINALIZANDO CLASE DE PRUEBA: {} ===", this.getClass().getSimpleName());
-    }
-    
-    // ===== MÉTODOS DE UTILIDAD CORREGIDOS =====
-    
-    /**
-     * ✅ CORRECCIÓN 5: Método capturarPantalla NO estático.
-     */
-    @Step("Capturar pantalla: {nombreArchivo}")
-    protected void capturarPantalla(String nombreArchivo) {
-        try {
-            if (driver != null) {
-                GestorCapturaPantalla.capturarPantalla(driver, nombreArchivo);
-                logger.debug("Captura realizada: {}", nombreArchivo);
-            } else {
-                logger.warn("No se puede capturar pantalla: driver es null");
-            }
-        } catch (Exception e) {
-            logger.error("Error al capturar pantalla '{}': {}", nombreArchivo, e.getMessage());
-        }
+    public void limpiezaClase() {
+        String nombreClase = this.getClass().getSimpleName();
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Finalizando clase de prueba: " + nombreClase));
     }
     
     /**
-     * Captura pantalla automática.
+     * Configuración que se ejecuta una vez después de todas las pruebas de la suite
      */
-    protected void capturarPantalla() {
-        capturarPantalla("test_screenshot");
+    @AfterSuite(alwaysRun = true)
+    public void limpiezaSuite() {
+        logger.info(TipoMensaje.CONFIGURACION.crearSeparador("FINALIZANDO SUITE DE AUTOMATIZACIÓN FUNCIONAL"));
+        logger.info(TipoMensaje.EXITO.formatearMensaje("Suite de pruebas completada"));
     }
     
-    /**
-     * Log de paso de prueba para seguimiento.
-     */
-    @Step("Paso de prueba: {mensaje}")
-    protected void logPasoPrueba(String mensaje) {
-        logger.info("🔄 PASO: {}", mensaje);
-    }
+    // === MÉTODOS PÚBLICOS PARA ACCESO A RECURSOS ===
     
     /**
-     * Log de validación para verificaciones.
+     * Obtiene el driver actual del hilo
+     * @return instancia de WebDriver
      */
-    @Step("Validación: {mensaje}")
-    protected void logValidacion(String mensaje) {
-        logger.info("✅ VALIDACIÓN: {}", mensaje);
-    }
-    
-    /**
-     * Log de error para fallos en pruebas.
-     */
-    protected void logError(String mensaje, Exception e) {
-        logger.error("❌ ERROR: {} - {}", mensaje, e.getMessage(), e);
-    }
-    
-    /**
-     * ✅ NAVEGACIÓN CORREGIDA: Navega a la página de login.
-     */
-    @Step("Navegar a página de login")
-    protected void navegarALogin() {
-        try {
-            logPasoPrueba("Navegando a página de login");
-            driver.get(urlLogin);
-            Thread.sleep(2000); // Esperar carga de página
-            logValidacion("Navegación a login completada");
-        } catch (Exception e) {
-            logError("Error al navegar a login", e);
-            capturarPantalla("error_navegacion_login");
-            throw new RuntimeException("No se pudo navegar a login", e);
-        }
-    }
-    
-    /**
-     * ✅ NAVEGACIÓN CORREGIDA: Navega a la página de registro.
-     */
-    @Step("Navegar a página de registro")
-    protected void navegarARegistro() {
-        try {
-            logPasoPrueba("Navegando a página de registro");
-            driver.get(urlRegistro);
-            Thread.sleep(2000); // Esperar carga de página
-            logValidacion("Navegación a registro completada");
-        } catch (Exception e) {
-            logError("Error al navegar a registro", e);
-            capturarPantalla("error_navegacion_registro");
-            throw new RuntimeException("No se pudo navegar a registro", e);
-        }
-    }
-    
-    /**
-     * ✅ NAVEGACIÓN CORREGIDA: Navega a la página base/home.
-     */
-    @Step("Navegar a página principal")
-    protected void navegarAHome() {
-        try {
-            logPasoPrueba("Navegando a página principal");
-            driver.get(urlBase);
-            Thread.sleep(2000); // Esperar carga de página
-            logValidacion("Navegación a home completada");
-        } catch (Exception e) {
-            logError("Error al navegar a home", e);
-            capturarPantalla("error_navegacion_home");
-            throw new RuntimeException("No se pudo navegar a home", e);
-        }
-    }
-    
-    /**
-     * Espera genérica para sincronización.
-     */
-    protected void esperar(long milisegundos) {
-        try {
-            Thread.sleep(milisegundos);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Espera interrumpida: {}", e.getMessage());
-        }
-    }
-    
-    /**
-     * Obtiene información del navegador para debugging.
-     */
-    protected String obtenerInfoNavegador() {
-        if (driver != null) {
-            try {
-                return String.format("Navegador: %s | URL: %s | Título: %s", 
-                    tipoNavegador, 
-                    driver.getCurrentUrl(), 
-                    driver.getTitle());
-            } catch (Exception e) {
-                return "Navegador: " + tipoNavegador + " | Error obteniendo info: " + e.getMessage();
-            }
-        }
-        return "Driver no disponible";
-    }
-    
-    /**
-     * Verifica si el driver está disponible y funcional.
-     */
-    protected boolean esDriverDisponible() {
-        try {
-            return driver != null && driver.getCurrentUrl() != null;
-        } catch (Exception e) {
-            logger.warn("Driver no disponible: {}", e.getMessage());
-            return false;
-        }
-    }
-    
-    /**
-     * Método template para logging de inicio de prueba.
-     */
-    protected void iniciarPrueba(String nombrePrueba, String descripcion) {
-        logger.info("🚀 INICIANDO PRUEBA: {}", nombrePrueba);
-        logger.info("📝 DESCRIPCIÓN: {}", descripcion);
-        logger.info("🌐 NAVEGADOR: {}", tipoNavegador);
-        logger.info("📍 URL BASE: {}", urlBase);
-        
-        // Log adicional de configuración
-        logger.debug("Configuración actual: {}", obtenerInfoNavegador());
-    }
-    
-    /**
-     * Método template para logging de finalización de prueba.
-     */
-    protected void finalizarPrueba(String nombrePrueba, boolean exitosa) {
-        String estado = exitosa ? "✅ EXITOSA" : "❌ FALLIDA";
-        logger.info("🏁 FINALIZANDO PRUEBA: {} - {}", nombrePrueba, estado);
-        
-        if (!exitosa) {
-            capturarPantalla("prueba_fallida_" + nombrePrueba.replaceAll("\\s+", "_"));
-        }
-    }
-    
-    /**
-     * Valida el estado del entorno antes de ejecutar pruebas.
-     */
-    protected void validarEntornoPrueba() {
+    protected WebDriver obtenerDriver() {
+        WebDriver driver = driverLocal.get();
         if (driver == null) {
-            throw new IllegalStateException("WebDriver no está inicializado");
+            throw new IllegalStateException("Driver no inicializado para el hilo actual");
         }
-        
-        if (config == null) {
-            throw new IllegalStateException("ConfiguracionGlobal no está inicializada");
-        }
-        
-        if (espera == null) {
-            throw new IllegalStateException("EsperaExplicita no está inicializada");
-        }
-        
-        logger.debug("Entorno de prueba validado correctamente");
+        return driver;
     }
     
     /**
-     * Obtiene configuración actual formateada para logs.
+     * Obtiene el gestor de capturas del hilo actual
+     * @return instancia de GestorCapturaPantalla
      */
-    protected String obtenerConfiguracionActual() {
-        if (config == null) {
-            return "Configuración no disponible";
+    protected GestorCapturaPantalla obtenerGestorCaptura() {
+        GestorCapturaPantalla gestor = gestorCapturaLocal.get();
+        if (gestor == null) {
+            throw new IllegalStateException("GestorCapturaPantalla no inicializado para el hilo actual");
         }
+        return gestor;
+    }
+    
+    /**
+     * Obtiene la utilidad de esperas del hilo actual
+     * @return instancia de EsperaExplicita
+     */
+    protected EsperaExplicita obtenerEsperaExplicita() {
+        EsperaExplicita espera = esperaExplicitaLocal.get();
+        if (espera == null) {
+            throw new IllegalStateException("EsperaExplicita no inicializada para el hilo actual");
+        }
+        return espera;
+    }
+    
+    /**
+     * Obtiene el manejador de scroll del hilo actual
+     * @return instancia de ManejadorScrollPagina
+     */
+    protected ManejadorScrollPagina obtenerManejadorScroll() {
+        ManejadorScrollPagina manejador = manejadorScrollLocal.get();
+        if (manejador == null) {
+            throw new IllegalStateException("ManejadorScrollPagina no inicializado para el hilo actual");
+        }
+        return manejador;
+    }
+    
+    // === MÉTODOS DE UTILIDAD PARA PRUEBAS ===
+    
+    /**
+     * Captura pantalla con nombre personalizado
+     * @param nombreCaptura nombre para la captura
+     */
+    protected void capturarPantalla(String nombreCaptura) {
+        try {
+            String rutaCaptura = obtenerGestorCaptura().capturarPantalla(nombreCaptura);
+            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Captura guardada: " + rutaCaptura));
+            
+            // Adjuntar a Allure si está disponible
+            adjuntarCapturaAllure(rutaCaptura, nombreCaptura);
+            
+        } catch (Exception e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Error capturando pantalla: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Registra un paso de prueba en logs
+     * @param descripcionPaso descripción del paso
+     */
+    protected void logPasoPrueba(String descripcionPaso) {
+        logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(descripcionPaso));
         
-        return String.format(
-            "Configuración: Navegador=%s, Timeout=%ds, URLs=[Base=%s, Login=%s, Registro=%s]",
-            tipoNavegador,
-            config.getTimeoutExplicito(),
-            urlBase,
-            urlLogin,
-            urlRegistro
-        );
+        // Agregar step a Allure si está disponible
+        try {
+            Allure.step(descripcionPaso);
+        } catch (Exception e) {
+            // Allure no disponible, continuar sin error
+        }
+    }
+    
+    /**
+     * Registra una validación exitosa
+     * @param descripcionValidacion descripción de la validación
+     */
+    protected void logValidacion(String descripcionValidacion) {
+        logger.info(TipoMensaje.VALIDACION.formatearMensaje(descripcionValidacion));
+    }
+    
+    /**
+     * Registra información general
+     * @param mensaje mensaje informativo
+     */
+    protected void logInformacion(String mensaje) {
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra un error
+     * @param mensaje mensaje de error
+     */
+    protected void logError(String mensaje) {
+        logger.error(TipoMensaje.ERROR.formatearMensaje(mensaje));
+    }
+    
+    /**
+     * Registra una advertencia
+     * @param mensaje mensaje de advertencia
+     */
+    protected void logAdvertencia(String mensaje) {
+        logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(mensaje));
+    }
+    
+    // === MÉTODOS PRIVADOS DE APOYO ===
+    
+    /**
+     * Inicializa las utilidades para el driver actual
+     * @param driver instancia de WebDriver
+     */
+    private void inicializarUtilidades(WebDriver driver) {
+        try {
+            // Inicializar gestor de capturas
+            GestorCapturaPantalla gestorCaptura = new GestorCapturaPantalla();
+            gestorCapturaLocal.set(gestorCaptura);
+            
+            // Inicializar espera explícita
+            EsperaExplicita esperaExplicita = new EsperaExplicita(driver, configuracion.obtenerTimeoutExplicito());
+            esperaExplicitaLocal.set(esperaExplicita);
+            
+            // Inicializar manejador de scroll
+            ManejadorScrollPagina manejadorScroll = new ManejadorScrollPagina(driver);
+            manejadorScrollLocal.set(manejadorScroll);
+            
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Utilidades inicializadas correctamente"));
+            
+        } catch (Exception e) {
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error inicializando utilidades: " + e.getMessage()));
+            throw new RuntimeException("Fallo en inicialización de utilidades", e);
+        }
+    }
+    
+    /**
+     * Procesa el resultado de la prueba
+     * @param result resultado de la prueba
+     */
+    private void procesarResultadoPrueba(ITestResult result) {
+        String nombrePrueba = result.getMethod().getMethodName();
+        
+        switch (result.getStatus()) {
+            case ITestResult.SUCCESS:
+                logger.info(TipoMensaje.EXITO.formatearMensaje("PRUEBA EXITOSA: " + nombrePrueba));
+                capturarPantalla(nombrePrueba + "_exitosa");
+                break;
+                
+            case ITestResult.FAILURE:
+                logger.error(TipoMensaje.ERROR.formatearMensaje("PRUEBA FALLIDA: " + nombrePrueba));
+                logger.error(TipoMensaje.ERROR.formatearMensaje("Error: " + result.getThrowable().getMessage()));
+                capturarPantalla(nombrePrueba + "_fallida");
+                break;
+                
+            case ITestResult.SKIP:
+                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("PRUEBA OMITIDA: " + nombrePrueba));
+                break;
+                
+            default:
+                logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Estado desconocido para prueba: " + nombrePrueba));
+        }
+    }
+    
+    /**
+     * Limpia los recursos del hilo actual
+     */
+    private void limpiarRecursos() {
+        try {
+            // Cerrar driver
+            WebDriver driver = driverLocal.get();
+            if (driver != null) {
+                ConfiguracionNavegador.cerrarNavegador(driver);
+                driverLocal.remove();
+            }
+            
+            // Limpiar ThreadLocals
+            gestorCapturaLocal.remove();
+            esperaExplicitaLocal.remove();
+            manejadorScrollLocal.remove();
+            
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Recursos limpiados correctamente"));
+            
+        } catch (Exception e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Error limpiando recursos: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Inicializa los directorios necesarios para las pruebas
+     */
+    private void inicializarDirectorios() {
+        try {
+            // Los directorios se crean automáticamente por las utilidades cuando es necesario
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Directorios inicializados"));
+        } catch (Exception e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Error inicializando directorios: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Adjunta captura a Allure si está disponible
+     * @param rutaCaptura ruta de la captura
+     * @param nombreCaptura nombre de la captura
+     */
+    private void adjuntarCapturaAllure(String rutaCaptura, String nombreCaptura) {
+        try {
+            byte[] captura = obtenerGestorCaptura().capturarPantallaComoBytes();
+            if (captura != null) {
+                Allure.addAttachment(nombreCaptura, "image/png", 
+                    new java.io.ByteArrayInputStream(captura), "png");
+            }
+        } catch (Exception e) {
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Allure no disponible o error adjuntando captura"));
+        }
     }
 }

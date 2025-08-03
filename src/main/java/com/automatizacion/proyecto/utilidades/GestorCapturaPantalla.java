@@ -1,5 +1,7 @@
 package com.automatizacion.proyecto.utilidades;
 
+import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -13,253 +15,209 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Gestor para captura de pantallas en las pruebas de automatización
- * Cumple con requerimientos ABP: Evidencia visual de pruebas
+ * Clase responsable de la gestión de capturas de pantalla durante la ejecución de pruebas.
+ * Proporciona funcionalidades para capturar, guardar y gestionar screenshots.
+ * 
+ * Sigue el principio de Responsabilidad Única y proporciona abstracción
+ * para el manejo de capturas de pantalla.
  * 
  * @author Roberto Rivas Lopez
+ * @version 1.0
  */
 public class GestorCapturaPantalla {
-    private static final Logger logger = LoggerFactory.getLogger(GestorCapturaPantalla.class);
     
-    // Configuración de directorios y formatos
-    private static final String CARPETA_CAPTURAS = "target/capturas-pantalla";
-    private static final String CARPETA_FALLOS = "target/capturas-pantalla/fallos";
+    private static final Logger logger = LoggerFactory.getLogger(GestorCapturaPantalla.class);
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+    private static final String EXTENSION_IMAGEN = ".png";
+    
+    private final ConfiguracionGlobal configuracion;
+    private final String directorioBase;
+    private final ThreadLocal<WebDriver> driverLocal = new ThreadLocal<>();
     
     /**
-     * Constructor que inicializa las carpetas necesarias
+     * Constructor que inicializa el gestor con la configuración global
      */
     public GestorCapturaPantalla() {
-        inicializarCarpetas();
+        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
+        this.directorioBase = configuracion.obtenerDirectorioCapturas();
+        crearDirectorioSiNoExiste();
     }
     
     /**
-     * Crea las carpetas necesarias para las capturas
+     * Constructor que permite especificar un directorio personalizado
+     * @param directorioPersonalizado directorio donde guardar las capturas
      */
-    private void inicializarCarpetas() {
+    public GestorCapturaPantalla(String directorioPersonalizado) {
+        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
+        this.directorioBase = directorioPersonalizado;
+        crearDirectorioSiNoExiste();
+    }
+    
+    /**
+     * Establece el driver para el hilo actual
+     * @param driver instancia de WebDriver
+     */
+    public void establecerDriver(WebDriver driver) {
+        driverLocal.set(driver);
+    }
+    
+    /**
+     * Obtiene el driver del hilo actual
+     * @return WebDriver del hilo actual
+     */
+    private WebDriver obtenerDriver() {
+        WebDriver driver = driverLocal.get();
+        if (driver == null) {
+            throw new IllegalStateException("Driver no establecido para el hilo actual");
+        }
+        return driver;
+    }
+    
+    /**
+     * Crea el directorio de capturas si no existe
+     */
+    private void crearDirectorioSiNoExiste() {
         try {
-            File carpetaCapturas = new File(CARPETA_CAPTURAS);
-            File carpetaFallos = new File(CARPETA_FALLOS);
-            
-            if (!carpetaCapturas.exists()) {
-                carpetaCapturas.mkdirs();
-                logger.debug("📁 Carpeta de capturas creada: {}", CARPETA_CAPTURAS);
+            File directorio = new File(directorioBase);
+            if (!directorio.exists()) {
+                boolean creado = directorio.mkdirs();
+                if (creado) {
+                    logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
+                        "Directorio de capturas creado: " + directorio.getAbsolutePath()));
+                } else {
+                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje(
+                        "No se pudo crear el directorio de capturas: " + directorio.getAbsolutePath()));
+                }
             }
-            
-            if (!carpetaFallos.exists()) {
-                carpetaFallos.mkdirs();
-                logger.debug("📁 Carpeta de fallos creada: {}", CARPETA_FALLOS);
-            }
-            
         } catch (Exception e) {
-            logger.error("❌ Error creando carpetas de capturas: {}", e.getMessage());
+            logger.error(TipoMensaje.ERROR.formatearMensaje(
+                "Error creando directorio de capturas: " + e.getMessage()));
         }
     }
     
     /**
-     * Captura pantalla con nombre personalizado
-     * @param driver WebDriver instance
-     * @param nombreArchivo nombre base del archivo
-     * @return String ruta completa del archivo generado
+     * Captura pantalla y la guarda con nombre específico
+     * @param nombreArchivo nombre para el archivo de captura
+     * @return ruta completa del archivo guardado
      */
-    public String capturarPantalla(WebDriver driver, String nombreArchivo) {
+    public String capturarPantalla(String nombreArchivo) {
         try {
-            // Validar parámetros
-            if (driver == null) {
-                logger.error("❌ Driver es null, no se puede capturar pantalla");
+            WebDriver driver = obtenerDriver();
+            if (!(driver instanceof TakesScreenshot)) {
+                throw new IllegalStateException("Driver no soporta capturas de pantalla");
+            }
+            
+            TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+            File archivoOrigen = takesScreenshot.getScreenshotAs(OutputType.FILE);
+            
+            String nombreCompleto = generarNombreArchivo(nombreArchivo);
+            File archivoDestino = new File(directorioBase, nombreCompleto);
+            
+            FileUtils.copyFile(archivoOrigen, archivoDestino);
+            
+            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
+                "Captura guardada: " + archivoDestino.getAbsolutePath()));
+            
+            return archivoDestino.getAbsolutePath();
+            
+        } catch (IOException e) {
+            logger.error(TipoMensaje.ERROR.formatearMensaje(
+                "Error guardando captura: " + e.getMessage()));
+            throw new RuntimeException("Error en captura de pantalla", e);
+        }
+    }
+    
+    /**
+     * Captura pantalla como array de bytes
+     * @return bytes de la captura
+     */
+    public byte[] capturarPantallaComoBytes() {
+        try {
+            WebDriver driver = obtenerDriver();
+            if (!(driver instanceof TakesScreenshot)) {
+                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Driver no soporta capturas"));
                 return null;
             }
             
-            if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
-                nombreArchivo = "captura";
-            }
-            
-            // Limpiar nombre de archivo
-            nombreArchivo = limpiarNombreArchivo(nombreArchivo);
-            
-            // Capturar screenshot
             TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-            File archivoTemporal = takesScreenshot.getScreenshotAs(OutputType.FILE);
+            return takesScreenshot.getScreenshotAs(OutputType.BYTES);
             
-            // Generar nombre con timestamp
-            String timestamp = LocalDateTime.now().format(FORMATO_FECHA);
-            String nombreCompleto = String.format("%s_%s.png", nombreArchivo, timestamp);
-            
-            // Guardar archivo
-            File archivoDestino = new File(CARPETA_CAPTURAS, nombreCompleto);
-            FileUtils.copyFile(archivoTemporal, archivoDestino);
-            
-            String rutaCompleta = archivoDestino.getAbsolutePath();
-            logger.info("📸 Captura guardada: {}", rutaCompleta);
-            
-            return rutaCompleta;
-            
-        } catch (IOException e) {
-            logger.error("❌ Error capturando pantalla: {}", e.getMessage());
-            return null;
         } catch (Exception e) {
-            logger.error("❌ Error inesperado capturando pantalla: {}", e.getMessage());
+            logger.error(TipoMensaje.ERROR.formatearMensaje(
+                "Error capturando pantalla como bytes: " + e.getMessage()));
             return null;
         }
     }
     
     /**
-     * Captura pantalla automática cuando ocurre un fallo
-     * @param driver WebDriver instance
-     * @param nombreTest nombre de la prueba que falló
-     * @return String ruta completa del archivo generado
+     * Genera nombre único para archivo de captura
+     * @param nombreBase nombre base del archivo
+     * @return nombre único con timestamp
      */
-    public String capturarPantallaFallo(WebDriver driver, String nombreTest) {
-        try {
-            if (driver == null) {
-                logger.error("❌ Driver es null, no se puede capturar pantalla de fallo");
-                return null;
-            }
-            
-            if (nombreTest == null || nombreTest.trim().isEmpty()) {
-                nombreTest = "fallo_desconocido";
-            }
-            
-            // Limpiar nombre
-            nombreTest = limpiarNombreArchivo(nombreTest);
-            
-            // Capturar screenshot
-            TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-            File archivoTemporal = takesScreenshot.getScreenshotAs(OutputType.FILE);
-            
-            // Generar nombre con prefijo FALLO y timestamp
-            String timestamp = LocalDateTime.now().format(FORMATO_FECHA);
-            String nombreCompleto = String.format("FALLO_%s_%s.png", nombreTest, timestamp);
-            
-            // Guardar en carpeta de fallos
-            File archivoDestino = new File(CARPETA_FALLOS, nombreCompleto);
-            FileUtils.copyFile(archivoTemporal, archivoDestino);
-            
-            String rutaCompleta = archivoDestino.getAbsolutePath();
-            logger.error("💥 Captura de fallo guardada: {}", rutaCompleta);
-            
-            return rutaCompleta;
-            
-        } catch (IOException e) {
-            logger.error("❌ Error capturando pantalla de fallo: {}", e.getMessage());
-            return null;
-        } catch (Exception e) {
-            logger.error("❌ Error inesperado capturando pantalla de fallo: {}", e.getMessage());
-            return null;
-        }
+    private String generarNombreArchivo(String nombreBase) {
+        String timestamp = LocalDateTime.now().format(FORMATO_FECHA);
+        String nombreLimpio = limpiarNombreArchivo(nombreBase);
+        
+        return String.format("%s_%s%s", nombreLimpio, timestamp, EXTENSION_IMAGEN);
     }
     
     /**
-     * Captura pantalla con prefijo personalizado
-     * @param driver WebDriver instance
-     * @param prefijo prefijo para el nombre del archivo
-     * @param descripcion descripción adicional
-     * @return String ruta completa del archivo generado
-     */
-    public String capturarPantallaConPrefijo(WebDriver driver, String prefijo, String descripcion) {
-        String nombreArchivo = String.format("%s_%s", 
-            prefijo != null ? prefijo : "captura", 
-            descripcion != null ? descripcion : "screenshot");
-        return capturarPantalla(driver, nombreArchivo);
-    }
-    
-    /**
-     * Captura pantalla de página completa (si el navegador lo soporta)
-     * @param driver WebDriver instance
-     * @param nombreArchivo nombre base del archivo
-     * @return String ruta completa del archivo generado
-     */
-    public String capturarPantallaCompleta(WebDriver driver, String nombreArchivo) {
-        // Por ahora, usar el método estándar
-        // En el futuro se puede implementar scroll y captura completa
-        return capturarPantalla(driver, nombreArchivo + "_completa");
-    }
-    
-    /**
-     * Limpia el nombre de archivo removiendo caracteres no válidos
-     * @param nombre nombre original
-     * @return String nombre limpio y seguro para archivos
+     * Limpia el nombre del archivo de caracteres no válidos
+     * @param nombre nombre a limpiar
+     * @return nombre limpio
      */
     private String limpiarNombreArchivo(String nombre) {
-        if (nombre == null) {
+        if (nombre == null || nombre.trim().isEmpty()) {
             return "captura";
         }
         
-        // Remover caracteres no válidos para nombres de archivo
-        String nombreLimpio = nombre.replaceAll("[^a-zA-Z0-9._-]", "_");
-        
-        // Limitar longitud
-        if (nombreLimpio.length() > 50) {
-            nombreLimpio = nombreLimpio.substring(0, 50);
-        }
-        
-        // Asegurar que no esté vacío
-        if (nombreLimpio.trim().isEmpty()) {
-            nombreLimpio = "captura";
-        }
-        
-        return nombreLimpio;
+        return nombre.trim()
+                    .replaceAll("[^a-zA-Z0-9._-]", "_")
+                    .replaceAll("_{2,}", "_")
+                    .toLowerCase();
     }
     
     /**
-     * Obtiene la carpeta de capturas configurada
-     * @return String ruta de la carpeta de capturas
-     */
-    public String obtenerCarpetaCapturas() {
-        return CARPETA_CAPTURAS;
-    }
-    
-    /**
-     * Obtiene la carpeta de fallos configurada
-     * @return String ruta de la carpeta de fallos
-     */
-    public String obtenerCarpetaFallos() {
-        return CARPETA_FALLOS;
-    }
-    
-    /**
-     * Verifica si el driver soporta capturas de pantalla
-     * @param driver WebDriver instance
-     * @return boolean true si soporta capturas
-     */
-    public boolean soportaCapturas(WebDriver driver) {
-        return driver instanceof TakesScreenshot;
-    }
-    
-    /**
-     * Limpia capturas antiguas (más de X días)
-     * @param diasAntiguedad días de antigüedad para limpiar
-     * @return int número de archivos eliminados
+     * Limpia capturas antiguas del directorio
+     * @param diasAntiguedad días de antigüedad para considerar archivos antiguos
+     * @return número de archivos eliminados
      */
     public int limpiarCapturasAntiguas(int diasAntiguedad) {
-        int archivosEliminados = 0;
-        
         try {
-            File carpeta = new File(CARPETA_CAPTURAS);
-            if (!carpeta.exists()) {
+            File directorio = new File(directorioBase);
+            if (!directorio.exists()) {
                 return 0;
             }
             
-            long tiempoLimite = System.currentTimeMillis() - (diasAntiguedad * 24L * 60L * 60L * 1000L);
+            File[] archivos = directorio.listFiles((dir, name) -> name.endsWith(EXTENSION_IMAGEN));
+            if (archivos == null) {
+                return 0;
+            }
             
-            File[] archivos = carpeta.listFiles((dir, name) -> name.endsWith(".png"));
-            if (archivos != null) {
-                for (File archivo : archivos) {
-                    if (archivo.lastModified() < tiempoLimite) {
-                        if (archivo.delete()) {
-                            archivosEliminados++;
-                            logger.debug("🗑️ Archivo antiguo eliminado: {}", archivo.getName());
-                        }
+            long tiempoLimite = System.currentTimeMillis() - (diasAntiguedad * 24 * 60 * 60 * 1000L);
+            int archivosEliminados = 0;
+            
+            for (File archivo : archivos) {
+                if (archivo.lastModified() < tiempoLimite) {
+                    if (archivo.delete()) {
+                        archivosEliminados++;
+                        logger.debug(TipoMensaje.DEBUG.formatearMensaje(
+                            "Captura antigua eliminada: " + archivo.getName()));
                     }
                 }
             }
             
-            logger.info("🧹 Limpieza completada: {} archivos eliminados", archivosEliminados);
+            if (archivosEliminados > 0) {
+                logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
+                    "Eliminadas " + archivosEliminados + " capturas antiguas"));
+            }
+            
+            return archivosEliminados;
             
         } catch (Exception e) {
-            logger.error("❌ Error limpiando capturas antiguas: {}", e.getMessage());
+            logger.error(TipoMensaje.ERROR.formatearMensaje(
+                "Error limpiando capturas antiguas: " + e.getMessage()));
+            return 0;
         }
-        
-        return archivosEliminados;
     }
 }

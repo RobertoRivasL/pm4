@@ -3,123 +3,154 @@ package com.automatizacion.proyecto.paginas.interfaces;
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
 
 /**
- * Interfaz que define el contrato para las páginas de login.
- * Implementa el principio de Inversión de Dependencias (DIP) del SOLID.
+ * Interfaz que define las operaciones específicas para la página de inicio de sesión.
+ * Específicamente adaptada para practice.expandtesting.com.
  * 
- * Permite que las clases de prueba dependan de abstracciones
- * en lugar de implementaciones concretas.
+ * Extiende IPaginaBase para heredar operaciones básicas e implementa
+ * el principio de Segregación de Interfaces del SOLID.
  * 
  * @author Roberto Rivas Lopez
  * @version 1.0
  */
-public interface IPaginaLogin {
+public interface IPaginaLogin extends IPaginaBase {
     
     /**
-     * Verifica si la página de login está visible y cargada correctamente.
-     * 
-     * @return true si la página está visible, false en caso contrario
+     * Ingresa las credenciales de usuario (username y contraseña)
+     * @param username nombre de usuario
+     * @param password contraseña del usuario
      */
-    boolean esPaginaVisible();
+    void ingresarCredenciales(String username, String password);
     
     /**
-     * Ingresa el email del usuario en el campo correspondiente.
-     * 
-     * @param email Email a ingresar
-     * @throws RuntimeException si no se puede ingresar el email
+     * Ingresa el username en el campo correspondiente
+     * @param username nombre de usuario
      */
-    void ingresarEmail(String email);
+    void ingresarUsername(String username);
     
     /**
-     * Ingresa la contraseña del usuario en el campo correspondiente.
-     * 
-     * @param password Contraseña a ingresar
-     * @throws RuntimeException si no se puede ingresar la contraseña
+     * Ingresa la contraseña en el campo correspondiente
+     * @param password contraseña del usuario
      */
     void ingresarPassword(String password);
     
     /**
-     * Marca o desmarca el checkbox de "Recordarme".
-     * 
-     * @param recordar true para marcar, false para desmarcar
-     * @throws RuntimeException si no se puede manejar el checkbox
-     */
-    void marcarRecordarme(boolean recordar);
-    
-    /**
-     * Hace clic en el botón de login para enviar el formulario.
-     * 
-     * @throws RuntimeException si no se puede hacer clic en el botón
+     * Hace click en el botón de inicio de sesión
      */
     void clickBotonLogin();
     
     /**
-     * Hace clic en el enlace "¿Olvidaste tu contraseña?".
-     * 
-     * @throws RuntimeException si no se puede hacer clic en el enlace
-     */
-    void clickOlvidePassword();
-    
-    /**
-     * Hace clic en el enlace "Crear cuenta nueva".
-     * 
-     * @throws RuntimeException si no se puede hacer clic en el enlace
-     */
-    void clickCrearCuenta();
-    
-    /**
-     * Realiza el proceso completo de inicio de sesión con los datos proporcionados.
-     * 
-     * @param datos Modelo con las credenciales y configuraciones de login
-     * @return true si el login fue exitoso, false en caso contrario
+     * Ejecuta el proceso completo de inicio de sesión
+     * @param datos modelo con los datos de login
+     * @return true si el proceso se ejecutó correctamente
      */
     boolean iniciarSesion(ModeloDatosPrueba datos);
     
     /**
-     * Obtiene el mensaje de error mostrado en la página, si existe.
-     * 
-     * @return Texto del mensaje de error, cadena vacía si no hay error
+     * Verifica si el login fue exitoso
+     * @return true si el login fue exitoso
+     */
+    boolean verificarLoginExitoso();
+    
+    /**
+     * Verifica si el login falló
+     * @return true si el login falló
+     */
+    boolean verificarLoginFallido();
+    
+    /**
+     * Obtiene el mensaje de error mostrado en la página
+     * @return texto del mensaje de error, cadena vacía si no hay error
      */
     String obtenerMensajeError();
     
     /**
-     * Obtiene el mensaje de éxito mostrado en la página, si existe.
-     * 
-     * @return Texto del mensaje de éxito, cadena vacía si no hay mensaje
+     * Obtiene el mensaje de éxito mostrado en la página
+     * @return texto del mensaje de éxito, cadena vacía si no hay mensaje
      */
     String obtenerMensajeExito();
     
     /**
-     * Verifica si la cuenta del usuario está bloqueada.
-     * 
-     * @return true si la cuenta está bloqueada, false en caso contrario
+     * Limpia todos los campos del formulario
      */
-    boolean esCuentaBloqueada();
+    void limpiarFormulario();
     
     /**
-     * Verifica si existen errores de validación en la página.
-     * 
-     * @return true si hay errores de validación, false en caso contrario
+     * Navega a la página de registro desde login
      */
-    boolean hayErroresValidacion();
+    void irARegistro();
     
     /**
-     * Verifica si el usuario está logueado exitosamente.
-     * 
-     * @return true si el usuario está logueado, false en caso contrario
+     * Verifica si el formulario está habilitado
+     * @return true si el formulario está habilitado
      */
-    boolean esUsuarioLogueado();
+    boolean esFormularioHabilitado();
     
     /**
-     * Limpia todos los campos del formulario de login.
-     * 
-     * @throws RuntimeException si no se pueden limpiar los campos
+     * Verifica si el botón de login está habilitado
+     * @return true si el botón está habilitado
      */
-    void limpiarCampos();
+    boolean esBotonLoginHabilitado();
     
     /**
-     * Cierra el modal de bloqueo si está presente en la página.
-     * 
-     * @throws RuntimeException si no se puede cerrar el modal
+     * Obtiene las credenciales válidas para este sitio
+     * @return ModeloDatosPrueba con credenciales válidas
      */
-    void cerrarModalBloqueo();
+    ModeloDatosPrueba obtenerCredencialesValidas();
+    
+    /**
+     * Realiza login con las credenciales válidas predeterminadas
+     * @return true si el login fue exitoso
+     */
+    boolean loginConCredencialesValidas();
+    
+    /**
+     * Valida que todos los elementos esperados estén presentes
+     * @return true si todos los elementos están presentes
+     */
+    boolean validarElementosPagina();
+    
+    // === MÉTODOS OPCIONALES PARA COMPATIBILIDAD ===
+    
+    /**
+     * Verifica si hay opción de "Recordarme" (no disponible en practice.expandtesting.com)
+     * @return false para este sitio
+     */
+    default boolean tieneOpcionRecordarme() {
+        return false;
+    }
+    
+    /**
+     * Marca opción "Recordarme" (no disponible en practice.expandtesting.com)
+     * @param marcar valor a establecer
+     */
+    default void marcarRecordarme(boolean marcar) {
+        // No implementado para este sitio
+    }
+    
+    /**
+     * Verifica si hay enlace "Olvidé mi contraseña" (no disponible en practice.expandtesting.com)
+     * @return false para este sitio
+     */
+    default boolean tieneEnlaceOlvidoPassword() {
+        return false;
+    }
+    
+    /**
+     * Click en enlace "Olvidé mi contraseña" (no disponible en practice.expandtesting.com)
+     */
+    default void clickOlvidoPassword() {
+        // No implementado para este sitio
+    }
+    
+    /**
+     * Realiza logout si está disponible
+     * @return true si el logout fue exitoso
+     */
+    boolean realizarLogout();
+    
+    /**
+     * Verifica si el usuario está logueado
+     * @return true si está logueado
+     */
+    boolean estaLogueado();
 }
