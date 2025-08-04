@@ -1,6 +1,8 @@
 package com.automatizacion.proyecto.configuracion;
 
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.enums.TipoNavegador;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -8,117 +10,105 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.Duration;
 
-/**
- * Factory para crear instancias de WebDriver configuradas.
- * Implementa el patrón Factory Method.
- * 
- * @author Roberto Rivas Lopez
- */
 public class ConfiguracionNavegador {
     
-    private static final int TIEMPO_ESPERA_IMPLICITA = 10;
-    private static final int TIEMPO_CARGA_PAGINA = 30;
+    private static final Logger logger = LoggerFactory.getLogger(ConfiguracionNavegador.class);
+    private final ConfiguracionGlobal configuracion;
     
-    /**
-     * Crea un WebDriver según el tipo y configuración especificada.
-     * 
-     * @param tipoNavegador tipo de navegador a crear
-     * @param esHeadless si debe ejecutarse sin interfaz gráfica
-     * @return instancia configurada de WebDriver
-     * @throws IllegalArgumentException si el tipo no es soportado
-     */
-    public static WebDriver crearDriver(TipoNavegador tipoNavegador, boolean esHeadless) {
-        WebDriver driver;
+    public ConfiguracionNavegador() {
+        this.configuracion = ConfiguracionGlobal.obtenerInstancia();
+    }
+    
+    public WebDriver crearWebDriver() {
+        String tipoNavegador = configuracion.obtenerPropiedad(ConfiguracionGlobal.NAVEGADOR_TIPO, "CHROME");
+        boolean headless = configuracion.obtenerPropiedadBoolean(ConfiguracionGlobal.NAVEGADOR_HEADLESS, false);
         
-        switch (tipoNavegador) {
-            case CHROME:
-                driver = configurarChrome(esHeadless);
-                break;
-            case FIREFOX:
-                driver = configurarFirefox(esHeadless);
-                break;
-            case EDGE:
-                driver = configurarEdge(esHeadless);
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo de navegador no soportado: " + tipoNavegador);
+        WebDriver driver = null;
+        
+        try {
+            switch (tipoNavegador.toUpperCase()) {
+                case "CHROME":
+                    driver = crearChromeDriver(headless);
+                    break;
+                case "FIREFOX":
+                    driver = crearFirefoxDriver(headless);
+                    break;
+                case "EDGE":
+                    driver = crearEdgeDriver(headless);
+                    break;
+                default:
+                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Navegador no soportado: " + tipoNavegador + ", usando Chrome"));
+                    driver = crearChromeDriver(headless);
+            }
+            
+            configurarTimeouts(driver);
+            maximizarVentana(driver);
+            
+            logger.info(TipoMensaje.EXITO.formatearMensaje("WebDriver creado: " + tipoNavegador + (headless ? " (headless)" : "")));
+            
+        } catch (Exception e) {
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error creando WebDriver: " + e.getMessage()));
+            throw new RuntimeException("No se pudo crear el WebDriver", e);
         }
-        
-        configurarTiemposEspera(driver);
-        driver.manage().window().maximize();
         
         return driver;
     }
     
-    /**
-     * Configura Chrome con las opciones especificadas.
-     */
-    private static WebDriver configurarChrome(boolean esHeadless) {
+    private WebDriver crearChromeDriver(boolean headless) {
         WebDriverManager.chromedriver().setup();
-        
         ChromeOptions opciones = new ChromeOptions();
         opciones.addArguments("--no-sandbox");
         opciones.addArguments("--disable-dev-shm-usage");
         opciones.addArguments("--disable-gpu");
-        opciones.addArguments("--window-size=1920,1080");
+        opciones.addArguments("--remote-allow-origins=*");
         
-        if (esHeadless) {
+        if (headless) {
             opciones.addArguments("--headless");
         }
-        
-        // Opciones adicionales para estabilidad
-        opciones.addArguments("--disable-web-security");
-        opciones.addArguments("--allow-running-insecure-content");
-        opciones.addArguments("--disable-extensions");
         
         return new ChromeDriver(opciones);
     }
     
-    /**
-     * Configura Firefox con las opciones especificadas.
-     */
-    private static WebDriver configurarFirefox(boolean esHeadless) {
+    private WebDriver crearFirefoxDriver(boolean headless) {
         WebDriverManager.firefoxdriver().setup();
-        
         FirefoxOptions opciones = new FirefoxOptions();
         
-        if (esHeadless) {
+        if (headless) {
             opciones.addArguments("--headless");
         }
-        
-        opciones.addArguments("--width=1920");
-        opciones.addArguments("--height=1080");
         
         return new FirefoxDriver(opciones);
     }
     
-    /**
-     * Configura Edge con las opciones especificadas.
-     */
-    private static WebDriver configurarEdge(boolean esHeadless) {
+    private WebDriver crearEdgeDriver(boolean headless) {
         WebDriverManager.edgedriver().setup();
-        
         EdgeOptions opciones = new EdgeOptions();
-        opciones.addArguments("--no-sandbox");
-        opciones.addArguments("--disable-dev-shm-usage");
-        opciones.addArguments("--window-size=1920,1080");
         
-        if (esHeadless) {
+        if (headless) {
             opciones.addArguments("--headless");
         }
         
         return new EdgeDriver(opciones);
     }
     
-    /**
-     * Configura los tiempos de espera para el driver.
-     */
-    private static void configurarTiemposEspera(WebDriver driver) {
-        driver.manage().timeouts()
-            .implicitlyWait(Duration.ofSeconds(TIEMPO_ESPERA_IMPLICITA))
-            .pageLoadTimeout(Duration.ofSeconds(TIEMPO_CARGA_PAGINA));
+    private void configurarTimeouts(WebDriver driver) {
+        int timeoutImplicito = configuracion.obtenerPropiedadInt(ConfiguracionGlobal.TIMEOUT_IMPLICITO, 10);
+        int timeoutExplicito = configuracion.obtenerPropiedadInt(ConfiguracionGlobal.TIMEOUT_EXPLICITO, 10);
+        
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeoutImplicito));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(timeoutExplicito * 2));
+        driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeoutExplicito));
+    }
+    
+    private void maximizarVentana(WebDriver driver) {
+        try {
+            driver.manage().window().maximize();
+        } catch (Exception e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("No se pudo maximizar la ventana: " + e.getMessage()));
+        }
     }
 }

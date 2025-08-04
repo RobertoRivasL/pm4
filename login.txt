@@ -1,0 +1,505 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------< com.automatizacion.proyecto:suite-automatizacion >----------
+[INFO] Building Suite de Automatización Funcional 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ suite-automatizacion ---
+[INFO] skip non existing resourceDirectory D:\Doc_HP_RRL\RRL\Sence\Iseg Spa\Modulo 4\Ejercicios\Entregables\06\suite-automatizacion\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ suite-automatizacion ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ suite-automatizacion ---
+[INFO] Copying 16 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ suite-automatizacion ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 17 source files with javac [debug target 21] to target\test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/base/BaseTest.java:[293,26] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+  required: java.lang.String
+  found:    org.openqa.selenium.WebDriver,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorSimple.java:[43,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+  required: java.lang.String
+  found:    org.openqa.selenium.WebDriver,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[105,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[118,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[131,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[144,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[157,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[213,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[223,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[233,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[243,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[253,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[263,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[406,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[416,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[427,17] cannot find symbol
+  symbol:   method mensajeError(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaRegistro.java:[230,21] esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaRegistro cannot override esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaBase
+  attempting to assign weaker access privileges; was protected
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaLogin.java:[45,5] method does not override or implement a method from a supertype
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaLogin.java:[152,21] esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaLogin cannot override esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaBase
+  attempting to assign weaker access privileges; was protected
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[44,20] cannot find symbol
+  symbol:   method debugElementos()
+  location: variable paginaLogin of type com.automatizacion.proyecto.paginas.PaginaLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[65,20] method realizarLogin in class com.automatizacion.proyecto.paginas.PaginaLogin cannot be applied to given types;
+  required: com.automatizacion.proyecto.datos.ModeloDatosPrueba
+  found:    java.lang.String,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[70,51] cannot find symbol
+  symbol:   variable urlActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[71,54] cannot find symbol
+  symbol:   variable tituloActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[74,34] cannot find symbol
+  symbol:   variable urlActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[75,36] cannot find symbol
+  symbol:   variable urlActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[76,30] cannot find symbol
+  symbol:   variable urlActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[87,82] cannot find symbol
+  symbol:   variable urlActual
+  location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[96,20] cannot find symbol
+  symbol:   method debugElementos()
+  location: variable paginaLogin of type com.automatizacion.proyecto.paginas.PaginaLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorPagina.java:[127,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+  required: java.lang.String
+  found:    org.openqa.selenium.WebDriver,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorPagina.java:[199,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+  required: java.lang.String
+  found:    org.openqa.selenium.WebDriver,java.lang.String
+  reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebaBase.java:[213,32] cannot find symbol
+  symbol:   method obtenerNombreCompleto()
+  location: variable tipo of type com.automatizacion.proyecto.enums.TipoNavegador
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebaBase.java:[215,32] cannot find symbol
+  symbol:   method esSoportadoEnSistemaActual()
+  location: variable tipo of type com.automatizacion.proyecto.enums.TipoNavegador
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[24,8] com.automatizacion.proyecto.pruebas.PruebasRegistro is not abstract and does not override abstract method configuracionEspecifica() in com.automatizacion.proyecto.pruebas.PruebaBase
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[32,49] cannot find symbol
+  symbol:   variable driver
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[33,13] cannot find symbol
+  symbol:   method navegarARegistro()
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[42,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[57,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[67,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[84,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[88,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[89,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[102,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[111,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[124,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[128,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[129,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[144,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[153,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[169,45] cannot find symbol
+  symbol:   method hayErroresValidacion()
+  location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[173,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[177,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[178,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[191,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[200,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[214,45] cannot find symbol
+  symbol:   method hayErroresValidacion()
+  location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[218,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[222,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[223,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[236,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[245,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[259,45] cannot find symbol
+  symbol:   method hayErroresValidacion()
+  location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[263,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[267,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[268,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[281,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[290,21] cannot find symbol
+  symbol:   method confirmarPassword(java.lang.String)
+  location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[304,45] cannot find symbol
+  symbol:   method hayErroresValidacion()
+  location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[308,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[312,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[313,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[343,9] cannot find symbol
+  symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[354,45] cannot find symbol
+  symbol:   method getConfirmarPassword()
+  location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[356,34] cannot find symbol
+  symbol:   method getGenero()
+  location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[357,43] cannot find symbol
+  symbol:   method isAceptarTerminos()
+  location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[374,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[378,13] cannot find symbol
+  symbol:   method capturarPantalla(java.lang.String)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[379,13] cannot find symbol
+  symbol:   method finalizarPrueba(java.lang.String,boolean)
+  location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[INFO] 77 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.457 s
+[INFO] Finished at: 2025-08-02T22:51:48-04:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:testCompile (default-testCompile) on project suite-automatizacion: Compilation failure: Compilation failure: 
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/base/BaseTest.java:[293,26] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+[ERROR]   required: java.lang.String
+[ERROR]   found:    org.openqa.selenium.WebDriver,java.lang.String
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorSimple.java:[43,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+[ERROR]   required: java.lang.String
+[ERROR]   found:    org.openqa.selenium.WebDriver,java.lang.String
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[105,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[118,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[131,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[144,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[157,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[213,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[223,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[233,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[243,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[253,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[263,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[406,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[416,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/datos/ProveedorDatos.java:[427,17] cannot find symbol
+[ERROR]   symbol:   method mensajeError(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaRegistro.java:[230,21] esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaRegistro cannot override esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaBase
+[ERROR]   attempting to assign weaker access privileges; was protected
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaLogin.java:[45,5] method does not override or implement a method from a supertype
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/paginas/PaginaLogin.java:[152,21] esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaLogin cannot override esElementoVisible(org.openqa.selenium.WebElement) in com.automatizacion.proyecto.paginas.PaginaBase
+[ERROR]   attempting to assign weaker access privileges; was protected
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[44,20] cannot find symbol
+[ERROR]   symbol:   method debugElementos()
+[ERROR]   location: variable paginaLogin of type com.automatizacion.proyecto.paginas.PaginaLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[65,20] method realizarLogin in class com.automatizacion.proyecto.paginas.PaginaLogin cannot be applied to given types;
+[ERROR]   required: com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR]   found:    java.lang.String,java.lang.String
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[70,51] cannot find symbol
+[ERROR]   symbol:   variable urlActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[71,54] cannot find symbol
+[ERROR]   symbol:   variable tituloActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[74,34] cannot find symbol
+[ERROR]   symbol:   variable urlActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[75,36] cannot find symbol
+[ERROR]   symbol:   variable urlActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[76,30] cannot find symbol
+[ERROR]   symbol:   variable urlActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[87,82] cannot find symbol
+[ERROR]   symbol:   variable urlActual
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasLogin.java:[96,20] cannot find symbol
+[ERROR]   symbol:   method debugElementos()
+[ERROR]   location: variable paginaLogin of type com.automatizacion.proyecto.paginas.PaginaLogin
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorPagina.java:[127,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+[ERROR]   required: java.lang.String
+[ERROR]   found:    org.openqa.selenium.WebDriver,java.lang.String
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/InspectorPagina.java:[199,31] method capturarPantalla in class com.automatizacion.proyecto.utilidades.GestorCapturaPantalla cannot be applied to given types;
+[ERROR]   required: java.lang.String
+[ERROR]   found:    org.openqa.selenium.WebDriver,java.lang.String
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebaBase.java:[213,32] cannot find symbol
+[ERROR]   symbol:   method obtenerNombreCompleto()
+[ERROR]   location: variable tipo of type com.automatizacion.proyecto.enums.TipoNavegador
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebaBase.java:[215,32] cannot find symbol
+[ERROR]   symbol:   method esSoportadoEnSistemaActual()
+[ERROR]   location: variable tipo of type com.automatizacion.proyecto.enums.TipoNavegador
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[24,8] com.automatizacion.proyecto.pruebas.PruebasRegistro is not abstract and does not override abstract method configuracionEspecifica() in com.automatizacion.proyecto.pruebas.PruebaBase
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[32,49] cannot find symbol
+[ERROR]   symbol:   variable driver
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[33,13] cannot find symbol
+[ERROR]   symbol:   method navegarARegistro()
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[42,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[57,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[67,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[84,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[88,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[89,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[102,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[111,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[124,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[128,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[129,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[144,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[153,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[169,45] cannot find symbol
+[ERROR]   symbol:   method hayErroresValidacion()
+[ERROR]   location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[173,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[177,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[178,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[191,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[200,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[214,45] cannot find symbol
+[ERROR]   symbol:   method hayErroresValidacion()
+[ERROR]   location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[218,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[222,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[223,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[236,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[245,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[259,45] cannot find symbol
+[ERROR]   symbol:   method hayErroresValidacion()
+[ERROR]   location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[263,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[267,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[268,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[281,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[290,21] cannot find symbol
+[ERROR]   symbol:   method confirmarPassword(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.datos.ModeloDatosPrueba.Builder
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[304,45] cannot find symbol
+[ERROR]   symbol:   method hayErroresValidacion()
+[ERROR]   location: variable paginaRegistro of type com.automatizacion.proyecto.paginas.PaginaRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[308,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[312,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[313,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[343,9] cannot find symbol
+[ERROR]   symbol:   method iniciarPrueba(java.lang.String,java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[354,45] cannot find symbol
+[ERROR]   symbol:   method getConfirmarPassword()
+[ERROR]   location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[356,34] cannot find symbol
+[ERROR]   symbol:   method getGenero()
+[ERROR]   location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[357,43] cannot find symbol
+[ERROR]   symbol:   method isAceptarTerminos()
+[ERROR]   location: variable datos of type com.automatizacion.proyecto.datos.ModeloDatosPrueba
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[374,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[378,13] cannot find symbol
+[ERROR]   symbol:   method capturarPantalla(java.lang.String)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] /D:/Doc_HP_RRL/RRL/Sence/Iseg Spa/Modulo 4/Ejercicios/Entregables/06/suite-automatizacion/src/test/java/com/automatizacion/proyecto/pruebas/PruebasRegistro.java:[379,13] cannot find symbol
+[ERROR]   symbol:   method finalizarPrueba(java.lang.String,boolean)
+[ERROR]   location: class com.automatizacion.proyecto.pruebas.PruebasRegistro
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

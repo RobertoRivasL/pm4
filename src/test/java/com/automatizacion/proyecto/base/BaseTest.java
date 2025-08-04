@@ -3,272 +3,160 @@ package com.automatizacion.proyecto.base;
 import com.automatizacion.proyecto.configuracion.ConfiguracionGlobal;
 import com.automatizacion.proyecto.configuracion.ConfiguracionNavegador;
 import com.automatizacion.proyecto.enums.TipoMensaje;
-import com.automatizacion.proyecto.enums.TipoNavegador;
 import com.automatizacion.proyecto.utilidades.GestorCapturaPantalla;
-import com.automatizacion.proyecto.utilidades.EsperaExplicita;
-import com.automatizacion.proyecto.utilidades.ManejadorScrollPagina;
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
-import io.qameta.allure.Allure;
-import io.qameta.allure.Attachment;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-/**
- * Clase base para todas las pruebas automatizadas.
- * Proporciona configuración común, setup y teardown.
- * 
- * @author Roberto Rivas Lopez
- */
 public abstract class BaseTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(BaseTest.class);
-
-    // ThreadLocal para ejecución paralela
-    private static final ThreadLocal<WebDriver> driverLocal = new ThreadLocal<>();
-    private static final ThreadLocal<GestorCapturaPantalla> gestorCapturaLocal = new ThreadLocal<>();
-    private static final ThreadLocal<EsperaExplicita> esperaExplicitaLocal = new ThreadLocal<>();
-    private static final ThreadLocal<ManejadorScrollPagina> manejadorScrollLocal = new ThreadLocal<>();
-
+    
+    protected static final Logger logger = LoggerFactory.getLogger(BaseTest.class);
+    protected WebDriver driver;
     protected ConfiguracionGlobal configuracion;
-
+    protected GestorCapturaPantalla gestorCaptura;
+    protected String nombrePruebaActual;
+    protected LocalDateTime inicioEjecucion;
+    protected boolean pruebaExitosa;
+    
     @BeforeSuite(alwaysRun = true)
     public void configuracionSuite() {
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                "=== INICIANDO SUITE DE AUTOMATIZACIÓN ==="));
-
+        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("INICIANDO SUITE DE AUTOMATIZACIÓN"));
         configuracion = ConfiguracionGlobal.obtenerInstancia();
-
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                "URL Base: " + configuracion.obtenerUrlBase()));
-        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                "Navegador: " + configuracion.obtenerTipoNavegador()));
+        logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Configuración cargada: " + configuracion.obtenerInformacionEstado()));
     }
-
-    @BeforeClass(alwaysRun = true)
-    public void configuracionClase() {
-        String nombreClase = this.getClass().getSimpleName();
-        logger.info(TipoMensaje.PRUEBA.formatearMensaje(
-                "Iniciando clase de prueba: " + nombreClase));
-    }
-
+    
     @BeforeMethod(alwaysRun = true)
-    public void configuracionMetodo(Method method) {
-        String nombreMetodo = method.getName();
-        logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(
-                "Ejecutando prueba: " + nombreMetodo));
-
+    public void configuracionBasePrueba(Method metodo) {
+        nombrePruebaActual = metodo.getName();
+        inicioEjecucion = LocalDateTime.now();
+        pruebaExitosa = false;
+        
+        logger.info(TipoMensaje.PRUEBA.formatearMensaje("INICIANDO PRUEBA: " + nombrePruebaActual));
+        
         try {
-            inicializarDriver();
-
-            String urlBase = configuracion.obtenerUrlBase();
-            if (urlBase != null && !urlBase.isEmpty()) {
-                obtenerDriver().get(urlBase);
-                logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                        "Navegando a: " + urlBase));
-            }
-
-            inicializarUtilidades();
-
+            inicializarWebDriver();
+            gestorCaptura = new GestorCapturaPantalla(driver);
+            navegarAUrlBase();
+            configuracionEspecificaPrueba();
+            
+            logger.info(TipoMensaje.EXITO.formatearMensaje("Configuración base completada para: " + nombrePruebaActual));
+            
         } catch (Exception e) {
-            logger.error(TipoMensaje.CRITICO.formatearMensaje(
-                    "Error en configuración: " + e.getMessage()));
-            throw new RuntimeException("Fallo en configuración inicial", e);
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error en configuración base: " + e.getMessage()));
+            if (driver != null && gestorCaptura != null) {
+                gestorCaptura.capturarPantalla("ConfiguracionBase_" + nombrePruebaActual);
+            }
+            limpiarRecursos();
+            throw new RuntimeException("Fallo en configuración base", e);
         }
     }
-
+    
     @AfterMethod(alwaysRun = true)
-    public void limpiezaMetodo(ITestResult result) {
-        String nombreMetodo = result.getMethod().getMethodName();
-
+    public void limpiezaBasePrueba(ITestResult resultado) {
         try {
-            if (result.getStatus() == ITestResult.FAILURE) {
-                logger.error(TipoMensaje.ERROR.formatearMensaje(
-                        "Prueba FALLIDA: " + nombreMetodo));
-
-                capturarPantallaError(nombreMetodo, result.getThrowable().getMessage());
-            } else if (result.getStatus() == ITestResult.SUCCESS) {
-                logger.info(TipoMensaje.VALIDACION.formatearMensaje(
-                        "Prueba EXITOSA: " + nombreMetodo));
+            pruebaExitosa = resultado.getStatus() == ITestResult.SUCCESS;
+            Duration duracion = Duration.between(inicioEjecucion, LocalDateTime.now());
+            
+            if (pruebaExitosa) {
+                logger.info(TipoMensaje.EXITO.formatearMensaje("PRUEBA EXITOSA: " + nombrePruebaActual + " - Duración: " + duracion.toSeconds() + "s"));
+            } else {
+                logger.error(TipoMensaje.ERROR.formatearMensaje("PRUEBA FALLIDA: " + nombrePruebaActual + " - Duración: " + duracion.toSeconds() + "s"));
+                if (gestorCaptura != null) {
+                    gestorCaptura.capturarPantalla("FALLO_" + nombrePruebaActual);
+                }
             }
-
+            
+            limpiezaEspecificaPrueba();
+            
         } catch (Exception e) {
-            logger.warn("Error durante limpieza: " + e.getMessage());
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error en limpieza: " + e.getMessage()));
         } finally {
-            cerrarDriver();
+            limpiarRecursos();
         }
     }
-
-    @AfterClass(alwaysRun = true)
-    public void limpiezaClase() {
-        String nombreClase = this.getClass().getSimpleName();
-        logger.info(TipoMensaje.PRUEBA.formatearMensaje(
-                "Finalizando clase de prueba: " + nombreClase));
-    }
-
+    
     @AfterSuite(alwaysRun = true)
     public void limpiezaSuite() {
-        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                "=== FINALIZANDO SUITE DE AUTOMATIZACIÓN ==="));
+        logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("FINALIZANDO SUITE DE AUTOMATIZACIÓN"));
     }
-
-    /**
-     * Inicializa el WebDriver según configuración
-     */
-    private void inicializarDriver() {
+    
+    protected void inicializarWebDriver() {
         try {
-            String tipoNavegadorStr = configuracion.obtenerTipoNavegador();
-            TipoNavegador tipoNavegador = TipoNavegador.desdeString(tipoNavegadorStr);
-            boolean esHeadless = configuracion.esNavegadorHeadless();
-
-            WebDriver driver = ConfiguracionNavegador.crearDriver(tipoNavegador, esHeadless);
-            driverLocal.set(driver);
-
-            logger.info(TipoMensaje.CONFIGURACION.formatearMensaje(
-                    "Driver inicializado: " + tipoNavegador + " (Headless: " + esHeadless + ")"));
-
+            ConfiguracionNavegador configuradorNavegador = new ConfiguracionNavegador();
+            driver = configuradorNavegador.crearWebDriver();
+            logger.info(TipoMensaje.EXITO.formatearMensaje("WebDriver inicializado correctamente"));
         } catch (Exception e) {
-            logger.error(TipoMensaje.CRITICO.formatearMensaje(
-                    "Error al inicializar driver: " + e.getMessage()));
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error inicializando WebDriver: " + e.getMessage()));
             throw new RuntimeException("No se pudo inicializar WebDriver", e);
         }
     }
-
-    /**
-     * Inicializa utilidades necesarias
-     */
-    private void inicializarUtilidades() {
-        WebDriver driver = obtenerDriver();
-
-        gestorCapturaLocal.set(new GestorCapturaPantalla());
-        esperaExplicitaLocal.set(new EsperaExplicita(driver, configuracion.obtenerTimeoutExplicito()));
-        manejadorScrollLocal.set(new ManejadorScrollPagina(driver));
-
-        logger.debug(TipoMensaje.DEBUG.formatearMensaje("Utilidades inicializadas"));
-    }
-
-    /**
-     * Cierra el WebDriver y limpia ThreadLocal
-     */
-    private void cerrarDriver() {
+    
+    protected void navegarAUrlBase() {
         try {
-            WebDriver driver = driverLocal.get();
-            if (driver != null) {
-                driver.quit();
-                logger.debug(TipoMensaje.DEBUG.formatearMensaje("Driver cerrado"));
-            }
+            String urlBase = configuracion.obtenerUrlRegistro(); // Para registro por defecto
+            driver.get(urlBase);
+            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Navegando a: " + urlBase));
+            Thread.sleep(2000); // Espera para carga
         } catch (Exception e) {
-            logger.warn("Error al cerrar driver: " + e.getMessage());
-        } finally {
-            driverLocal.remove();
-            gestorCapturaLocal.remove();
-            esperaExplicitaLocal.remove();
-            manejadorScrollLocal.remove();
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error navegando a URL base: " + e.getMessage()));
+            throw new RuntimeException("No se pudo navegar a URL base", e);
         }
     }
-
- /**
- * Captura pantalla en caso de error
- * @param nombrePrueba nombre de la prueba que falló
- * @param mensajeError mensaje de error
- */
-private void capturarPantallaError(String nombrePrueba, String mensajeError) {
-    try {
-        String rutaCaptura = capturarPantalla("ERROR_" + nombrePrueba);
-        if (rutaCaptura != null) {
-            // Adjuntar a Allure
-            adjuntarCaptura(rutaCaptura, "Error en " + nombrePrueba);
-            
-            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje(
-                "Captura de error guardada: " + rutaCaptura));
+    
+    protected void limpiarRecursos() {
+        if (driver != null) {
+            try {
+                driver.quit();
+                logger.debug(TipoMensaje.DEBUG.formatearMensaje("WebDriver cerrado correctamente"));
+            } catch (Exception e) {
+                logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Error cerrando WebDriver: " + e.getMessage()));
+            } finally {
+                driver = null;
+            }
         }
-    } catch (Exception e) {
-        logger.warn("No se pudo capturar pantalla de error: " + e.getMessage());
     }
-
-    /**
- * Adjunta captura a reporte Allure
- * @param rutaArchivo ruta del archivo de captura
- * @param descripcion descripción de la captura
- * @return bytes del archivo o array vacío si hay error
- */
-private byte[] adjuntarCaptura(String rutaArchivo, String descripcion) {
-    try {
-        byte[] imageBytes = Files.readAllBytes(Paths.get(rutaArchivo));
-        Allure.addAttachment(descripcion, "image/png", new ByteArrayInputStream(imageBytes), "png");
-        return imageBytes;
-    } catch (Exception e) {
-        logger.warn("Error al adjuntar captura: " + e.getMessage());
-        return new byte[0];
+    
+    // Métodos template para ser implementados por subclases
+    protected void configuracionEspecificaPrueba() {
+        // Implementación opcional en subclases
     }
-
-    // === MÉTODOS PÚBLICOS PARA CLASES HEREDADAS ===
-
-    /**
-     * @return WebDriver actual del hilo
-     */
-    protected WebDriver obtenerDriver() {
-        WebDriver driver = driverLocal.get();
-        if (driver == null) {
-            throw new IllegalStateException("WebDriver no inicializado. " +
-                    "Verifique la configuración del test.");
-        }
-        return driver;
+    
+    protected void limpiezaEspecificaPrueba() {
+        // Implementación opcional en subclases
     }
-
-    /**
-     * @return GestorCapturaPantalla actual
-     */
-    protected GestorCapturaPantalla obtenerGestorCaptura() {
-        return gestorCapturaLocal.get();
-    }
-
-    /**
-     * @return EsperaExplicita actual
-     */
-    protected EsperaExplicita obtenerEsperaExplicita() {
-        return esperaExplicitaLocal.get();
-    }
-
-    /**
-     * @return ManejadorScrollPagina actual
-     */
-    protected ManejadorScrollPagina obtenerManejadorScroll() {
-        return manejadorScrollLocal.get();
-    }
-
-    /**
-     * Captura pantalla con descripción
-     */
-    protected String capturarPantalla(String descripcion) {
-        GestorCapturaPantalla gestor = obtenerGestorCaptura();
-        if (gestor != null) {
-            // CORRECCIÓN: Usar capturarPantalla(driver, descripcion)
-            return gestor.capturarPantalla(obtenerDriver(), descripcion);
-        }
-        return null;
-    }
-
-    /**
-     * Log de paso de prueba
-     */
+    
+    // Métodos de utilidad para pruebas
+    @Step("Paso de prueba: {mensaje}")
     protected void logPasoPrueba(String mensaje) {
         logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje(mensaje));
-        Allure.step(mensaje);
     }
-
-    /**
-     * Log de validación
-     */
+    
+    @Step("Validación: {mensaje}")
     protected void logValidacion(String mensaje) {
         logger.info(TipoMensaje.VALIDACION.formatearMensaje(mensaje));
-        Allure.step("✓ " + mensaje);
+    }
+    
+    protected void esperarSegundos(int segundos) {
+        try {
+            Thread.sleep(segundos * 1000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    protected WebDriver obtenerDriver() {
+        return driver;
+    }
+    
+    protected void capturarPantalla(String nombreArchivo) {
+        if (gestorCaptura != null) {
+            gestorCaptura.capturarPantalla(nombreArchivo);
+        }
     }
 }

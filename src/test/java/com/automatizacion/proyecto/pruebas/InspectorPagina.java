@@ -1,206 +1,83 @@
 package com.automatizacion.proyecto.pruebas;
 
 import com.automatizacion.proyecto.base.BaseTest;
+import com.automatizacion.proyecto.enums.TipoMensaje;
+import com.automatizacion.proyecto.paginas.PaginaRegistro;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import java.util.List;
 
 /**
- * Inspector para encontrar los localizadores reales de la página
+ * Clase para inspección avanzada de páginas y elementos.
+ * Realiza validaciones detalladas de la estructura de las páginas.
+ * 
  * @author Roberto Rivas Lopez
  */
 public class InspectorPagina extends BaseTest {
     
-    @Test(description = "Inspeccionar página de login")
-    public void inspeccionarLogin() {
-        WebDriver driver = obtenerDriver();
+    @Test(description = "Inspeccionar elementos de la página de registro")
+    public void inspeccionarPaginaRegistro() {
+        logPasoPrueba("Iniciando inspección de página de registro");
         
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("🔍 INSPECCIONANDO PÁGINA DE LOGIN");
-        System.out.println("=".repeat(50) + "\n");
+        PaginaRegistro paginaRegistro = new PaginaRegistro(obtenerDriver());
         
-        // Ir a la página de login
-        driver.get("https://practice.expandtesting.com/login");
+        // Validar que la página está visible
+        Assert.assertTrue(paginaRegistro.esPaginaVisible(), 
+                         "La página de registro debe estar visible");
         
-        // Esperar un poco para que cargue
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Inspeccionar elementos del formulario
+        inspeccionarElementosFormulario();
         
-        // Información básica
-        System.out.println("📄 URL actual: " + driver.getCurrentUrl());
-        System.out.println("📋 Título: " + driver.getTitle());
-        System.out.println("📏 Tamaño de ventana: " + driver.manage().window().getSize());
-        System.out.println();
+        // Validar estructura de la página
+        paginaRegistro.validarElementosPagina();
         
-        // Buscar campos de entrada (input)
-        System.out.println("🔎 CAMPOS DE ENTRADA:");
-        System.out.println("-".repeat(30));
-        
-        List<WebElement> inputs = driver.findElements(By.tagName("input"));
-        for (int i = 0; i < inputs.size(); i++) {
-            WebElement input = inputs.get(i);
-            String id = input.getAttribute("id");
-            String name = input.getAttribute("name");
-            String type = input.getAttribute("type");
-            String placeholder = input.getAttribute("placeholder");
-            String className = input.getAttribute("class");
-            
-            System.out.println(String.format("Input %d:", i + 1));
-            System.out.println("  ID: " + (id != null ? id : "(sin id)"));
-            System.out.println("  Name: " + (name != null ? name : "(sin name)"));
-            System.out.println("  Type: " + (type != null ? type : "(sin type)"));
-            System.out.println("  Placeholder: " + (placeholder != null ? placeholder : "(sin placeholder)"));
-            System.out.println("  Class: " + (className != null ? className : "(sin class)"));
-            System.out.println("  Visible: " + input.isDisplayed());
-            System.out.println("  Habilitado: " + input.isEnabled());
-            System.out.println();
-        }
-        
-        // Buscar botones
-        System.out.println("🔘 BOTONES:");
-        System.out.println("-".repeat(30));
-        
-        List<WebElement> buttons = driver.findElements(By.tagName("button"));
-        for (int i = 0; i < buttons.size(); i++) {
-            WebElement button = buttons.get(i);
-            String id = button.getAttribute("id");
-            String type = button.getAttribute("type");
-            String className = button.getAttribute("class");
-            String dataTest = button.getAttribute("data-test");
-            String texto = button.getText();
-            
-            System.out.println(String.format("Botón %d:", i + 1));
-            System.out.println("  ID: " + (id != null ? id : "(sin id)"));
-            System.out.println("  Type: " + (type != null ? type : "(sin type)"));
-            System.out.println("  Class: " + (className != null ? className : "(sin class)"));
-            System.out.println("  Data-test: " + (dataTest != null ? dataTest : "(sin data-test)"));
-            System.out.println("  Texto: " + (texto != null && !texto.isEmpty() ? texto : "(sin texto)"));
-            System.out.println("  Visible: " + button.isDisplayed());
-            System.out.println();
-        }
-        
-        // Buscar enlaces
-        System.out.println("🔗 ENLACES:");
-        System.out.println("-".repeat(30));
-        
-        List<WebElement> links = driver.findElements(By.tagName("a"));
-        for (int i = 0; i < links.size(); i++) {
-            WebElement link = links.get(i);
-            String href = link.getAttribute("href");
-            String texto = link.getText();
-            String id = link.getAttribute("id");
-            
-            if (href != null && !href.isEmpty() && texto != null && !texto.trim().isEmpty()) {
-                System.out.println(String.format("Enlace %d:", i + 1));
-                System.out.println("  Texto: " + texto.trim());
-                System.out.println("  Href: " + href);
-                System.out.println("  ID: " + (id != null ? id : "(sin id)"));
-                System.out.println();
-            }
-        }
-        
-        // Buscar elementos con IDs importantes
-        System.out.println("🆔 ELEMENTOS CON IDs RELEVANTES:");
-        System.out.println("-".repeat(30));
-        
-        String[] idsImportantes = {"username", "password", "email", "login", "submit", "flash", "error", "message"};
-        
-        for (String id : idsImportantes) {
-            try {
-                WebElement elemento = driver.findElement(By.id(id));
-                System.out.println("✅ Encontrado ID '" + id + "':");
-                System.out.println("   Tag: " + elemento.getTagName());
-                System.out.println("   Texto: " + elemento.getText());
-                System.out.println("   Visible: " + elemento.isDisplayed());
-                System.out.println();
-            } catch (Exception e) {
-                System.out.println("❌ No encontrado ID '" + id + "'");
-            }
-        }
-        
-        // Tomar captura para revisión manual
-        obtenerGestorCaptura().capturarPantalla(driver, "inspeccion_login");
-        System.out.println("📸 Captura guardada como: inspeccion_login.png");
-        
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("✅ INSPECCIÓN DE LOGIN COMPLETADA");
-        System.out.println("=".repeat(50) + "\n");
+        capturarPantalla("inspeccion_registro");
+        logger.info(TipoMensaje.EXITO.formatearMensaje("Inspección de página de registro completada"));
     }
     
-    @Test(description = "Inspeccionar página de registro", dependsOnMethods = "inspeccionarLogin")
-    public void inspeccionarRegistro() {
-        WebDriver driver = obtenerDriver();
+    @Test(description = "Contar elementos en la página")
+    public void contarElementosPagina() {
+        logPasoPrueba("Contando elementos en la página");
         
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("🔍 INSPECCIONANDO PÁGINA DE REGISTRO");
-        System.out.println("=".repeat(50) + "\n");
-        
-        // Ir a la página de registro
-        driver.get("https://practice.expandtesting.com/register");
-        
-        // Esperar un poco para que cargue
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        // Información básica
-        System.out.println("📄 URL actual: " + driver.getCurrentUrl());
-        System.out.println("📋 Título: " + driver.getTitle());
-        System.out.println();
-        
-        // Buscar campos de entrada
-        System.out.println("🔎 CAMPOS DE ENTRADA EN REGISTRO:");
-        System.out.println("-".repeat(30));
-        
+        // Contar inputs
         List<WebElement> inputs = driver.findElements(By.tagName("input"));
-        for (int i = 0; i < inputs.size(); i++) {
-            WebElement input = inputs.get(i);
-            String id = input.getAttribute("id");
-            String name = input.getAttribute("name");
-            String type = input.getAttribute("type");
-            String placeholder = input.getAttribute("placeholder");
+        logValidacion("Número de inputs encontrados: " + inputs.size());
+        
+        // Contar botones
+        List<WebElement> botones = driver.findElements(By.tagName("button"));
+        logValidacion("Número de botones encontrados: " + botones.size());
+        
+        // Contar links
+        List<WebElement> links = driver.findElements(By.tagName("a"));
+        logValidacion("Número de links encontrados: " + links.size());
+        
+        capturarPantalla("conteo_elementos");
+        logger.info(TipoMensaje.EXITO.formatearMensaje("Conteo de elementos completado"));
+    }
+    
+    private void inspeccionarElementosFormulario() {
+        logPasoPrueba("Inspeccionando elementos del formulario");
+        
+        try {
+            // Verificar campo username
+            WebElement campoUsername = driver.findElement(By.id("username"));
+            Assert.assertTrue(campoUsername.isDisplayed(), "Campo username debe estar visible");
+            logValidacion("Campo username encontrado y visible");
             
-            System.out.println(String.format("Input %d:", i + 1));
-            System.out.println("  ID: " + (id != null ? id : "(sin id)"));
-            System.out.println("  Name: " + (name != null ? name : "(sin name)"));
-            System.out.println("  Type: " + (type != null ? type : "(sin type)"));
-            System.out.println("  Placeholder: " + (placeholder != null ? placeholder : "(sin placeholder)"));
-            System.out.println("  Visible: " + input.isDisplayed());
-            System.out.println();
-        }
-        
-        // Buscar botones en registro
-        System.out.println("🔘 BOTONES EN REGISTRO:");
-        System.out.println("-".repeat(30));
-        
-        List<WebElement> buttons = driver.findElements(By.tagName("button"));
-        for (int i = 0; i < buttons.size(); i++) {
-            WebElement button = buttons.get(i);
-            String id = button.getAttribute("id");
-            String dataTest = button.getAttribute("data-test");
-            String texto = button.getText();
+            // Verificar campo password
+            WebElement campoPassword = driver.findElement(By.id("password"));
+            Assert.assertTrue(campoPassword.isDisplayed(), "Campo password debe estar visible");
+            logValidacion("Campo password encontrado y visible");
             
-            System.out.println(String.format("Botón %d:", i + 1));
-            System.out.println("  ID: " + (id != null ? id : "(sin id)"));
-            System.out.println("  Data-test: " + (dataTest != null ? dataTest : "(sin data-test)"));
-            System.out.println("  Texto: " + (texto != null ? texto : "(sin texto)"));
-            System.out.println("  Visible: " + button.isDisplayed());
-            System.out.println();
+            // Verificar botón register
+            List<WebElement> botonesRegister = driver.findElements(By.xpath("//button[text()='Register']"));
+            Assert.assertFalse(botonesRegister.isEmpty(), "Debe existir botón Register");
+            logValidacion("Botón Register encontrado");
+            
+        } catch (Exception e) {
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Algunos elementos no fueron encontrados: " + e.getMessage()));
         }
-        
-        // Tomar captura de registro
-        obtenerGestorCaptura().capturarPantalla(driver, "inspeccion_registro");
-        System.out.println("📸 Captura guardada como: inspeccion_registro.png");
-        
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("✅ INSPECCIÓN DE REGISTRO COMPLETADA");
-        System.out.println("=".repeat(50) + "\n");
     }
 }

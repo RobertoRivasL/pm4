@@ -1,202 +1,104 @@
 package com.automatizacion.proyecto.configuracion;
 
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * Clase singleton responsable de la configuración global de la aplicación.
- * Gestiona la carga y acceso a propiedades de configuración desde archivos.
- * 
- * Implementa el patrón Singleton y sigue el principio de Responsabilidad Única.
- * 
- * @author Roberto Rivas Lopez
- * @version 1.0
- */
 public class ConfiguracionGlobal {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfiguracionGlobal.class);
-    private static final String ARCHIVO_CONFIG = "config.properties";
-    
-    private static ConfiguracionGlobal instancia;
+    private static volatile ConfiguracionGlobal instancia;
     private final Properties propiedades;
     
+    public static final String URL_BASE = "url.base";
+    public static final String URL_LOGIN = "url.login";
+    public static final String URL_REGISTRO = "url.registro";
+    public static final String NAVEGADOR_TIPO = "navegador.tipo";
+    public static final String NAVEGADOR_HEADLESS = "navegador.headless";
+    public static final String TIMEOUT_EXPLICITO = "timeout.explicito";
+    public static final String TIMEOUT_IMPLICITO = "timeout.implicito";
+    
     private ConfiguracionGlobal() {
-        propiedades = new Properties();
-        cargarPropiedades();
+        this.propiedades = new Properties();
+        cargarConfiguraciones();
     }
     
-    /**
-     * Obtiene la instancia única de la configuración global
-     * @return instancia singleton de ConfiguracionGlobal
-     */
-    public static synchronized ConfiguracionGlobal obtenerInstancia() {
+    public static ConfiguracionGlobal obtenerInstancia() {
         if (instancia == null) {
-            instancia = new ConfiguracionGlobal();
+            synchronized (ConfiguracionGlobal.class) {
+                if (instancia == null) {
+                    instancia = new ConfiguracionGlobal();
+                }
+            }
         }
         return instancia;
     }
     
-    /**
-     * Carga las propiedades desde el archivo de configuración
-     */
-    private void cargarPropiedades() {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ARCHIVO_CONFIG)) {
-            if (inputStream == null) {
-                logger.warn("No se pudo encontrar el archivo de configuración: {}", ARCHIVO_CONFIG);
-                cargarConfiguracionPorDefecto();
-                return;
+    private void cargarConfiguraciones() {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (input != null) {
+                propiedades.load(input);
+                logger.info(TipoMensaje.CONFIGURACION.formatearMensaje("Configuraciones cargadas"));
+            } else {
+                cargarConfiguracionesPorDefecto();
             }
-            
-            propiedades.load(inputStream);
-            logger.info("Configuración cargada exitosamente desde: {}", ARCHIVO_CONFIG);
-            
         } catch (IOException e) {
-            logger.error("Error al cargar el archivo de configuración: {}", e.getMessage());
-            cargarConfiguracionPorDefecto();
+            logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Error cargando config.properties, usando valores por defecto"));
+            cargarConfiguracionesPorDefecto();
         }
     }
     
-    /**
-     * Carga configuración por defecto en caso de error
-     */
-    private void cargarConfiguracionPorDefecto() {
-        propiedades.setProperty("url.base", "https://example.com");
-        propiedades.setProperty("navegador.tipo", "CHROME");
-        propiedades.setProperty("navegador.headless", "false");
-        propiedades.setProperty("timeout.implicito", "10");
-        propiedades.setProperty("timeout.explicito", "15");
-        propiedades.setProperty("timeout.carga.pagina", "30");
-        propiedades.setProperty("capturas.directorio", "capturas");
-        propiedades.setProperty("reportes.directorio", "reportes");
-        propiedades.setProperty("datos.directorio", "src/test/resources/datos");
-        
-        logger.info("Configuración por defecto cargada");
+    private void cargarConfiguracionesPorDefecto() {
+        propiedades.setProperty(URL_BASE, "https://practice.expandtesting.com");
+        propiedades.setProperty(URL_LOGIN, "/login");
+        propiedades.setProperty(URL_REGISTRO, "/register");
+        propiedades.setProperty(NAVEGADOR_TIPO, "CHROME");
+        propiedades.setProperty(NAVEGADOR_HEADLESS, "false");
+        propiedades.setProperty(TIMEOUT_EXPLICITO, "10");
+        propiedades.setProperty(TIMEOUT_IMPLICITO, "10");
     }
     
-    /**
-     * Obtiene una propiedad como cadena de texto
-     * @param clave clave de la propiedad
-     * @return valor de la propiedad o cadena vacía si no existe
-     */
     public String obtenerPropiedad(String clave) {
-        String valor = propiedades.getProperty(clave);
-        if (valor == null) {
-            logger.debug("Propiedad no encontrada: {}. Usando valor vacío", clave);
-            return "";
-        }
-        return valor.trim();
+        return propiedades.getProperty(clave);
     }
     
-    /**
-     * Obtiene una propiedad como cadena de texto con valor por defecto
-     * @param clave clave de la propiedad
-     * @param valorPorDefecto valor por defecto si la clave no existe
-     * @return valor de la propiedad o valor por defecto
-     */
     public String obtenerPropiedad(String clave, String valorPorDefecto) {
-        String valor = propiedades.getProperty(clave);
-        if (valor == null || valor.trim().isEmpty()) {
-            logger.debug("Propiedad '{}' no encontrada o vacía. Usando valor por defecto: {}", 
-                       clave, valorPorDefecto);
-            return valorPorDefecto;
-        }
-        return valor.trim();
+        return propiedades.getProperty(clave, valorPorDefecto);
     }
     
-    /**
-     * Obtiene una propiedad como entero
-     * @param clave clave de la propiedad
-     * @param valorPorDefecto valor por defecto si la clave no existe o no es un entero válido
-     * @return valor entero de la propiedad o valor por defecto
-     */
-    public int obtenerPropiedadEntero(String clave, int valorPorDefecto) {
-        String valor = obtenerPropiedad(clave);
-        if (valor.isEmpty()) {
-            return valorPorDefecto;
-        }
-        
+    public int obtenerPropiedadInt(String clave, int valorPorDefecto) {
         try {
-            return Integer.parseInt(valor);
+            String valor = obtenerPropiedad(clave);
+            return valor != null ? Integer.parseInt(valor.trim()) : valorPorDefecto;
         } catch (NumberFormatException e) {
-            logger.warn("La propiedad '{}' con valor '{}' no es un entero válido. " +
-                       "Usando valor por defecto: {}", 
-                       clave, valor, valorPorDefecto);
             return valorPorDefecto;
         }
     }
     
-    /**
-     * Obtiene una propiedad como booleano
-     * @param clave clave de la propiedad
-     * @param valorPorDefecto valor por defecto si la clave no existe
-     * @return valor booleano de la propiedad o valor por defecto
-     */
-    public boolean obtenerPropiedadBooleana(String clave, boolean valorPorDefecto) {
+    public boolean obtenerPropiedadBoolean(String clave, boolean valorPorDefecto) {
         String valor = obtenerPropiedad(clave);
-        if (valor.isEmpty()) {
-            return valorPorDefecto;
-        }
-        return Boolean.parseBoolean(valor);
+        return valor != null ? Boolean.parseBoolean(valor.trim()) : valorPorDefecto;
     }
-    
-    // Métodos de conveniencia para propiedades comunes
     
     public String obtenerUrlBase() {
-        return obtenerPropiedad("url.base");
+        return obtenerPropiedad(URL_BASE, "https://practice.expandtesting.com");
     }
     
-    public String obtenerTipoNavegador() {
-        return obtenerPropiedad("navegador.tipo", "CHROME");
+    public String obtenerUrlLogin() {
+        return obtenerUrlBase() + obtenerPropiedad(URL_LOGIN, "/login");
     }
     
-    public boolean esNavegadorHeadless() {
-        return obtenerPropiedadBooleana("navegador.headless", false);
+    public String obtenerUrlRegistro() {
+        return obtenerUrlBase() + obtenerPropiedad(URL_REGISTRO, "/register");
     }
     
-    public int obtenerTimeoutImplicito() {
-        return obtenerPropiedadEntero("timeout.implicito", 10);
-    }
-    
-    public int obtenerTimeoutExplicito() {
-        return obtenerPropiedadEntero("timeout.explicito", 15);
-    }
-    
-    public int obtenerTimeoutCargaPagina() {
-        return obtenerPropiedadEntero("timeout.carga.pagina", 30);
-    }
-    
-    public String obtenerDirectorioCapturas() {
-        return obtenerPropiedad("capturas.directorio", "capturas");
-    }
-    
-    public String obtenerDirectorioReportes() {
-        return obtenerPropiedad("reportes.directorio", "reportes");
-    }
-    
-    public String obtenerDirectorioDatos() {
-        return obtenerPropiedad("datos.directorio", "src/test/resources/datos");
-    }
-    
-    /**
-     * Establece una propiedad en tiempo de ejecución
-     * @param clave clave de la propiedad
-     * @param valor valor de la propiedad
-     */
-    public void establecerPropiedad(String clave, String valor) {
-        propiedades.setProperty(clave, valor);
-        logger.debug("Propiedad establecida: {} = {}", clave, valor);
-    }
-    
-    /**
-     * Verifica si una propiedad existe
-     * @param clave clave de la propiedad
-     * @return true si la propiedad existe, false en caso contrario
-     */
-    public boolean existePropiedad(String clave) {
-        return propiedades.containsKey(clave);
+    public String obtenerInformacionEstado() {
+        return String.format("Config[URL: %s, Navegador: %s, Timeout: %s]", 
+                           obtenerUrlBase(), 
+                           obtenerPropiedad(NAVEGADOR_TIPO, "CHROME"),
+                           obtenerPropiedad(TIMEOUT_EXPLICITO, "10"));
     }
 }

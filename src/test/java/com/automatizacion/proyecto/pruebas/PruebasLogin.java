@@ -1,105 +1,148 @@
 package com.automatizacion.proyecto.pruebas;
 
 import com.automatizacion.proyecto.base.BaseTest;
+import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
+import com.automatizacion.proyecto.datos.ProveedorDatos;
+import com.automatizacion.proyecto.enums.TipoMensaje;
 import com.automatizacion.proyecto.paginas.PaginaLogin;
+import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import org.testng.annotations.*;
-import io.qameta.allure.*;
-import com.automatizacion.proyecto.paginas.PaginaRegistro;
-import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
-import com.automatizacion.proyecto.utilidades.LectorDatosPrueba;
-
-/**
- * Pruebas de Login - VERSIÓN CON DEBUG COMPLETO
- * @author Roberto Rivas Lopez
- */
+@Epic("Gestión de Usuarios")
+@Feature("Inicio de Sesión")
 public class PruebasLogin extends BaseTest {
     
     private PaginaLogin paginaLogin;
     
-    @BeforeMethod
-    public void configurarPagina() {
-        System.out.println("\n" + "=".repeat(80));
-        System.out.println("🔧 CONFIGURANDO PRUEBA DE LOGIN - VERSIÓN DEBUG");
-        System.out.println("=".repeat(80));
-        
-        String urlLogin = "https://practice.expandtesting.com/login";
-        System.out.println("🌐 Navegando a: " + urlLogin);
-        
-        
-        
-        // Esperar que la página cargue completamente
-        System.out.println("⏳ Esperando 5 segundos para carga completa...");
+    @Override
+    protected void navegarAUrlBase() {
         try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            String urlLogin = configuracion.obtenerUrlLogin();
+            driver.get(urlLogin);
+            logger.info(TipoMensaje.INFORMATIVO.formatearMensaje("Navegando a: " + urlLogin));
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error navegando a URL login: " + e.getMessage()));
+            throw new RuntimeException("No se pudo navegar a URL login", e);
         }
+    }
+    
+    @BeforeMethod(alwaysRun = true)
+    public void configuracionEspecificaLogin() {
+        paginaLogin = new PaginaLogin(obtenerDriver());
         
-                
-        // Debug de elementos antes de verificar
-        paginaLogin.debugElementos();
-        
-        // Verificar que la página cargó
+        logPasoPrueba("Verificando que la página de login está visible");
         boolean paginaVisible = paginaLogin.esPaginaVisible();
-        System.out.println("🎯 RESULTADO VERIFICACIÓN: " + paginaVisible);
+        Assert.assertTrue(paginaVisible, "La página de login debería estar visible");
         
-        if (!paginaVisible) {
-            System.out.println("❌ PÁGINA NO VISIBLE - CAPTURANDO EVIDENCIA");
-          
+        if (paginaVisible) {
+            logValidacion("Página de login cargada correctamente");
+            paginaLogin.validarElementosPagina();
         }
-        
-        Assert.assertTrue(paginaVisible, "La página de login debe estar visible después de la carga");
-        System.out.println("✅ Configuración completada exitosamente\n");
     }
     
-    @Test(description = "Login exitoso con credenciales válidas - VERSIÓN DEBUG")
+    @Test(priority = 1,
+          description = "Verificar login exitoso con credenciales válidas",
+          groups = {"smoke", "login", "positivo"})
+    @Story("Login Exitoso")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("Verifica que un usuario puede iniciar sesión con credenciales válidas")
     public void testLoginExitoso() {
-        System.out.println("\n🧪 === TEST: LOGIN EXITOSO (DEBUG) ===");
-        System.out.println("-".repeat(50));
         
-        // Usar credenciales conocidas de la página
-        paginaLogin.realizarLogin("practice", "SuperSecretPassword!");
+        logPasoPrueba("Preparando credenciales válidas para login exitoso");
         
+        ModeloDatosPrueba datos = ModeloDatosPrueba.builder()
+                .casoPrueba("LOGIN_001")
+                .descripcion("Login exitoso con credenciales válidas")
+                .email("practice")
+                .password("SuperSecretPassword!")
+                .esValido(true)
+                .resultadoEsperado("Usuario autenticado exitosamente")
+                .build();
         
+        logPasoPrueba("Ejecutando proceso de login con datos: " + datos.getCasoPrueba());
         
-        System.out.println("📊 ANÁLISIS DEL RESULTADO:");
-        System.out.println("   📍 URL actual: " + urlActual);
-        System.out.println("   📋 Título actual: " + tituloActual);
+        boolean loginExitoso = paginaLogin.iniciarSesion(datos);
         
-        // Verificar diferentes indicadores de éxito
-        boolean contieneSecure = urlActual.contains("secure");
-        boolean noContieneLogin = !urlActual.contains("login");
-        boolean cambioUrl = !urlActual.equals("https://practice.expandtesting.com/login");
+        logValidacion("Verificando resultado del login");
+        Assert.assertTrue(loginExitoso, "El login debería ser exitoso con credenciales válidas");
         
-        System.out.println("   ✅ Contiene 'secure': " + contieneSecure);
-        System.out.println("   ✅ No contiene 'login': " + noContieneLogin);
-        System.out.println("   ✅ Cambió de URL: " + cambioUrl);
-        
-        boolean loginExitoso = contieneSecure || cambioUrl;
-        System.out.println("   🎯 LOGIN EXITOSO: " + loginExitoso);
-        
-       
-        
-        Assert.assertTrue(loginExitoso, "El login debería ser exitoso - URL: " + urlActual);
-        System.out.println("✅ === TEST LOGIN EXITOSO COMPLETADO ===\n");
+        capturarPantalla("login_exitoso");
+        logger.info(TipoMensaje.EXITO.formatearMensaje("Test de login exitoso completado"));
     }
     
-    @Test(description = "Debug completo de elementos")
-    public void testDebugElementos() {
-        System.out.println("\n🐛 === TEST: DEBUG COMPLETO ===");
-        System.out.println("-".repeat(50));
+    @Test(priority = 2,
+          description = "Verificar validación con credenciales inválidas",
+          groups = {"regression", "login", "negativo", "validacion"})
+    @Story("Validación de Credenciales")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Verifica que el sistema rechaza credenciales inválidas")
+    public void testValidacionCredencialesInvalidas() {
         
-        paginaLogin.debugElementos();
+        logPasoPrueba("Preparando credenciales inválidas");
         
-                
-        System.out.println("📸 Captura guardada para análisis visual");
-        System.out.println("✅ === DEBUG COMPLETADO ===\n");
+        ModeloDatosPrueba datos = ModeloDatosPrueba.builder()
+                .casoPrueba("LOGIN_002")
+                .descripcion("Validación de credenciales inválidas")
+                .email("usuario.inexistente@test.com")
+                .password("PasswordIncorrecto!")
+                .esValido(false)
+                .mensajeError("Invalid credentials")
+                .build();
         
-        // Siempre pasa - es solo para debug
-        Assert.assertTrue(true, "Test de debug siempre pasa");
+        logPasoPrueba("Ejecutando login con credenciales inválidas");
+        
+        boolean loginFallido = paginaLogin.iniciarSesion(datos);
+        
+        logValidacion("Verificando que el login falló como esperado");
+        Assert.assertTrue(loginFallido, "El login debería fallar con credenciales inválidas");
+        
+        String mensajeError = paginaLogin.obtenerMensajeError();
+        logValidacion("Mensaje de error obtenido: " + mensajeError);
+        
+        capturarPantalla("validacion_credenciales_invalidas");
+        logger.info(TipoMensaje.EXITO.formatearMensaje("Test de validación de credenciales inválidas completado"));
+    }
+    
+    @Test(priority = 3,
+          dataProvider = "datosLoginValidos", 
+          dataProviderClass = ProveedorDatos.class,
+          description = "Verificar login con múltiples credenciales válidas",
+          groups = {"regression", "login", "positivo", "datadriven"})
+    @Story("Login con Datos Múltiples")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verifica login con diferentes conjuntos de credenciales válidas")
+    public void testLoginMultiplesCredencialesValidas(ModeloDatosPrueba datos) {
+        
+        logPasoPrueba("Ejecutando login con datos: " + datos.getCasoPrueba());
+        
+        boolean loginExitoso = paginaLogin.iniciarSesion(datos);
+        
+        logValidacion("Verificando resultado del login para: " + datos.getCasoPrueba());
+        Assert.assertTrue(loginExitoso, "El login debería ser exitoso para: " + datos.getCasoPrueba());
+        
+        capturarPantalla("login_multiple_" + datos.getCasoPrueba());
+    }
+    
+    @Test(priority = 4,
+          dataProvider = "datosLoginInvalidos", 
+          dataProviderClass = ProveedorDatos.class,
+          description = "Verificar validación con múltiples credenciales inválidas",
+          groups = {"regression", "login", "negativo", "datadriven"})
+    @Story("Validación con Datos Múltiples")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verifica validación con diferentes conjuntos de credenciales inválidas")
+    public void testValidacionMultiplesCredencialesInvalidas(ModeloDatosPrueba datos) {
+        
+        logPasoPrueba("Ejecutando validación con datos: " + datos.getCasoPrueba());
+        
+        boolean loginFallido = paginaLogin.iniciarSesion(datos);
+        
+        logValidacion("Verificando que falló como esperado para: " + datos.getCasoPrueba());
+        Assert.assertTrue(loginFallido, "El login debería fallar para: " + datos.getCasoPrueba());
+        
+        capturarPantalla("validacion_multiple_" + datos.getCasoPrueba());
     }
 }
