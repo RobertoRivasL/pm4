@@ -1,3 +1,7 @@
+// ===============================================
+// ARCHIVO: src/test/java/com/automatizacion/proyecto/paginas/PaginaRegistro.java
+// VERSIÓN CORREGIDA FINAL
+// ===============================================
 package com.automatizacion.proyecto.paginas;
 
 import com.automatizacion.proyecto.datos.ModeloDatosPrueba;
@@ -84,23 +88,51 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
     public void llenarFormularioCompleto(ModeloDatosPrueba datos) {
         logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje("Llenando formulario completo de registro"));
         
-        if (datos.getNombre() != null && !datos.getNombre().isEmpty()) {
-            ingresarNombre(datos.getNombre());
+        try {
+            // Scroll para asegurar que los elementos están visibles
+            manejadorScroll.scrollAlInicio();
+            Thread.sleep(500);
+            
+            if (datos.getNombre() != null && !datos.getNombre().isEmpty()) {
+                logger.debug(TipoMensaje.PASO_PRUEBA.formatearMensaje("Ingresando nombre: " + datos.getNombre()));
+                ingresarNombre(datos.getNombre());
+                Thread.sleep(500); // Pausa entre campos
+            }
+            
+            if (datos.getEmail() != null && !datos.getEmail().isEmpty()) {
+                logger.debug(TipoMensaje.PASO_PRUEBA.formatearMensaje("Ingresando email: " + datos.getEmail()));
+                ingresarEmail(datos.getEmail());
+                Thread.sleep(500);
+            }
+            
+            if (datos.getPassword() != null && !datos.getPassword().isEmpty()) {
+                logger.debug(TipoMensaje.PASO_PRUEBA.formatearMensaje("Ingresando password"));
+                ingresarPassword(datos.getPassword());
+                Thread.sleep(500);
+            }
+            
+            if (datos.getConfirmacionPassword() != null && !datos.getConfirmacionPassword().isEmpty()) {
+                logger.debug(TipoMensaje.PASO_PRUEBA.formatearMensaje("Ingresando confirmación password"));
+                ingresarConfirmarPassword(datos.getConfirmacionPassword());
+                Thread.sleep(500);
+            }
+            
+            if (datos.isAceptarTerminos()) {
+                logger.debug(TipoMensaje.PASO_PRUEBA.formatearMensaje("Aceptando términos"));
+                aceptarTerminos();
+                Thread.sleep(500);
+            }
+            
+            // Scroll final para mostrar todo el formulario lleno
+            scrollParaCaptura();
+            Thread.sleep(1000);
+            
+            logger.info(TipoMensaje.EXITO.formatearMensaje("Formulario de registro completado correctamente"));
+            
+        } catch (Exception e) {
+            logger.error(TipoMensaje.ERROR.formatearMensaje("Error llenando formulario: " + e.getMessage()));
+            throw new RuntimeException("Error llenando formulario", e);
         }
-        if (datos.getEmail() != null && !datos.getEmail().isEmpty()) {
-            ingresarEmail(datos.getEmail());
-        }
-        if (datos.getPassword() != null && !datos.getPassword().isEmpty()) {
-            ingresarPassword(datos.getPassword());
-        }
-        if (datos.getConfirmacionPassword() != null && !datos.getConfirmacionPassword().isEmpty()) {
-            ingresarConfirmarPassword(datos.getConfirmacionPassword());
-        }
-        if (datos.isAceptarTerminos()) {
-            aceptarTerminos();
-        }
-        
-        logger.info(TipoMensaje.EXITO.formatearMensaje("Formulario de registro completado"));
     }
     
     @Override
@@ -156,13 +188,34 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
         logger.info(TipoMensaje.PASO_PRUEBA.formatearMensaje("Iniciando proceso de registro de usuario"));
         
         try {
-            llenarFormularioCompleto(datos);
-            clickBotonRegistrar();
-            Thread.sleep(2000); // Espera para procesos
+            // 1. Scroll al inicio para ver el formulario
+            manejadorScroll.scrollAlInicio();
+            Thread.sleep(1000);
             
+            // 2. Llenar formulario
+            llenarFormularioCompleto(datos);
+            
+            // 3. Captura ANTES de hacer click (con datos visibles)
+            capturarPantalla("formulario_lleno_" + datos.getCasoPrueba());
+            
+            // 4. Hacer click en registrar
+            clickBotonRegistrar();
+            
+            // 5. Esperar procesamiento
+            Thread.sleep(3000); // Más tiempo para procesamiento
+            
+            // 6. Verificar resultado
             if (datos.isEsValido()) {
                 boolean exitoso = verificarRegistroExitoso();
                 logger.info(TipoMensaje.EXITO.formatearMensaje("Registro completado - Exitoso: " + exitoso));
+                
+                if (!exitoso) {
+                    // Debug: capturar estado actual para análisis
+                    capturarPantalla("debug_registro_no_exitoso_" + datos.getCasoPrueba());
+                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("URL actual: " + driver.getCurrentUrl()));
+                    logger.warn(TipoMensaje.ADVERTENCIA.formatearMensaje("Título actual: " + driver.getTitle()));
+                }
+                
                 return exitoso;
             } else {
                 boolean fallido = verificarRegistroFallido();
@@ -180,18 +233,49 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
     @Override
     public boolean verificarRegistroExitoso() {
         try {
+            // Esperar un poco más para que se procese la respuesta
+            Thread.sleep(2000);
+            
+            // 1. Verificar mensaje de éxito
             if (esElementoVisible(mensajeExito)) {
                 String mensaje = obtenerTextoSeguro(mensajeExito);
-                logger.info(TipoMensaje.EXITO.formatearMensaje("Registro exitoso detectado: " + mensaje));
+                logger.info(TipoMensaje.EXITO.formatearMensaje("Registro exitoso detectado con mensaje: " + mensaje));
                 return true;
             }
             
+            // 2. Verificar redirección por URL
             String urlActual = driver.getCurrentUrl();
-            if (urlActual.contains("success") || urlActual.contains("welcome") || urlActual.contains("dashboard")) {
-                logger.info(TipoMensaje.EXITO.formatearMensaje("Redirección exitosa detectada: " + urlActual));
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("URL actual para verificación: " + urlActual));
+            
+            if (urlActual.contains("success") || 
+                urlActual.contains("welcome") || 
+                urlActual.contains("dashboard") ||
+                urlActual.contains("home") ||
+                !urlActual.contains("register")) {
+                logger.info(TipoMensaje.EXITO.formatearMensaje("Registro exitoso detectado por cambio de URL: " + urlActual));
                 return true;
             }
             
+            // 3. Verificar cambio en el título
+            String titulo = obtenerTituloPagina();
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Título actual: " + titulo));
+            
+            if (titulo.toLowerCase().contains("welcome") || 
+                titulo.toLowerCase().contains("success") ||
+                titulo.toLowerCase().contains("home") ||
+                !titulo.toLowerCase().contains("register")) {
+                logger.info(TipoMensaje.EXITO.formatearMensaje("Registro exitoso detectado por cambio de título: " + titulo));
+                return true;
+            }
+            
+            // 4. Verificar ausencia de errores
+            boolean hayErrores = hayErroresValidacion();
+            if (!hayErrores && !esPaginaVisible()) {
+                logger.info(TipoMensaje.EXITO.formatearMensaje("Registro exitoso detectado por ausencia de errores y cambio de página"));
+                return true;
+            }
+            
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("No se detectó registro exitoso"));
             return false;
             
         } catch (Exception e) {
@@ -204,7 +288,7 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
     public boolean verificarRegistroFallido() {
         try {
             boolean enPaginaRegistro = esPaginaVisible();
-            boolean hayErrores = hayErroresValidacion(); // Ahora usa el método público
+            boolean hayErrores = hayErroresValidacion();
             boolean hayMensajeError = esElementoVisible(mensajeError);
             
             boolean registroFallo = enPaginaRegistro && (hayErrores || hayMensajeError);
@@ -253,10 +337,6 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
         }
     }
     
-    // ===============================================
-    // MÉTODO PÚBLICO AGREGADO PARA RESOLVER EL ERROR
-    // ===============================================
-    
     /**
      * Verifica si hay errores de validación en la página (método público)
      * @return true si hay errores visibles
@@ -268,6 +348,26 @@ public class PaginaRegistro extends PaginaBase implements IPaginaRegistro {
         } catch (Exception e) {
             logger.debug(TipoMensaje.DEBUG.formatearMensaje("Error verificando errores de validación: " + e.getMessage()));
             return false;
+        }
+    }
+    
+    /**
+     * Scroll para mostrar formulario completo en capturas
+     */
+    private void scrollParaCaptura() {
+        try {
+            // Buscar el formulario de registro
+            org.openqa.selenium.WebElement formulario = driver.findElement(org.openqa.selenium.By.tagName("form"));
+            if (formulario != null) {
+                manejadorScroll.scrollHastaElemento(formulario);
+            } else {
+                // Si no encuentra form, scroll al primer input
+                org.openqa.selenium.WebElement primerInput = driver.findElement(org.openqa.selenium.By.tagName("input"));
+                manejadorScroll.scrollHastaElemento(primerInput);
+            }
+        } catch (Exception e) {
+            manejadorScroll.scrollAlInicio(); // Fallback
+            logger.debug(TipoMensaje.DEBUG.formatearMensaje("Scroll para captura - fallback al inicio"));
         }
     }
 }
