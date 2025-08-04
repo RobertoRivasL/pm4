@@ -1,20 +1,31 @@
-# ===============================================
-# ARCHIVO: src/test/resources/testng.xml
-// ===============================================
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SuiteAutomatizacionFuncional" parallel="methods" thread-count="1">
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SuiteAutomatizacion" parallel="methods" thread-count="3">
     
-    <parameter name="navegador" value="CHROME"/>
-    <parameter name="ambiente" value="test"/>
+    <parameter name="browser" value="chrome"/>
+    <parameter name="headless" value="false"/>
     
-    <test name="PruebasRegistro">
+    <test name="PruebasLogin" group-by-instances="true">
         <groups>
             <run>
                 <include name="smoke"/>
                 <include name="regression"/>
+                <include name="login"/>
             </run>
         </groups>
-        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin"/>
+        </classes>
+    </test>
+    
+    <test name="PruebasRegistro" group-by-instances="true">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <include name="regression"/>
+                <include name="registro"/>
+            </run>
+        </groups>
         <classes>
             <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro"/>
         </classes>

@@ -159,4 +159,7 @@ public abstract class BaseTest {
             gestorCaptura.capturarPantalla(nombreArchivo);
         }
     }
+
+    
+    
 }

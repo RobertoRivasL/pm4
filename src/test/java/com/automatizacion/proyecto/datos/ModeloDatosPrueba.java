@@ -106,4 +106,24 @@ public class ModeloDatosPrueba {
     
     public String getMensajeError() { return mensajeError; }
     public void setMensajeError(String mensajeError) { this.mensajeError = mensajeError; }
+
+    /**
+ * Verifica si los campos mínimos para login están completos
+ * @return true si email y password no están vacíos
+ */
+public boolean camposLoginCompletos() {
+    return email != null && !email.trim().isEmpty() && 
+           password != null && !password.trim().isEmpty();
+}
+
+/**
+ * Genera un resumen seguro para logging
+ * @return resumen sin datos sensibles
+ */
+public String generarResumen() {
+    return String.format("Caso: %s, Email: %s, Válido: %s", 
+                        casoPrueba != null ? casoPrueba : "N/A",
+                        email != null ? email.substring(0, Math.min(email.length(), 3)) + "***" : "N/A",
+                        esValido);
+}
 }
