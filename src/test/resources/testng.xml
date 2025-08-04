@@ -1,33 +1,242 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="SuiteAutomatizacion" parallel="methods" thread-count="3">
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<!--
+====================================================================
+CONFIGURACIÓN DE TESTNG PARA SUITE DE AUTOMATIZACIÓN FUNCIONAL
+Archivo: testng.xml
+Autores: Antonio B. Arriagada LL., Dante Escalona Bustos, Roberto Rivas Lopez
+====================================================================
+-->
+
+<suite name="SuiteAutomatizacionFuncional" verbose="1" parallel="methods" thread-count="3">
     
-    <parameter name="browser" value="chrome"/>
+    <!-- ====== CONFIGURACIÓN GLOBAL ====== -->
+    <parameter name="browser" value="CHROME"/>
     <parameter name="headless" value="false"/>
+    <parameter name="timeout" value="15"/>
     
-    <test name="PruebasLogin" group-by-instances="true">
+    <!-- ====== LISTENERS PARA REPORTES ====== -->
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+    
+    <!-- ====== GRUPOS DE PRUEBAS ====== -->
+    <groups>
+        <define name="smoke">
+            <include name="smoke"/>
+        </define>
+        
+        <define name="regression">
+            <include name="regression"/>
+            <include name="smoke"/>
+        </define>
+        
+        <define name="login">
+            <include name="login"/>
+        </define>
+        
+        <define name="registro">
+            <include name="registro"/>
+        </define>
+        
+        <define name="negativo">
+            <include name="negativo"/>
+        </define>
+        
+        <define name="positivo">
+            <include name="positivo"/>
+        </define>
+        
+        <define name="validacion">
+            <include name="validacion"/>
+        </define>
+        
+        <define name="security">
+            <include name="security"/>
+        </define>
+        
+        <define name="ui">
+            <include name="ui"/>
+        </define>
+        
+        <define name="integration">
+            <include name="integration"/>
+        </define>
+        
+        <define name="performance">
+            <include name="performance"/>
+        </define>
+        
+        <define name="stress">
+            <include name="stress"/>
+        </define>
+    </groups>
+    
+    <!-- ====== TEST DE SMOKE (CRÍTICOS) ====== -->
+    <test name="PruebasSmoke" preserve-order="true">
         <groups>
-            <run>
-                <include name="smoke"/>
-                <include name="regression"/>
-                <include name="login"/>
-            </run>
+            <include name="smoke"/>
         </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testLoginExitoso"/>
+                    <include name="testAccesoDashboard"/>
+                    <include name="testFlujoCompletoLoginLogout"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testRegistroExitoso"/>
+                    <include name="testRegistroYLogin"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE LOGIN COMPLETAS ====== -->
+    <test name="PruebasLoginCompletas" preserve-order="true">
+        <groups>
+            <include name="login"/>
+        </groups>
+        
         <classes>
             <class name="com.automatizacion.proyecto.pruebas.PruebasLogin"/>
         </classes>
     </test>
     
-    <test name="PruebasRegistro" group-by-instances="true">
+    <!-- ====== PRUEBAS DE REGISTRO COMPLETAS ====== -->
+    <test name="PruebasRegistroCompletas" preserve-order="true">
         <groups>
-            <run>
-                <include name="smoke"/>
-                <include name="regression"/>
-                <include name="registro"/>
-            </run>
+            <include name="registro"/>
         </groups>
+        
         <classes>
             <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro"/>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE REGRESIÓN ====== -->
+    <test name="PruebasRegresion" preserve-order="false">
+        <groups>
+            <include name="regression"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin"/>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro"/>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS NEGATIVAS ====== -->
+    <test name="PruebasNegativas" preserve-order="false">
+        <groups>
+            <include name="negativo"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testLoginCredencialesInvalidas"/>
+                    <include name="testLoginPasswordIncorrecto"/>
+                    <include name="testLoginUsuarioInexistente"/>
+                    <include name="testMultiplesIntentosFallidos"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testValidacionEmailInvalido"/>
+                    <include name="testValidacionPasswordsNoCoinciden"/>
+                    <include name="testValidacionCamposObligatorios"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE VALIDACIÓN ====== -->
+    <test name="PruebasValidacion" preserve-order="false">
+        <groups>
+            <include name="validacion"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testValidacionCamposVacios"/>
+                    <include name="testValidacionSoloUsuario"/>
+                    <include name="testValidacionSoloPassword"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testValidacionFormatoEmail"/>
+                    <include name="testValidacionLongitudPassword"/>
+                    <include name="testValidacionTerminosNoAceptados"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE SEGURIDAD ====== -->
+    <test name="PruebasSeguridad" preserve-order="false">
+        <groups>
+            <include name="security"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testSeguridadPasswordEnmascarado"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testValidacionPasswordDebil"/>
+                    <include name="testSeguridadPassword"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE INTERFAZ ====== -->
+    <test name="PruebasInterfaz" preserve-order="false">
+        <groups>
+            <include name="ui"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testElementosInterfazPresentes"/>
+                </methods>
+            </class>
+            
+            <class name="com.automatizacion.proyecto.pruebas.PruebasRegistro">
+                <methods>
+                    <include name="testCamposOpcionales"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    
+    <!-- ====== PRUEBAS DE RENDIMIENTO ====== -->
+    <test name="PruebasRendimiento" preserve-order="false">
+        <groups>
+            <include name="performance"/>
+        </groups>
+        
+        <classes>
+            <class name="com.automatizacion.proyecto.pruebas.PruebasLogin">
+                <methods>
+                    <include name="testTiempoRespuestaLogin"/>
+                </methods>
+            </class>
         </classes>
     </test>
     
